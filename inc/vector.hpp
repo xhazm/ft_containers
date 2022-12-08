@@ -18,10 +18,10 @@ public:
     typedef vector_allocator::const_reference	const_reference;
     typedef vector_allocator::size_type			size_type;
     typedef vector_allocator::difference_type	difference_type;
-    // typedef reverse_iterator<const_iterator, value_type, const_reference, 
-    //                          difference_type>  const_reverse_iterator;
-    // typedef reverse_iterator<iterator, value_type, reference, difference_type>
-    //     reverse_iterator;
+    typedef reverse_iterator<const_iterator, value_type, const_reference, 
+                             difference_type>  const_reverse_iterator;
+    typedef reverse_iterator<iterator, value_type, reference, difference_type>
+        reverse_iterator;
 
 protected:
 	static Allocator<T>	static_allocator;
@@ -60,8 +60,33 @@ public:
 		static_allocator.deallocate(start_, capacity());
 	}
 /* =================           Element Access               ================= */
-	
-
+	reference at(size_type pos)
+	{
+		if (pos >= size() || pos < 0)
+			throw std::out_of_range ("vector");
+		return *(begin() + pos);
+	}
+	const_reference at(size_type pos) const
+	{
+		if (pos >= size() || pos < 0)
+			throw std::out_of_range ("vector");
+		return *(begin() + pos);
+	}
+	reference		operator[](size_type pos)		{ return *(begin() + pos); }
+	const_reference	operator[](size_type pos) const	{ return *(begin() + pos); }
+	reference		front()							{ return *begin(); }
+	const_reference front() const					{ return *begin(); }
+	reference		back()							{ return *(end() - 1); }
+	const_reference back() const					{ return *(end() - 1); }
+/* =================                Iterators               ================= */
+	iterator				begin()			{ return start_ }
+	const_iterator			begin() const	{ return start_ }
+	iterator				end()			{ return finish_ }
+	const_iterator			end() const		{ return finish_ }
+	reverse_iterator		rbegin()		{ return reverse_iterator(end()) }
+	const_reverse_iterator	rbegin() const	{ return const_reverse_iterator(end()) }
+	reverse_iterator		rend()			{ return reverse_iterator(begin()) }
+	const_reverse_iterator	rend() const	{ return const_reverse_iterator(begin()) }
 /* =================                Capacity                ================= */
 	size_type	size() const { return size_type(end() - begin()); }
 	size_type	max_size() const { return static_allocator.max_size(); }
@@ -83,8 +108,6 @@ public:
 	}
 /* =================               Modifiers              ================= */
 
-
-
 	void push_back(T& data)
 	{
 		if (current == capacity) {
@@ -93,7 +116,6 @@ public:
             for (int i = 0; i < capacity; i++) {
                 temp[i] = arr[i];
             }
- 
             delete[] arr;
             capacity *= 2;
             arr = temp;

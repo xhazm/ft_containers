@@ -15,12 +15,12 @@ class vector_iterator
         typedef typename ft::iterator<ft::random_access_iterator_tag, T >::iterator_category    iterator_category;
 
     private:
-        pointer _current;
+        pointer current_;
 
 /* =================                Constructors                ================= */
     public:
 
-        vector_iterator(pointer ptr = NULL) : _current(ptr) {}
+        vector_iterator(pointer ptr = NULL) : current_(ptr) {}
 
         vector_iterator(const vector_iterator &other) { *this = other; }
 
@@ -28,22 +28,22 @@ class vector_iterator
         ~vector_iterator() {}
 
 /* =================                Accessor                    ================= */
-        pointer base( void ) const { return (_current); }
+        pointer base( void ) const { return (current_); }
 
 /* =================                Operator Overloads                    ================= */
-        operator        vector_iterator< const T >( void ) const { return (vector_iterator< const T >(_current)); }
+        operator        vector_iterator< const T >( void ) const { return (vector_iterator< const T >(current_)); }
 
-        vector_iterator  &operator=( const vector_iterator &other ) { _current = other.base(); return (*this); }
-        reference        operator*( void ) const { return *_current; }
-        pointer          operator->() const {return &(*_current);}
-        vector_iterator& operator++() {++_current; return *this;}
-        vector_iterator& operator++(int) {vector_iterator tmp(_current), ++_current; return tmp;}
-        vector_iterator& operator--() {--_current; return *this;}
-        vector_iterator& operator--(int) {vector_iterator tmp(_current), --_current; return tmp;}
-        vector_iterator  operator+ (difference_type __n) const {return vector_iterator(_current + __n);}
-        vector_iterator  operator+=(difference_type __n) const {_current += n; return this;}
-        vector_iterator  operator- (difference_type __n) const {return vector_iterator(_current + __n);}
-        vector_iterator  operator-=(difference_type __n) const {_current -= n; return this;}
+        vector_iterator  &operator=( const vector_iterator &other ) { current_ = other.base(); return (*this); }
+        reference        operator*( void ) const { return *current_; }
+        pointer          operator->() const {return &(*current_);}
+        vector_iterator& operator++() {++current_; return *this;}
+        vector_iterator& operator++(int) {vector_iterator tmp(current_), ++current_; return tmp;}
+        vector_iterator& operator--() {--current_; return *this;}
+        vector_iterator& operator--(int) {vector_iterator tmp(current_), --current_; return tmp;}
+        vector_iterator  operator+ (difference_type __n) const {return vector_iterator(current_ + __n);}
+        vector_iterator  operator+=(difference_type __n) const {current_ += n; return this;}
+        vector_iterator  operator- (difference_type __n) const {return vector_iterator(current_ + __n);}
+        vector_iterator  operator-=(difference_type __n) const {current_ -= n; return this;}
         reference        operator[](difference_type __n) const {return *(*this + __n);}
 
 };
