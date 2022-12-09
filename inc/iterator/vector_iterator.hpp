@@ -7,12 +7,15 @@ namespace ft {
 template < class T >
 class vector_iterator
 {
+   private:
+        typedef typename ft::iterator<ft::random_access_iterator_tag, T >       iterator;
+
     public:
-        typedef typename ft::iterator<ft::random_access_iterator_tag, T >::value_type           value_type;
-        typedef typename ft::iterator<ft::random_access_iterator_tag, T >::difference_type      difference_type;
-        typedef typename ft::iterator<ft::random_access_iterator_tag, T >::reference            reference;
-        typedef typename ft::iterator<ft::random_access_iterator_tag, T >::pointer              pointer;
-        typedef typename ft::iterator<ft::random_access_iterator_tag, T >::iterator_category    iterator_category;
+        typedef typename iterator::value_type                                   value_type;
+        typedef typename iterator::difference_type                              difference_type;
+        typedef typename iterator::reference                                    reference;
+        typedef typename iterator::pointer                                      pointer;
+        typedef typename iterator::iterator_category                            iterator_category;
 
     private:
         pointer current_;
@@ -47,17 +50,20 @@ class vector_iterator
         reference        operator[](difference_type __n) const {return *(*this + __n);}
 
 };
-        // template < typename T >
-        // bool operator==(const VectorIterator<T>& lhs, const VectorIterator<T>& rhs) { return lhs.base() == rhs.base(); }
-        // bool operator<(const VectorIterator<T>& lhs, const VectorIterator<T>& rhs) { return lhs.base() < rhs.base(); }
-        // bool operator!=(const VectorIterator<T>& lhs, const VectorIterator<T>& rhs) { return lhs.base() != rhs.base(); }
-        // bool operator>(const VectorIterator<T>& lhs, const VectorIterator<T>& rhs) { return lhs.base() > rhs.base(); }
-        // bool operator>=(const VectorIterator<T>& lhs, const VectorIterator<T>& rhs) { return lhs.base() >= rhs.base(); }
-        // bool operator add(const VectorIterator<T>& lhs, const VectorIterator<T>& rhs) { return lhs.base() add rhs.base(); }
-        // bool operator add(const VectorIterator<T>& lhs, const VectorIterator<T>& rhs) { return lhs.base() add rhs.base(); }
-        // bool operator add(const VectorIterator<T>& lhs, const VectorIterator<T>& rhs) { return lhs.base() add rhs.base(); }
-        // bool operator add(const VectorIterator<T>& lhs, const VectorIterator<T>& rhs) { return lhs.base() add rhs.base(); }
-        // bool operator add(const VectorIterator<T>& lhs, const VectorIterator<T>& rhs) { return lhs.base() add rhs.base(); }
+
+/* =================                Non Member Operators                    ================= */
+        template < typename T >
+        bool operator==(const vector_iterator<T>& lhs, const vector_iterator<T>& rhs) { return lhs.base() == rhs.base(); }
+        template < typename T >
+        bool operator!=(const vector_iterator<T>& lhs, const vector_iterator<T>& rhs) { return !(lhs == rhs); }
+        template < typename T >
+        bool operator> (const vector_iterator<T>& lhs, const vector_iterator<T>& rhs) { return lhs.base() > rhs.base(); }
+        template < typename T >
+        bool operator>=(const vector_iterator<T>& lhs, const vector_iterator<T>& rhs) { return lhs.base() >= rhs.base(); }
+        template < typename T >
+        bool operator< (const vector_iterator<T>& lhs, const vector_iterator<T>& rhs) { return lhs.base() < rhs.base(); }
+        template < typename T >
+        bool operator<=(const vector_iterator<T>& lhs, const vector_iterator<T>& rhs) { return lhs.base() <= rhs.base(); }
 
 
 
