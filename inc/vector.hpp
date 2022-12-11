@@ -1,39 +1,39 @@
 #pragma once
 
 #include <memory>
-
-#define Allocator std::allocator
+#include "./iterator/vector_iterator.hpp"
 
 namespace ft
 {
-template < typename T >
+template < class T >
 class vector {
 public:
-    typedef Allocator<T> 						vector_allocator;
-    typedef T									value_type;
-    typedef vector_allocator::pointer			pointer;
-    typedef vector_allocator::pointer			iterator;
-    typedef vector_allocator::const_pointer		const_iterator;
-    typedef vector_allocator::reference			reference;
-    typedef vector_allocator::const_reference	const_reference;
-    typedef vector_allocator::size_type			size_type;
-    typedef vector_allocator::difference_type	difference_type;
-    typedef reverse_iterator<const_iterator, value_type, const_reference, 
-                             difference_type>  const_reverse_iterator;
-    typedef reverse_iterator<iterator, value_type, reference, difference_type>
-        reverse_iterator;
+    typedef std::allocator<T> 								vector_allocator;
+    typedef T											value_type;
+    typedef vector_iterator< T >						iterator;
+    typedef vector_iterator< T >						const_iterator;
+    typedef typename vector_allocator::pointer			pointer;
+    typedef typename vector_allocator::const_pointer	const_pointer;
+    typedef typename vector_allocator::reference		reference;
+    typedef typename vector_allocator::const_reference	const_reference;
+    typedef typename vector_allocator::size_type		size_type;
+    typedef typename vector_allocator::difference_type	difference_type;
+    // typedef reverse_iterator<const_iterator, value_type, const_reference, 
+    //                          difference_type>  const_reverse_iterator;
+    // typedef reverse_iterator<iterator, value_type, reference, difference_type>
+    //     reverse_iterator;
 
 protected:
-	static Allocator<T>	static_allocator;
-	iterator			start_;
-	iterator			finish_;
-	iterator 			end_of_storage;
+	vector_allocator		static_allocator;
+	pointer					start_;
+	pointer					finish_;
+	pointer					end_of_storage;
 
 public:
 
 /* =================                Constructors                ================= */
 
-	vector() : start_(0), finish_(0), end_of_storage(0) {}
+	vector() : start_(0), finish_(0), end_of_storage(0) { }
 	vector(size_type n, const T& value = T()) {
 	start_ = static_allocator.allocate(n);
 	uninitialized_fill_n(start_, n, value);
@@ -56,8 +56,8 @@ public:
 
 	~vector()
 	{
-		destroy(start_, finish_);
-		static_allocator.deallocate(start_, capacity());
+		destroy_range(begin(), end());
+		static_allocator.deallocate(&(*start_), capacity());
 	}
 /* =================           Element Access               ================= */
 	reference at(size_type pos)
@@ -79,50 +79,81 @@ public:
 	reference		back()							{ return *(end() - 1); }
 	const_reference back() const					{ return *(end() - 1); }
 /* =================                Iterators               ================= */
-	iterator				begin()			{ return start_ }
-	const_iterator			begin() const	{ return start_ }
-	iterator				end()			{ return finish_ }
-	const_iterator			end() const		{ return finish_ }
-	reverse_iterator		rbegin()		{ return reverse_iterator(end()) }
-	const_reverse_iterator	rbegin() const	{ return const_reverse_iterator(end()) }
-	reverse_iterator		rend()			{ return reverse_iterator(begin()) }
-	const_reverse_iterator	rend() const	{ return const_reverse_iterator(begin()) }
+	iterator				begin()			{ return iterator(start_); }
+	const_iterator			begin() const	{ return iterator(start_); }
+	iterator				end()			{ return iterator(finish_); }
+	const_iterator			end() const		{ return iterator(finish_); }
+	// reverse_iterator		rbegin()		{ return reverse_iterator(end()); }
+	// const_reverse_iterator	rbegin() const	{ return const_reverse_iterator(end()); }
+	// reverse_iterator		rend()			{ return reverse_iterator(begin()); }
+	// const_reverse_iterator	rend() const	{ return const_reverse_iterator(begin()); }
 /* =================                Capacity                ================= */
-	size_type	size() const { return size_type(end() - begin()); }
-	size_type	max_size() const { return static_allocator.max_size(); }
-	size_type	capacity() const { return size_type(end_of_storage - begin()); }
-	bool		empty() const { return start_ == finish_; } //or static allocator.empty()?
+	size_type	size() const		{ return size_type(finish_ - start_); }
+	size_type	max_size() const	{ return static_allocator.max_size(); }
+	size_type	capacity() const	{ return size_type(end_of_storage - start_); }
+	bool		empty() const		{ return start_ == finish_; } //or static allocator.empty()?
 /* =================                Capacity Modulator      ================= */
-	void		reserve(size_type new_cap)
+	void	reserve(size_type new_cap)
 	{
 		if (capacity() < new_cap)
-		{
-			iterator tmp = static_allocator.allocate(new_cap);
-			end_of_storage = uninitialized_copy(begin(), end(), tmp);
-			destroy(start_, finish_);
-			static_allocator.deallocate(start_, capacity()); //wrong? original implementation only gives start_
-			finish_ = tmp + size();
-			start_ = tmp;
-			end_of_storage = begin() + new_cap;
-		}
+			grow_(new_cap);
 	}
 /* =================               Modifiers              ================= */
-
-	void push_back(T& data)
+	private:
+	void destroy_range(iterator first, iterator last)
 	{
-		if (current == capacity) {
-            T* temp = new T[2 * capacity];
- 
-            for (int i = 0; i < capacity; i++) {
-                temp[i] = arr[i];
-            }
-            delete[] arr;
-            capacity *= 2;
-            arr = temp;
-        }
-        arr[current] = data;
-        current++;
-    }
+		difference_type n = ft::distance(first, last);
+		for (iterator it = first; last < end(); ++it, ++last)
+		{
+			*it = *last;
+		}
+		for (difference_type diff = 1; n >= diff ; diff++)
+		{
+			static_allocator.destroy(finish_ - diff);
+		}
+		finish_ -= n;
+	}
 
+	public:
+	void push_back(const T& data)
+	{
+		if (size() == capacity())
+		{
+			grow_(capacity() * 2);
+		}
+		static_allocator.construct(finish_, data);
+		finish_++;
+	}
+
+	iterator erase( iterator pos )
+	{
+		for (iterator it = pos; it < end() - 1; it++)
+		{
+			*it = *(it + 1);
+		}
+		static_allocator.destroy(end() - 1);
+		if (pos != end())
+			finish_ -= 1;
+		return (pos);
+	}
+
+	iterator erase( iterator first, iterator last )
+	{
+		destroy_range(first, last); //begin -n +1?
+		return (first);
+	}
+
+	void clear() { erase(begin(), back()); }
+
+	void grow_(size_t new_cap)
+	{
+			iterator tmp = static_allocator.allocate(new_cap);
+			end_of_storage = &(*std::uninitialized_copy(begin(), end(), tmp));
+			destroy_range(begin(), end());
+			static_allocator.deallocate(start_, capacity()); //wrong? original implementation only gives start_
+			finish_ = &(*(tmp + size()));
+			start_ = &(*tmp);
+			end_of_storage = start_ + new_cap;
+	}
 };
 }

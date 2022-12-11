@@ -36,6 +36,16 @@ struct iterator_traits< T* >
 	typedef ft::random_access_iterator_tag	iterator_category;
 };
 
+template< typename T >
+struct iterator_traits< const T* >
+{
+	typedef T								value_type;
+	typedef const T*						pointer;
+	typedef const T&						reference;
+	typedef std::ptrdiff_t					difference_type;
+	typedef ft::random_access_iterator_tag	iterator_category;
+};
+
 /* =================	Iterator base					   ================= */
 
 template< typename Category,
@@ -51,5 +61,30 @@ template< typename Category,
 	typedef Distance	difference_type;
 	typedef Category	iterator_category;
 };
+
+template< typename InputIterator >
+typename iterator_traits< InputIterator >::difference_type
+_distance_helper( InputIterator first, InputIterator last, input_iterator_tag )
+{
+    typename iterator_traits< InputIterator >::difference_type dist = 0;
+
+    for (; first != last; ++first)
+    ++dist;
+    return dist;
+}
+
+template< typename InputIterator >
+typename iterator_traits< InputIterator >::difference_type
+_distance_helper( InputIterator first, InputIterator last, random_access_iterator_tag )
+{
+    return last - first;
+}
+
+template< typename InputIterator >
+typename iterator_traits< InputIterator >::difference_type
+distance( InputIterator first, InputIterator last )
+{
+    return _distance_helper(first, last, typename iterator_traits< InputIterator >::iterator_category());
+}
 
 }
