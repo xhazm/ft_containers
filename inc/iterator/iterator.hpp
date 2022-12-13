@@ -62,16 +62,16 @@ template< typename Category,
 	typedef Category	iterator_category;
 };
 
-template< typename InputIterator >
-typename iterator_traits< InputIterator >::difference_type
-_distance_helper( InputIterator first, InputIterator last, input_iterator_tag )
-{
-    typename iterator_traits< InputIterator >::difference_type dist = 0;
+// template< typename InputIterator >
+// typename iterator_traits< InputIterator >::difference_type
+// _distance_helper( InputIterator first, InputIterator last, input_iterator_tag )
+// {
+//     typename iterator_traits< InputIterator >::difference_type dist = 0;
 
-    for (; first != last; ++first)
-    ++dist;
-    return dist;
-}
+//     for (; first != last; ++first)
+//     ++dist;
+//     return dist;
+// }
 
 template< typename InputIterator >
 typename iterator_traits< InputIterator >::difference_type
