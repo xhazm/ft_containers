@@ -75,14 +75,14 @@ public:
 	reference		operator[](size_type pos)		{ return *(begin() + pos); }
 	const_reference	operator[](size_type pos) const	{ return *(begin() + pos); }
 	reference		front()							{ return *begin(); }
-	const_reference front() const					{ return *begin(); }
+	const_reference	front() const					{ return *begin(); }
 	reference		back()							{ return *(end() - 1); }
-	const_reference back() const					{ return *(end() - 1); }
+	const_reference	back() const					{ return *(end() - 1); }
 /* =================                Iterators               ================= */
-	iterator				begin()			{ return iterator(start_); }
-	const_iterator			begin() const	{ return iterator(start_); }
-	iterator				end()			{ return iterator(finish_); }
-	const_iterator			end() const		{ return iterator(finish_); }
+	iterator			begin()			{ return iterator(start_); }
+	const_iterator		begin() const	{ return iterator(start_); }
+	iterator			end()			{ return iterator(finish_); }
+	const_iterator		end() const		{ return iterator(finish_); }
 	// reverse_iterator		rbegin()		{ return reverse_iterator(end()); }
 	// const_reverse_iterator	rbegin() const	{ return const_reverse_iterator(end()); }
 	// reverse_iterator		rend()			{ return reverse_iterator(begin()); }
