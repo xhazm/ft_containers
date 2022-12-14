@@ -95,8 +95,10 @@ public:
 /* =================                Capacity Modulator      ================= */
 	void	reserve(size_type new_cap)
 	{
+		if (new_cap > max_size())
+			throw std::length_error("vector");
 		if (capacity() <= new_cap)
-			grow_(new_cap);
+			_grow_(new_cap);
 	}
 /* =================               Modifiers              ================= */
 	private:
@@ -120,22 +122,29 @@ public:
 		if (size() == capacity())
 		{
 			if (capacity() != 0)
-				grow_(capacity() * 2);
+				_grow_(capacity() * 2);
 			else
-				grow_(1);
+				_grow_(1);
 		}
 		static_allocator.construct(finish_, data);
 		finish_++;
 		std::cout << "data: " << data << "\tsize: " << size() << "\tcapacity: " << capacity() <<std::endl;
 	}
 
+	void pop_back()
+	{
+		if (size() == 0)
+			return ;
+		erase(finish_ - 1);
+	}
+
 	iterator erase( iterator pos )
 	{
-		for (iterator it = pos; it < end() - 1; it++)
+		for (iterator it = pos; it < end() - 1; ++it)
 		{
 			*it = *(it + 1);
 		}
-		static_allocator.destroy(end() - 1);
+		static_allocator.destroy(finish_ - 1);
 		if (pos != end())
 			finish_ -= 1;
 		return (pos);
@@ -149,7 +158,12 @@ public:
 
 	void clear() { erase(begin(), back()); }
 
-	void grow_(size_t new_cap)
+	void resize(size_type count, T value = T())
+	{
+
+	}
+
+	inline void _grow_(size_t new_cap)
 	{
 		iterator old_begin = begin();
 		iterator old_end = end();
