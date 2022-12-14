@@ -97,7 +97,7 @@ public:
 	{
 		if (new_cap > max_size())
 			throw std::length_error("vector");
-		if (capacity() <= new_cap)
+		if (capacity() < new_cap)
 			_grow_(new_cap);
 	}
 /* =================               Modifiers              ================= */
@@ -121,10 +121,7 @@ public:
 	{
 		if (size() == capacity())
 		{
-			if (capacity() != 0)
-				_grow_(capacity() * 2);
-			else
-				_grow_(1);
+			capacity() ? reserve(capacity() * 2) : reserve(1);
 		}
 		static_allocator.construct(finish_, data);
 		finish_++;
@@ -160,7 +157,15 @@ public:
 
 	void resize(size_type count, T value = T())
 	{
-
+		size_type size = this->size();
+		if (count > size)
+		{
+			reserve(count);
+			for (int i = 0; i < (count - size); ++i)
+				push_back(value);
+		}
+		else if (count < size)
+			erase(begin() + count, end());
 	}
 
 	inline void _grow_(size_t new_cap)
