@@ -8,20 +8,20 @@ namespace ft
 template < class T >
 class vector {
 public:
-    typedef std::allocator<T> 								vector_allocator;
-    typedef T											value_type;
-    typedef vector_iterator< T >						iterator;
-    typedef vector_iterator< T >						const_iterator;
-    typedef typename vector_allocator::pointer			pointer;
-    typedef typename vector_allocator::const_pointer	const_pointer;
-    typedef typename vector_allocator::reference		reference;
-    typedef typename vector_allocator::const_reference	const_reference;
-    typedef typename vector_allocator::size_type		size_type;
-    typedef typename vector_allocator::difference_type	difference_type;
-    // typedef reverse_iterator<const_iterator, value_type, const_reference, 
-    //                          difference_type>  const_reverse_iterator;
-    // typedef reverse_iterator<iterator, value_type, reference, difference_type>
-    //     reverse_iterator;
+	typedef std::allocator<T> 								vector_allocator;
+	typedef T											value_type;
+	typedef vector_iterator< T >						iterator;
+	typedef vector_iterator< T >						const_iterator;
+	typedef typename vector_allocator::pointer			pointer;
+	typedef typename vector_allocator::const_pointer	const_pointer;
+	typedef typename vector_allocator::reference		reference;
+	typedef typename vector_allocator::const_reference	const_reference;
+	typedef typename vector_allocator::size_type		size_type;
+	typedef typename vector_allocator::difference_type	difference_type;
+	// typedef reverse_iterator<const_iterator, value_type, const_reference, 
+	//						  difference_type>  const_reverse_iterator;
+	// typedef reverse_iterator<iterator, value_type, reference, difference_type>
+	//	 reverse_iterator;
 
 protected:
 	vector_allocator		static_allocator;
@@ -31,7 +31,7 @@ protected:
 
 public:
 
-/* =================                Constructors                ================= */
+/* =================				Constructors				================= */
 
 	vector() : start_(0), finish_(0), end_of_storage_(0) { }
 	vector(size_type n, const T& value = T()) {
@@ -59,7 +59,7 @@ public:
 		destroy_range(begin(), end(), &finish_);
 		static_allocator.deallocate(&(*start_), capacity());
 	}
-/* =================           Element Access               ================= */
+/* =================		   Element Access			   ================= */
 	reference at(size_type pos)
 	{
 		if (pos >= size() || pos < 0)
@@ -78,7 +78,7 @@ public:
 	const_reference	front() const					{ return *begin(); }
 	reference		back()							{ return *(end() - 1); }
 	const_reference	back() const					{ return *(end() - 1); }
-/* =================                Iterators               ================= */
+/* =================				Iterators			   ================= */
 	iterator			begin()			{ return iterator(start_); }
 	const_iterator		begin() const	{ return iterator(start_); }
 	iterator			end()			{ return iterator(finish_); }
@@ -87,12 +87,12 @@ public:
 	// const_reverse_iterator	rbegin() const	{ return const_reverse_iterator(end()); }
 	// reverse_iterator		rend()			{ return reverse_iterator(begin()); }
 	// const_reverse_iterator	rend() const	{ return const_reverse_iterator(begin()); }
-/* =================                Capacity                ================= */
+/* =================				Capacity				================= */
 	size_type	size() const		{ return size_type(finish_ - start_); }
 	size_type	max_size() const	{ return static_allocator.max_size(); }
 	size_type	capacity() const	{ return size_type(end_of_storage_ - start_ ); }
 	bool		empty() const		{ return start_ == finish_; } //or static allocator.empty()?
-/* =================                Capacity Modulator      ================= */
+/* =================				Capacity Modulator	  ================= */
 	void	reserve(size_type new_cap)
 	{
 		if (new_cap > max_size())
@@ -100,7 +100,7 @@ public:
 		if (capacity() < new_cap)
 			_grow_(new_cap);
 	}
-/* =================               Modifiers              ================= */
+/* =================			   Modifiers			  ================= */
 	private:
 	void destroy_range(iterator first, iterator last, pointer* finish)
 	{
@@ -166,6 +166,46 @@ public:
 		}
 		else if (count < size)
 			erase(begin() + count, end());
+	}
+
+	iterator insert( const_iterator pos, size_type count, const T& value )
+	{
+		iterator	insert_pos = _find_(begin(), end(), pos);
+
+		if (count == 0 || insert_pos == end())
+			return (pos);
+		if (size() + count > capacity())
+			reserve(size() + count); //reserve double capacity?
+		finish_ = finish_ + count;
+		iterator	it = insert_pos + count;
+		for(iterator next = it + count + 1; next < end(); ++it, ++next)
+		{
+			*next = *it;
+			static_allocator.destroy(it);
+		}
+		for(size_type i = 0; i < count; ++i)
+			static_allocator.construct(insert_pos + i, value);
+		return (pos);
+	}
+
+	iterator insert( const_iterator pos, const T& value )
+	{
+		return(insert(pos, 1, value);)
+	}
+
+	// template< class InputIt >
+	// iterator insert(iterator pos, InputIt first, InputIt last,
+	// 								typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true)
+	// {
+	// 	return (_insert_range(pos, first, last, typename ft::iterator_traits<InputIt>::iterator_category()));
+	// }
+
+	inline iterator _find_(iterator to_find) //tofind call by reference?
+	{
+		iterator	it;
+		for(it = begin(); it < end() && it != to_find; it++)
+			;
+		return (it);
 	}
 
 	inline void _grow_(size_t new_cap)
