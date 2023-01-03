@@ -9,81 +9,10 @@ int main(void)
     vector_test<int> vec_tester;
 
     vec_tester.test_erase();
+    vec_tester.test_at(5, 99);
+    vec_tester.test_pop_back(2);
+    vec_tester.test_resize(3);
 
 
-
-	// std::vector<int> i;
-	// std::vector<int>::iterator it;
-    // ft::vector<int> hi;
-    // ft::vector<int>::iterator itertest;
-    // ft::vector<int>::iterator itertest2;
-    // std::cout << "size: "<<i.size() << std::endl;
-    // std::cout << "capa: "<<i.capacity() << std::endl;
-	// i.push_back(6);
-	// i.push_back(6);
-    // std::cout << "size: "<<i.size() << std::endl;
-    // std::cout << "capa: "<<i.capacity() << std::endl;
-
-    // try {
-    //     // Set element 6
-    //     i.at(4) = 666;
-    // } catch (std::out_of_range const& exc) {
-    //     std::cout << exc.what() << '\n';}
-    
-    // for(ft::vector<int>::iterator it = hi.begin(); it != hi.end(); ++it)
-    // {
-    //     if (*it == 9)
-    //         itertest = it;
-    //     if (*it == 7)
-    //         itertest2 = it;
-    //     std::cout << *it << std::endl;
-    // }
-    // std::cout << "size: "<<hi.size() << std::endl;
-    // std::cout << "capa: "<<hi.capacity() << std::endl;
-
-    // hi.erase(itertest, itertest2);
-
-    // std::cout << "after erasing" << std::endl;
-    // for(ft::vector<int>::iterator it = hi.begin(); it != hi.end(); ++it)
-    // {
-    //     std::cout << *it << std::endl;
-    // }
-    // std::cout << "size: "<<hi.size() << std::endl;
-    // std::cout << "capa: "<<hi.capacity() << std::endl;
-
-    // hi.pop_back();
-    // std::cout << "popped the back" << std::endl;
-
-    // for(ft::vector<int>::iterator it = hi.begin(); it != hi.end(); ++it)
-    // {
-    //     std::cout << *it << std::endl;
-    // }
-
-    // std::cout << "size: "<<hi.size() << std::endl;
-    // std::cout << "capa: "<<hi.capacity() << std::endl;
-
-    // std::cout << "resize" << std::endl;
-    // hi.resize(10, 2);
-    // for(ft::vector<int>::iterator it = hi.begin(); it != hi.end(); ++it)
-    // {
-    //     std::cout << *it << std::endl;
-    // }
-    // std::cout << "size: "<<hi.size() << std::endl;
-    // std::cout << "capa: "<<hi.capacity() << std::endl;
-
-    // hi.resize(0, 2);
-    // for(ft::vector<int>::iterator it = hi.begin(); it != hi.end(); ++it)
-    // {
-    //     std::cout << *it << std::endl;
-    // }
-
-    // std::cout << "size: "<<hi.size() << std::endl;
-    // std::cout << "capa: "<<hi.capacity() << std::endl;
-
-	// ft::VectorIterator<int> test;
-	// ft::VectorIterator<int> test2;
-
-	// if (test == test2)
-	// 	std::cout << "true" << std::endl;
 
 }

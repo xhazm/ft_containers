@@ -54,12 +54,30 @@ public:
 	finish_ = uninitialized_copy(first, last, start_);
 	end_of_storage_ = finish_;
 	}
+	//enable if is integral input iterator constructor?
 
 	~vector()
 	{
 		destroy_range(begin(), end(), &finish_);
 		static_allocator.deallocate(&(*start_), capacity());
 	}
+
+/* =================		 Member Functions		   ================= */
+
+	void assign(size_type count, const T& value)
+	{
+		clear();
+		insert(vec.begin(), count, value);
+	}
+
+	// template< class InputIt >
+	// void assign( InputIt first, InputIt last, ft::enable_if<!is_integral<InputIt>::value, bool>::type = true)
+	// {
+	// 	clear();
+	// 	insert(begin(), first, last);
+	// }
+
+	allocator_type get_allocator() const { return (static_allocator); } //or static_allocator::allocator_type ?
 /* =================		   Element Access			   ================= */
 	reference at(size_type pos)
 	{
@@ -216,29 +234,6 @@ public:
 		return (it);
 	}
 
-	// inline void _grow_(size_t new_cap)
-	// {
-	// 	iterator old_begin = begin();
-	// 	iterator old_end = end();
-	// 	pointer old_start = start_;
-	// 	pointer old_eos = end_of_storage_;
-	// 	pointer old_finish = finish_;
-	// 	if (start_ + new_cap <= end_of_storage_)
-	// 		return ;
-	// 	_allocate_n_(new_cap);
-	// 	if (new_cap != 1)
-	// 	{
-	// 		for(iterator it = old_begin; it != old_end; ++it)
-	// 		{
-	// 			static_allocator.construct(finish_, *it);
-	// 			finish_++;
-	// 		}
-	// 		// destroy_range(old_begin, old_end, &old_finish);
-	// 		if (old_start != 0)
-	// 			static_allocator.deallocate(old_start, old_eos - old_start);
-	// 	}
-	// }
-
 	inline void _grow_(size_t new_cap)
 	{
 		pointer	new_start = static_allocator.allocate(new_cap);;
@@ -257,7 +252,6 @@ public:
 		finish_ = start_ + i;
 		end_of_storage_ = start_ + new_cap;
 	}
-
 
 	inline void	_allocate_n_(size_type n)
 	{
