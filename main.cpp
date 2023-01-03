@@ -2,7 +2,9 @@
 #include <vector>
 #include <iostream>
 #include "./inc/vector.hpp"
+#include "./inc/utils.hpp"
 #include "./tester/vector/vector_test.hpp"
+
 
 int main(void)
 {
@@ -12,7 +14,4 @@ int main(void)
     vec_tester.test_at(5, 99);
     vec_tester.test_pop_back(2);
     vec_tester.test_resize(3);
-
-
-
 }

@@ -9,23 +9,23 @@ namespace ft
 template < class T >
 class vector {
 public:
-	typedef std::allocator<T> 							vector_allocator;
+	typedef std::allocator<T> 							allocator_type;
 	typedef T											value_type;
 	typedef vector_iterator< T >						iterator;
 	typedef vector_iterator< T >						const_iterator;
-	typedef typename vector_allocator::pointer			pointer;
-	typedef typename vector_allocator::const_pointer	const_pointer;
-	typedef typename vector_allocator::reference		reference;
-	typedef typename vector_allocator::const_reference	const_reference;
-	typedef typename vector_allocator::size_type		size_type;
-	typedef typename vector_allocator::difference_type	difference_type;
+	typedef typename allocator_type::pointer			pointer;
+	typedef typename allocator_type::const_pointer	const_pointer;
+	typedef typename allocator_type::reference		reference;
+	typedef typename allocator_type::const_reference	const_reference;
+	typedef typename allocator_type::size_type		size_type;
+	typedef typename allocator_type::difference_type	difference_type;
 	// typedef reverse_iterator<const_iterator, value_type, const_reference, 
 	//						  difference_type>  const_reverse_iterator;
 	// typedef reverse_iterator<iterator, value_type, reference, difference_type>
 	//	 reverse_iterator;
 
 protected:
-	vector_allocator		static_allocator;
+	allocator_type		static_allocator;
 	pointer					start_;
 	pointer					finish_;
 	pointer					end_of_storage_;
@@ -67,15 +67,15 @@ public:
 	void assign(size_type count, const T& value)
 	{
 		clear();
-		insert(vec.begin(), count, value);
+		insert(begin(), count, value);
 	}
 
-	// template< class InputIt >
-	// void assign( InputIt first, InputIt last, ft::enable_if<!is_integral<InputIt>::value, bool>::type = true)
-	// {
-	// 	clear();
-	// 	insert(begin(), first, last);
-	// }
+	template< class InputIt >
+	void assign( InputIt first, InputIt last, typename ft::enable_if<!is_integral<InputIt>::value, bool>::type = true)
+	{
+		clear();
+		insert(begin(), first, last);
+	}
 
 	allocator_type get_allocator() const { return (static_allocator); } //or static_allocator::allocator_type ?
 /* =================		   Element Access			   ================= */
@@ -210,13 +210,13 @@ public:
 		return(insert(pos, 1, value));
 	}
 
-	// template< class InputIt >
-	// iterator insert(iterator pos, InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true)
-	// {
-	// 	for (iterator it = first; it < last; ++it)
-	// 		insert(pos, 1, *it);
-	// 	return (pos);
-	// }
+	template< class InputIt >
+	iterator insert(iterator pos, InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true)
+	{
+		for (iterator it = first; it < last; ++it)
+			insert(pos, 1, *it);
+		return (pos);
+	}
 
 	void swap(vector& other)
 	{
