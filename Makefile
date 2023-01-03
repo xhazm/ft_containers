@@ -1,7 +1,7 @@
 NAME	= ft_containers
 
 SRC_DIR	= ./
-SRC		= main.cpp
+SRC		= main.cpp 
 
 HDR	=  ./inc/vector.hpp
 
@@ -26,3 +26,8 @@ fclean : clean
 	rm -f $(NAME)
 
 re: fclean all
+
+valgrind: re
+	rm -f valgrind.log
+	G_SLICE=always-malloc G_DEBUG=gc-friendly  valgrind -v --tool=memcheck --leak-check=full --num-callers=40 --log-file=valgrind.log /home/sirlin/code/ft_containers/ft_containers
+	tail -1 ./valgrind.log

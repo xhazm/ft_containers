@@ -2,13 +2,14 @@
 
 #include <memory>
 #include "./iterator/vector_iterator.hpp"
+#include "./utils.hpp"
 
 namespace ft
 {
 template < class T >
 class vector {
 public:
-	typedef std::allocator<T> 								vector_allocator;
+	typedef std::allocator<T> 							vector_allocator;
 	typedef T											value_type;
 	typedef vector_iterator< T >						iterator;
 	typedef vector_iterator< T >						const_iterator;
@@ -170,35 +171,42 @@ public:
 
 	iterator insert( const_iterator pos, size_type count, const T& value )
 	{
-		iterator	insert_pos = _find_(begin(), end(), pos);
-
-		if (count == 0 || insert_pos == end())
+		if (count == 0) //make sure that pos is in vector. pos can be end()
 			return (pos);
 		if (size() + count > capacity())
 			reserve(size() + count); //reserve double capacity?
 		finish_ = finish_ + count;
-		iterator	it = insert_pos + count;
+		iterator	it = pos + count;
 		for(iterator next = it + count + 1; next < end(); ++it, ++next)
 		{
 			*next = *it;
 			static_allocator.destroy(it);
 		}
 		for(size_type i = 0; i < count; ++i)
-			static_allocator.construct(insert_pos + i, value);
+			static_allocator.construct(pos + i, value);
 		return (pos);
 	}
 
 	iterator insert( const_iterator pos, const T& value )
 	{
-		return(insert(pos, 1, value);)
+		return(insert(pos, 1, value));
 	}
 
 	// template< class InputIt >
-	// iterator insert(iterator pos, InputIt first, InputIt last,
-	// 								typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true)
+	// iterator insert(iterator pos, InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true)
 	// {
-	// 	return (_insert_range(pos, first, last, typename ft::iterator_traits<InputIt>::iterator_category()));
+	// 	for (iterator it = first; it < last; ++it)
+	// 		insert(pos, 1, *it);
+	// 	return (pos);
 	// }
+
+	void swap(vector& other)
+	{
+		std::swap(start_, other.start_);
+		std::swap(finish_, other.finish_);
+		std::swap(end_of_storage_, other.end_of_storage_);
+		std::swap(static_allocator, other.static_allocator);
+	}
 
 	inline iterator _find_(iterator to_find) //tofind call by reference?
 	{
@@ -208,27 +216,48 @@ public:
 		return (it);
 	}
 
+	// inline void _grow_(size_t new_cap)
+	// {
+	// 	iterator old_begin = begin();
+	// 	iterator old_end = end();
+	// 	pointer old_start = start_;
+	// 	pointer old_eos = end_of_storage_;
+	// 	pointer old_finish = finish_;
+	// 	if (start_ + new_cap <= end_of_storage_)
+	// 		return ;
+	// 	_allocate_n_(new_cap);
+	// 	if (new_cap != 1)
+	// 	{
+	// 		for(iterator it = old_begin; it != old_end; ++it)
+	// 		{
+	// 			static_allocator.construct(finish_, *it);
+	// 			finish_++;
+	// 		}
+	// 		// destroy_range(old_begin, old_end, &old_finish);
+	// 		if (old_start != 0)
+	// 			static_allocator.deallocate(old_start, old_eos - old_start);
+	// 	}
+	// }
+
 	inline void _grow_(size_t new_cap)
 	{
-		iterator old_begin = begin();
-		iterator old_end = end();
-		pointer old_start = start_;
-		pointer old_eos = end_of_storage_;
-		pointer old_finish = finish_;
+		pointer	new_start = static_allocator.allocate(new_cap);;
 		if (start_ + new_cap <= end_of_storage_)
 			return ;
-		_allocate_n_(new_cap);
-		if (new_cap != 1)
+		int i = 0;
+		// if (new_cap != 1)  just letting here in case the deleting makes error later. kiss kiss.
+		for(iterator it = begin(); it != end(); ++it, i++)
 		{
-			for(iterator it = old_begin; it != old_end; ++it)
-			{
-				static_allocator.construct(finish_, *it);
-				finish_++;
-			}
-			destroy_range(old_begin, old_end, &old_finish);
-			static_allocator.deallocate(old_start, old_eos - old_start); //wrong? original implementation only gives start_
+			static_allocator.construct(new_start + i, *it);
+			static_allocator.destroy(start_ + i);
 		}
+		if (start_ != 0)
+			static_allocator.deallocate(start_, end_of_storage_ - start_);
+		start_ = new_start;
+		finish_ = start_ + i;
+		end_of_storage_ = start_ + new_cap;
 	}
+
 
 	inline void	_allocate_n_(size_type n)
 	{
@@ -236,5 +265,6 @@ public:
 		finish_ = start_;
 		end_of_storage_ = start_ + n;
 	}
+
 };
 }
