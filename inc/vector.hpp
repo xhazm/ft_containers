@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 #include "./iterator/vector_iterator.hpp"
 #include "./utils.hpp"
 
@@ -82,13 +83,13 @@ public:
 	reference at(size_type pos)
 	{
 		if (pos >= size() || pos < 0)
-			throw std::out_of_range ("vector");
+			throw std::out_of_range("vetor"); //change to:std::string ret = "vector::_M_range_check: __n (which is" + pos << ") >= this->size() (which is " << size() << ")";? 
 		return *(begin() + pos);
 	}
 	const_reference at(size_type pos) const
 	{
 		if (pos >= size() || pos < 0)
-			throw std::out_of_range ("vector");
+			throw std::out_of_range("vector");
 		return *(begin() + pos);
 	}
 	reference		operator[](size_type pos)		{ return *(begin() + pos); }
@@ -144,7 +145,6 @@ public:
 		}
 		static_allocator.construct(finish_, data);
 		finish_++;
-		std::cout << "data: " << data << "\tsize: " << size() << "\tcapacity: " << capacity() <<std::endl;
 	}
 
 	void pop_back()
@@ -194,14 +194,14 @@ public:
 		if (size() + count > capacity())
 			reserve(size() + count); //reserve double capacity?
 		finish_ = finish_ + count;
-		iterator	it = pos + count;
-		for(iterator next = it + count + 1; next < end(); ++it, ++next)
+		iterator	copy_it = pos + count;
+		for(iterator next = copy_it + count + 1; next < end(); ++copy_it, ++next)
 		{
-			*next = *it;
-			static_allocator.destroy(it);
+			*next = *copy_it;
+			static_allocator.destroy(copy_it.base());
 		}
 		for(size_type i = 0; i < count; ++i)
-			static_allocator.construct(pos + i, value);
+			static_allocator.construct( pos.base() + i, value);
 		return (pos);
 	}
 
@@ -232,6 +232,20 @@ public:
 		for(it = begin(); it < end() && it != to_find; it++)
 			;
 		return (it);
+	}
+
+	inline long long _find_pos_(iterator to_find) //tofind call by reference?
+	{
+		iterator	it;
+		int			ret = 0;
+		for(it = begin(); it < end() && it != to_find; ++it, ret++)
+		{
+
+			std::cout << *it << std::endl <<  *to_find << std::endl << std::endl;
+		}
+		if (it == end() && it != to_find)
+			return (-1);
+		return (ret);
 	}
 
 	inline void _grow_(size_t new_cap)
