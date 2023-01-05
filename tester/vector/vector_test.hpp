@@ -110,21 +110,37 @@ void test_resize(size_t num)
 
 
 template <class U>
-void test_swap_sub(U& test_vec)
+void test_insert_sub(U& test_vec, std::string what)
 {
     typename U::iterator it;
-    U   swap_vec;
-    swap_vec.insert(swap_vec.begin(), test_vec.begin(), test_vec.end());
-    for(typename U::iterator swap_it = swap_vec.begin(); swap_it != swap_vec.end(); ++swap_it)
+    U   insert_vec;
+    insert_vec.insert(insert_vec.begin(), test_vec.begin(), test_vec.end());
+    insert_vec.insert(insert_vec.begin(), test_vec[0]);
+    // insert_vec.insert(insert_vec.begin(), 10, test_vec[0]);
+    for(typename U::iterator insert_it = insert_vec.begin(); insert_it != insert_vec.end(); ++insert_it)
     {
-        std::cout << "insert_data: " << *swap_it << std::endl;
+        std::cout << "inserted_data: " << *insert_it << std::endl;
     }
+    std::cout << PRINT_CAPA_SIZE(insert_vec, what) << std::endl;
+
+}
+
+void test_insert()
+{
+    std::cout << "ft: " << std::endl;
+    test_insert_sub(ft_vec, " __ft_insert__ ");
+    std::cout << "std: " << std::endl;
+    test_insert_sub(std_vec, " __std_insert__ ");
+    PRINT_ALL("after insert in new vector: ", "" ,ft_vec, std_vec, print_data());
 }
 
 void test_swap()
 {
-    test_swap_sub(ft_vec);
-    test_swap_sub(std_vec);
+    std::cout << "ft: " << std::endl;
+    test_insert_sub(ft_vec, " __ft_insert__ ");
+    std::cout << "std: " << std::endl;
+    test_insert_sub(std_vec, " __std_insert__ ");
+    PRINT_ALL("after insert in new vector: ", "" ,ft_vec, std_vec, print_data());
 }
 
 

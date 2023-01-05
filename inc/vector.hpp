@@ -189,19 +189,17 @@ public:
 
 	iterator insert( const_iterator pos, size_type count, const T& value )
 	{
-		if (count == 0) //make sure that pos is in vector. pos can be end()
+		difference_type c_pos = ft::distance(begin(), pos);
+
+		if (count == 0) //make sure that pos is in vector. pos can be end() let distance throw error?
 			return (pos);
-		if (size() + count > capacity())
-			reserve(size() + count); //reserve double capacity?
-		finish_ = finish_ + count;
-		iterator	copy_it = pos + count;
-		for(iterator next = copy_it + count + 1; next < end(); ++copy_it, ++next)
-		{
-			*next = *copy_it;
-			static_allocator.destroy(copy_it.base());
-		}
+		_insert_reserve_(count);
+		iterator	copy_it = begin() + c_pos;
+		if (finish_ == start_ && pos.base() == 0)
+			copy_it = begin();
+		_move_mem_to_end(copy_it, count);
 		for(size_type i = 0; i < count; ++i)
-			static_allocator.construct( pos.base() + i, value);
+			static_allocator.construct( copy_it.base() + i, value);
 		return (pos);
 	}
 
@@ -211,10 +209,19 @@ public:
 	}
 
 	template< class InputIt >
-	iterator insert(iterator pos, InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true)
+	iterator insert(const_iterator pos, InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true)
 	{
-		for (iterator it = first; it < last; ++it)
-			insert(pos, 1, *it);
+		difference_type count = ft::distance(first, last);
+		difference_type c_pos = ft::distance(begin(), pos);
+
+		if (count == 0) // throw execption?
+			return (pos);
+		_insert_reserve_(count);
+		iterator		copy_it = begin() + c_pos;
+		_move_mem_to_end(copy_it, count);
+		int dist = 0;
+		for (iterator it = first; it != last; ++it, ++dist)
+			static_allocator.construct(copy_it.base() + dist, *it);
 		return (pos);
 	}
 
@@ -239,14 +246,33 @@ public:
 		iterator	it;
 		int			ret = 0;
 		for(it = begin(); it < end() && it != to_find; ++it, ret++)
-		{
-
 			std::cout << *it << std::endl <<  *to_find << std::endl << std::endl;
-		}
 		if (it == end() && it != to_find)
 			return (-1);
 		return (ret);
 	}
+
+	void _insert_reserve_(size_type count)
+	{
+		reserve(size() + count);
+		// if (count > 1 && size() > 0)
+		// 	reserve(capacity() * 2);
+		// else if (c)
+		// reserve(count > 1 ? capacity() * 2 : size() + count); //reserve double capacity?
+	}
+
+	void _move_mem_to_end(const_iterator from, size_type count)
+	{
+		iterator		r_copy_it = from + count;
+		size_type		offset = 0;
+		finish_ = finish_ + count;
+		for(iterator copy_end = end(); offset < count; --r_copy_it, --copy_end, ++offset)
+		{
+			copy_end = r_copy_it;
+			static_allocator.destroy(r_copy_it.base());
+		}
+	}
+
 
 	inline void _grow_(size_t new_cap)
 	{
