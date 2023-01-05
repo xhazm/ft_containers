@@ -21,9 +21,9 @@ public:
 	typedef typename allocator_type::size_type		size_type;
 	typedef typename allocator_type::difference_type	difference_type;
 	// typedef reverse_iterator<const_iterator, value_type, const_reference, 
-	//						  difference_type>  const_reverse_iterator;
+	// 						  difference_type>  const_reverse_iterator;
 	// typedef reverse_iterator<iterator, value_type, reference, difference_type>
-	//	 reverse_iterator;
+	// 	 reverse_iterator;
 
 protected:
 	allocator_type		static_allocator;
@@ -193,30 +193,15 @@ public:
 			return (pos);
 	
 		difference_type c_pos = ft::distance(begin(), pos);
-		size_type		new_size = size() + count;
-		pointer			new_start = static_allocator.allocate(size() + new_size);
-		size_type		copy_c = 0;
+		size_type		n_size = size() + count;
+		pointer			n_start = static_allocator.allocate(size() + n_size);
 
-		for (; copy_c < c_pos; ++copy_c)
-		{
-			static_allocator.construct(new_start + copy_c, *(start_ + copy_c));
-			static_allocator.destroy(start_ + copy_c);
-		}
+		_copy_destroy_(start_, n_start, c_pos);
 		for (size_type temp_pos = c_pos; temp_pos < c_pos + count; ++temp_pos)
-			static_allocator.construct(new_start + temp_pos, value);
-		for (copy_c ; copy_c + count < new_size ; ++copy_c)
-		{
-			static_allocator.construct(new_start + copy_c + count, *(start_ + copy_c));
-			static_allocator.destroy(start_ + copy_c);
-		}
-
+			static_allocator.construct(n_start + temp_pos, value);
+		_copy_destroy_(start_ + c_pos, n_start + c_pos + count, n_size - count - c_pos);
 		clear();
-
-		if (start_ != NULL)
-			static_allocator.deallocate(start_, capacity());
-		start_ = new_start;
-		finish_ = new_start + new_size;
-		end_of_storage_ = finish_;
+		_set_class_vars_(n_start, n_start + n_size, n_start + n_size);
 		return (begin() + c_pos);
 	}
 
@@ -229,35 +214,39 @@ public:
 	iterator insert(const_iterator pos, InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true)
 	{
 		difference_type count = ft::distance(first, last);
+
 		if (count == 0) //make sure that pos is in vector. pos can be end() let distance throw error?
 			return (pos);
 
 		difference_type c_pos = ft::distance(begin(), pos);
-		size_type		new_size = size() + count;
-		pointer			new_start = static_allocator.allocate(size() + new_size);
-		size_type		copy_c = 0;
+		size_type		n_size = size() + count;
+		pointer			n_start = static_allocator.allocate(size() + n_size);
 
-		for (; copy_c < c_pos; ++copy_c)
-		{
-			static_allocator.construct(new_start + copy_c, *(start_ + copy_c));
-			static_allocator.destroy(start_ + copy_c);
-		}
+		_copy_destroy_(start_, n_start, c_pos);
 		for (size_type dist = c_pos; dist < c_pos + count; ++dist, ++first)
-			static_allocator.construct(new_start + dist, *first);
-		for (copy_c ; copy_c + count < new_size ; ++copy_c)
-		{
-			static_allocator.construct(new_start + copy_c + count, *(start_ + copy_c));
-			static_allocator.destroy(start_ + copy_c);
-		}
-
+			static_allocator.construct(n_start + dist, *first);
+		_copy_destroy_(start_ + c_pos, n_start + c_pos + count, n_size - count - c_pos);
 		clear();
+		_set_class_vars_(n_start, n_start + n_size, n_start + n_size);
+		return (begin() + c_pos);
+	}
 
+	void _copy_destroy_(pointer from, pointer to, size_type count)
+	{
+		for (size_type dist = 0; dist < count ; ++dist)
+		{
+			static_allocator.construct(to + dist, *(from + dist));
+			static_allocator.destroy(from + dist);
+		}
+	}
+	
+	void _set_class_vars_(pointer n_start, pointer n_finish, pointer n_end_of_storage)
+	{
 		if (start_ != NULL)
 			static_allocator.deallocate(start_, capacity());
-		start_ = new_start;
-		finish_ = new_start + new_size;
-		end_of_storage_ = finish_;
-		return (begin() + c_pos);
+		start_ = n_start;
+		finish_ = n_finish;
+		end_of_storage_ = n_end_of_storage;
 	}
 
 	void swap(vector& other)
