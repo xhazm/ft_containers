@@ -116,7 +116,7 @@ void test_insert_sub(U& test_vec, std::string what)
     U   insert_vec;
     insert_vec.insert(insert_vec.begin(), test_vec.begin(), test_vec.end());
     insert_vec.insert(insert_vec.begin(), test_vec[0]);
-    // insert_vec.insert(insert_vec.begin(), 10, test_vec[0]);
+    insert_vec.insert(insert_vec.begin(), 10, test_vec[0]);
     for(typename U::iterator insert_it = insert_vec.begin(); insert_it != insert_vec.end(); ++insert_it)
     {
         std::cout << "inserted_data: " << *insert_it << std::endl;

@@ -172,7 +172,7 @@ public:
 		return (first);
 	}
 
-	void clear() { erase(begin(), back()); }
+	void clear() { erase(iterator(start_), iterator(end_of_storage_)); }
 
 	void resize(size_type count, T value = T())
 	{
@@ -189,18 +189,35 @@ public:
 
 	iterator insert( const_iterator pos, size_type count, const T& value )
 	{
-		difference_type c_pos = ft::distance(begin(), pos);
-
 		if (count == 0) //make sure that pos is in vector. pos can be end() let distance throw error?
 			return (pos);
-		_insert_reserve_(count);
-		iterator	copy_it = begin() + c_pos;
-		if (finish_ == start_ && pos.base() == 0)
-			copy_it = begin();
-		_move_mem_to_end(copy_it, count);
-		for(size_type i = 0; i < count; ++i)
-			static_allocator.construct( copy_it.base() + i, value);
-		return (pos);
+	
+		difference_type c_pos = ft::distance(begin(), pos);
+		size_type		new_size = size() + count;
+		pointer			new_start = static_allocator.allocate(size() + new_size);
+		size_type		copy_c = 0;
+
+		for (; copy_c < c_pos; ++copy_c)
+		{
+			static_allocator.construct(new_start + copy_c, *(start_ + copy_c));
+			static_allocator.destroy(start_ + copy_c);
+		}
+		for (size_type temp_pos = c_pos; temp_pos < c_pos + count; ++temp_pos)
+			static_allocator.construct(new_start + temp_pos, value);
+		for (copy_c ; copy_c + count < new_size ; ++copy_c)
+		{
+			static_allocator.construct(new_start + copy_c + count, *(start_ + copy_c));
+			static_allocator.destroy(start_ + copy_c);
+		}
+
+		clear();
+
+		if (start_ != NULL)
+			static_allocator.deallocate(start_, capacity());
+		start_ = new_start;
+		finish_ = new_start + new_size;
+		end_of_storage_ = finish_;
+		return (begin() + c_pos);
 	}
 
 	iterator insert( const_iterator pos, const T& value )
@@ -212,17 +229,35 @@ public:
 	iterator insert(const_iterator pos, InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true)
 	{
 		difference_type count = ft::distance(first, last);
-		difference_type c_pos = ft::distance(begin(), pos);
-
-		if (count == 0) // throw execption?
+		if (count == 0) //make sure that pos is in vector. pos can be end() let distance throw error?
 			return (pos);
-		_insert_reserve_(count);
-		iterator		copy_it = begin() + c_pos;
-		_move_mem_to_end(copy_it, count);
-		int dist = 0;
-		for (iterator it = first; it != last; ++it, ++dist)
-			static_allocator.construct(copy_it.base() + dist, *it);
-		return (pos);
+
+		difference_type c_pos = ft::distance(begin(), pos);
+		size_type		new_size = size() + count;
+		pointer			new_start = static_allocator.allocate(size() + new_size);
+		size_type		copy_c = 0;
+
+		for (; copy_c < c_pos; ++copy_c)
+		{
+			static_allocator.construct(new_start + copy_c, *(start_ + copy_c));
+			static_allocator.destroy(start_ + copy_c);
+		}
+		for (size_type dist = c_pos; dist < c_pos + count; ++dist, ++first)
+			static_allocator.construct(new_start + dist, *first);
+		for (copy_c ; copy_c + count < new_size ; ++copy_c)
+		{
+			static_allocator.construct(new_start + copy_c + count, *(start_ + copy_c));
+			static_allocator.destroy(start_ + copy_c);
+		}
+
+		clear();
+
+		if (start_ != NULL)
+			static_allocator.deallocate(start_, capacity());
+		start_ = new_start;
+		finish_ = new_start + new_size;
+		end_of_storage_ = finish_;
+		return (begin() + c_pos);
 	}
 
 	void swap(vector& other)
@@ -260,19 +295,6 @@ public:
 		// else if (c)
 		// reserve(count > 1 ? capacity() * 2 : size() + count); //reserve double capacity?
 	}
-
-	void _move_mem_to_end(const_iterator from, size_type count)
-	{
-		iterator		r_copy_it = from + count;
-		size_type		offset = 0;
-		finish_ = finish_ + count;
-		for(iterator copy_end = end(); offset < count; --r_copy_it, --copy_end, ++offset)
-		{
-			copy_end = r_copy_it;
-			static_allocator.destroy(r_copy_it.base());
-		}
-	}
-
 
 	inline void _grow_(size_t new_cap)
 	{
