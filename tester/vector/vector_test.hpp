@@ -114,13 +114,9 @@ void test_insert_sub(U& test_vec, std::string what)
 {
     typename U::iterator it;
     U   insert_vec;
-    insert_vec.insert(insert_vec.begin(), 10, test_vec[0]);
-    insert_vec.insert(insert_vec.begin(), test_vec[0]);
-    insert_vec.insert(insert_vec.begin() + 1, test_vec.begin(), test_vec.end());
-    for(typename U::iterator insert_it = insert_vec.begin(); insert_it != insert_vec.end(); ++insert_it)
-    {
-        std::cout << "inserted_data: " << *insert_it << std::endl;
-    }
+    test_vec.insert(test_vec.begin(), 2, test_vec[0]);
+    test_vec.insert(test_vec.begin(), test_vec[0]);
+    test_vec.insert(test_vec.begin() + 1, test_vec.begin(), test_vec.end());
     std::cout << PRINT_CAPA_SIZE(insert_vec, what) << std::endl;
 
 }
@@ -144,17 +140,15 @@ void test_swap_sub(U& test_vec, std::string what)
     {
         inverted_vec.push_back(*it);
     }
-    print_data(inverted_vec);
+    test_vec.swap(inverted_vec);
 }
 
 
 void test_swap()
 {
-    std::cout << "ft: " << std::endl;
     test_swap_sub(ft_vec, " __ft_insert__ ");
-    std::cout << "std: " << std::endl;
     test_swap_sub(std_vec, " __std_insert__ ");
-    PRINT_ALL("after insert in new vector: ", "" ,ft_vec, std_vec, print_data());
+    PRINT_ALL("after swap with inverted vector: ", "" ,ft_vec, std_vec, print_data());
 }
 
 
