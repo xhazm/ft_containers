@@ -36,4 +36,5 @@ int main(void)
     vec_tester.test_pop_back(2);
     vec_tester.test_resize(3);
     vec_tester.test_insert();
+    vec_tester.test_swap();
 }

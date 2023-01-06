@@ -135,12 +135,25 @@ void test_insert()
     PRINT_ALL("after insert in new vector: ", "" ,ft_vec, std_vec, print_data());
 }
 
+template <class U>
+void test_swap_sub(U& test_vec, std::string what)
+{
+    U   inverted_vec;
+    inverted_vec.reserve(test_vec.size());
+    for (typename U::reverse_iterator it = test_vec.rbegin(); it != test_vec.rend(); ++it)
+    {
+        inverted_vec.push_back(*it);
+    }
+    print_data(inverted_vec);
+}
+
+
 void test_swap()
 {
     std::cout << "ft: " << std::endl;
-    test_insert_sub(ft_vec, " __ft_insert__ ");
+    test_swap_sub(ft_vec, " __ft_insert__ ");
     std::cout << "std: " << std::endl;
-    test_insert_sub(std_vec, " __std_insert__ ");
+    test_swap_sub(std_vec, " __std_insert__ ");
     PRINT_ALL("after insert in new vector: ", "" ,ft_vec, std_vec, print_data());
 }
 
@@ -152,6 +165,17 @@ std::string print_data()
     for(; ft_it != ft_vec.end(); ++ft_it, ++std_it)
     {
         std::cout << "ft_data: " << *ft_it <<  "\t\t\t\tstd_data: " <<  *std_it << std::endl;
+    }
+    return ("");
+}
+
+template<class U>
+std::string print_data(U& test_vec)
+{
+    typename U::iterator test_it = test_vec.begin();
+    for(; test_it != test_vec.end(); ++test_it)
+    {
+        std::cout << "test_data: " << *test_it << std::endl;
     }
     return ("");
 }

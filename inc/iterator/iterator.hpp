@@ -75,7 +75,7 @@ template< typename Category,
 
 template< typename InputIterator >
 typename iterator_traits< InputIterator >::difference_type
-_distance_helper( InputIterator first, InputIterator last, random_access_iterator_tag )
+_distance_helper( InputIterator first, InputIterator last, random_access_iterator_tag ) // only callable with random_access_iterator_tag -> thats why third argument in distance
 {
     return last - first;
 }

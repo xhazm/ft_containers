@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include "./iterator/vector_iterator.hpp"
+#include "./iterator/reverse_iterator.hpp"
 #include "./utils.hpp"
 
 namespace ft
@@ -12,18 +13,16 @@ class vector {
 public:
 	typedef std::allocator<T> 							allocator_type;
 	typedef T											value_type;
-	typedef vector_iterator< T >						iterator;
-	typedef vector_iterator< T >						const_iterator;
+	typedef ft::vector_iterator< value_type >			iterator;
+	typedef ft::vector_iterator< value_type >			const_iterator;
 	typedef typename allocator_type::pointer			pointer;
-	typedef typename allocator_type::const_pointer	const_pointer;
-	typedef typename allocator_type::reference		reference;
+	typedef typename allocator_type::const_pointer		const_pointer;
+	typedef typename allocator_type::reference			reference;
 	typedef typename allocator_type::const_reference	const_reference;
-	typedef typename allocator_type::size_type		size_type;
+	typedef typename allocator_type::size_type			size_type;
 	typedef typename allocator_type::difference_type	difference_type;
-	// typedef reverse_iterator<const_iterator, value_type, const_reference, 
-	// 						  difference_type>  const_reverse_iterator;
-	// typedef reverse_iterator<iterator, value_type, reference, difference_type>
-	// 	 reverse_iterator;
+	typedef typename ft::reverse_iterator<iterator>  	reverse_iterator;
+	typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
 protected:
 	allocator_type		static_allocator;
@@ -99,14 +98,14 @@ public:
 	reference		back()							{ return *(end() - 1); }
 	const_reference	back() const					{ return *(end() - 1); }
 /* =================				Iterators			   ================= */
-	iterator			begin()			{ return iterator(start_); }
-	const_iterator		begin() const	{ return iterator(start_); }
-	iterator			end()			{ return iterator(finish_); }
-	const_iterator		end() const		{ return iterator(finish_); }
-	// reverse_iterator		rbegin()		{ return reverse_iterator(end()); }
-	// const_reverse_iterator	rbegin() const	{ return const_reverse_iterator(end()); }
-	// reverse_iterator		rend()			{ return reverse_iterator(begin()); }
-	// const_reverse_iterator	rend() const	{ return const_reverse_iterator(begin()); }
+	iterator				begin()			{ return iterator(start_); }
+	const_iterator			begin() const	{ return iterator(start_); }
+	iterator				end()			{ return iterator(finish_); }
+	const_iterator			end() const		{ return iterator(finish_); }
+	reverse_iterator		rbegin()		{ return reverse_iterator(end()); }
+	const_reverse_iterator	rbegin() const	{ return const_reverse_iterator(end() ); }
+	reverse_iterator		rend()			{ return reverse_iterator(begin() ); }
+	const_reverse_iterator	rend() const	{ return const_reverse_iterator(begin() ); }
 /* =================				Capacity				================= */
 	size_type	size() const		{ return size_type(finish_ - start_); }
 	size_type	max_size() const	{ return static_allocator.max_size(); }
@@ -231,24 +230,6 @@ public:
 		return (begin() + c_pos);
 	}
 
-	void _copy_destroy_(pointer from, pointer to, size_type count)
-	{
-		for (size_type dist = 0; dist < count ; ++dist)
-		{
-			static_allocator.construct(to + dist, *(from + dist));
-			static_allocator.destroy(from + dist);
-		}
-	}
-	
-	void _set_class_vars_(pointer n_start, pointer n_finish, pointer n_end_of_storage)
-	{
-		if (start_ != NULL)
-			static_allocator.deallocate(start_, capacity());
-		start_ = n_start;
-		finish_ = n_finish;
-		end_of_storage_ = n_end_of_storage;
-	}
-
 	void swap(vector& other)
 	{
 		std::swap(start_, other.start_);
@@ -276,6 +257,24 @@ public:
 		return (ret);
 	}
 
+	void _copy_destroy_(pointer from, pointer to, size_type count)
+	{
+		for (size_type dist = 0; dist < count ; ++dist)
+		{
+			static_allocator.construct(to + dist, *(from + dist));
+			static_allocator.destroy(from + dist);
+		}
+	}
+	
+	void _set_class_vars_(pointer n_start, pointer n_finish, pointer n_end_of_storage)
+	{
+		if (start_ != NULL)
+			static_allocator.deallocate(start_, capacity());
+		start_ = n_start;
+		finish_ = n_finish;
+		end_of_storage_ = n_end_of_storage;
+	}
+
 	void _insert_reserve_(size_type count)
 	{
 		reserve(size() + count);
@@ -291,7 +290,6 @@ public:
 		if (start_ + new_cap <= end_of_storage_)
 			return ;
 		int i = 0;
-		// if (new_cap != 1)  just letting here in case the deleting makes error later. kiss kiss.
 		for(iterator it = begin(); it != end(); ++it, i++)
 		{
 			static_allocator.construct(new_start + i, *it);
