@@ -22,6 +22,7 @@ int main(void)
 
 
     vector_test<int> vec_tester;
+    vec_tester.reserve(2);
     vec_tester.push_back(6);
 	vec_tester.push_back(9);
 	vec_tester.push_back(99);
@@ -31,10 +32,13 @@ int main(void)
 	vec_tester.push_back(300);
 	vec_tester.push_back(1);
     vec_tester.print_data();
-    vec_tester.test_erase();
+    vec_tester.test_erase(9, 7);
     vec_tester.test_at(5, 99, 4);
     vec_tester.test_pop_back(2);
-    vec_tester.test_resize(3);
     vec_tester.test_insert();
     vec_tester.test_swap();
+    vec_tester.test_resize(3);
+    vec_tester.test_capacity_functions();
+
+
 }

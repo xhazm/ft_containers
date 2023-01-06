@@ -41,36 +41,6 @@ std::vector<T> std_vec;
 vector_test(){}
 ~vector_test(){}
 
-void push_back(T value)
-{
-    ft_vec.push_back(value);
-    std_vec.push_back(value);
-}
-
-template <class U>
-void test_erase_sub(U& test_vec)
-{
-    typename U::iterator itertest;
-    typename U::iterator itertest2;
-    typename U::iterator it = test_vec.begin();
-    for(; it != test_vec.end(); ++it)
-    {
-        if (*it == 9)
-            itertest = it;
-        if (*it == 7)
-            itertest2 = it;
-    }
-    PRINT("start erase from\t", *itertest)
-    PRINT("end erase until\t\t", *itertest2);
-    test_vec.erase(itertest, itertest2); 
-}
-void test_erase()
-{
-    test_erase_sub(ft_vec);
-    test_erase_sub(std_vec);
-    PRINT_ALL("after erasing", "" ,ft_vec, std_vec, print_data());
-}
-
 template<class U>
 void test_at_sub(T first, T second, U& test_vec)
 {
@@ -89,6 +59,62 @@ void test_at(T first_num, T second_num, long pos_to_change)
     test_at_sub(first_num, second_num, ft_vec);
     test_at_sub(first_num, second_num, std_vec);
     PRINT_ALL("after changing pos: ", pos_to_change ,ft_vec, std_vec, print_data());
+}
+
+/* =================				Capacity				================= */
+void test_capacity_functions()
+{
+    PRINT("ft max_size?: ",ft_vec.max_size());
+    PRINT("ft empty?: ", ft_vec.empty());
+    PRINT("std max_size?: ",std_vec.max_size());
+    PRINT("std empty?: ", std_vec.empty());
+    PRINT_ALL("", "", ft_vec, std_vec, "")
+}
+
+/* =================				Capacity Modulator	  ================= */
+void reserve(size_t value)
+{
+    ft_vec.reserve(value);
+    std_vec.reserve(value);
+    PRINT_ALL("after reserving: ", value ,ft_vec, std_vec, print_data());
+}
+/* =================			   Modifiers			  ================= */
+
+void push_back(T value)
+{
+    ft_vec.push_back(value);
+    std_vec.push_back(value);
+}
+
+template <class U>
+void test_erase_sub(T& from, T& to, U& test_vec)
+{
+    typename U::iterator from_it;
+    typename U::iterator to_it;
+    typename U::iterator it = test_vec.begin();
+    for(; it != test_vec.end(); ++it)
+    {
+        if (*it == from)
+            from_it = it;
+        if (*it == to)
+            to_it = it;
+    }
+    PRINT("start erase from\t", *from_it)
+    PRINT("end erase until\t\t", *to_it);
+    test_vec.erase(from_it, to_it); 
+    if (*(test_vec.begin()))
+    {
+        PRINT("erase beginning\t", *(test_vec.begin()))
+    }
+    test_vec.erase(test_vec.begin()); 
+
+}
+
+void test_erase(T from, T to)
+{
+    test_erase_sub(from, to, ft_vec);
+    test_erase_sub(from, to, std_vec);
+    PRINT_ALL("after erasing", "" ,ft_vec, std_vec, print_data());
 }
 
 void test_pop_back(size_t num_times)
@@ -112,21 +138,15 @@ void test_resize(size_t num)
 template <class U>
 void test_insert_sub(U& test_vec, std::string what)
 {
-    typename U::iterator it;
-    U   insert_vec;
     test_vec.insert(test_vec.begin(), 10, test_vec[0]);
     test_vec.insert(test_vec.begin(), test_vec[0]);
     test_vec.insert(test_vec.begin() + 1, test_vec.begin(), test_vec.end());
-    std::cout << PRINT_CAPA_SIZE(insert_vec, what) << std::endl;
-
 }
 
 
 void test_insert()
 {
-    std::cout << "ft: " << std::endl;
     test_insert_sub(ft_vec, " __ft_insert__ ");
-    std::cout << "std: " << std::endl;
     test_insert_sub(std_vec, " __std_insert__ ");
     PRINT_ALL("after insert in new vector: ", "" ,ft_vec, std_vec, print_data());
 }
@@ -151,7 +171,7 @@ void test_swap()
     PRINT_ALL("after swap with inverted vector: ", "" ,ft_vec, std_vec, print_data());
 }
 
-
+/* =================			 Utils			  ================= */
 std::string print_data()
 {
     typename ft::vector<T>::iterator ft_it = ft_vec.begin();

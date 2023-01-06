@@ -99,9 +99,9 @@ public:
 	const_reference	back() const					{ return *(end() - 1); }
 /* =================				Iterators			   ================= */
 	iterator				begin()			{ return iterator(start_); }
-	const_iterator			begin() const	{ return iterator(start_); }
+	const_iterator			begin() const	{ return const_iterator(start_); }
 	iterator				end()			{ return iterator(finish_); }
-	const_iterator			end() const		{ return iterator(finish_); }
+	const_iterator			end() const		{ return const_iterator(finish_); }
 	reverse_iterator		rbegin()		{ return reverse_iterator(end()); }
 	const_reverse_iterator	rbegin() const	{ return const_reverse_iterator(end() ); }
 	reverse_iterator		rend()			{ return reverse_iterator(begin() ); }
