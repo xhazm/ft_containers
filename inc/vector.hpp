@@ -238,25 +238,7 @@ public:
 		std::swap(static_allocator, other.static_allocator);
 	}
 
-	inline iterator _find_(iterator to_find) //tofind call by reference?
-	{
-		iterator	it;
-		for(it = begin(); it < end() && it != to_find; it++)
-			;
-		return (it);
-	}
-
-	inline long long _find_pos_(iterator to_find) //tofind call by reference?
-	{
-		iterator	it;
-		int			ret = 0;
-		for(it = begin(); it < end() && it != to_find; ++it, ret++)
-			std::cout << *it << std::endl <<  *to_find << std::endl << std::endl;
-		if (it == end() && it != to_find)
-			return (-1);
-		return (ret);
-	}
-
+/* =================			 Helper Functions			  ================= */
 	void _copy_destroy_(pointer from, pointer to, size_type count)
 	{
 		for (size_type dist = 0; dist < count ; ++dist)

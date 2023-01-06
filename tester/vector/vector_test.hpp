@@ -114,7 +114,7 @@ void test_insert_sub(U& test_vec, std::string what)
 {
     typename U::iterator it;
     U   insert_vec;
-    test_vec.insert(test_vec.begin(), 2, test_vec[0]);
+    test_vec.insert(test_vec.begin(), 10, test_vec[0]);
     test_vec.insert(test_vec.begin(), test_vec[0]);
     test_vec.insert(test_vec.begin() + 1, test_vec.begin(), test_vec.end());
     std::cout << PRINT_CAPA_SIZE(insert_vec, what) << std::endl;
