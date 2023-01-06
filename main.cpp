@@ -35,10 +35,14 @@ int main(void)
     vec_tester.test_erase(9, 7);
     vec_tester.test_at(5, 99, 4);
     vec_tester.test_pop_back(2);
-    vec_tester.test_insert();
     vec_tester.test_swap();
     vec_tester.test_resize(3);
     vec_tester.test_capacity_functions();
+    vec_tester.test_brackets(200, 2);
+    vec_tester.test_front_back_access();
+    vec_tester.clear();
+    vec_tester.reserve(900);
+    vec_tester.test_assign(5, 12);
 
 
 }

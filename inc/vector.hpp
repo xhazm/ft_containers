@@ -167,11 +167,13 @@ public:
 
 	iterator erase( iterator first, iterator last )
 	{
+		if (first == last)
+			return(first);
 		destroy_range(first, last, &finish_);
 		return (first);
 	}
 
-	void clear() { erase(iterator(start_), iterator(end_of_storage_)); }
+	void clear() { erase(iterator(start_), iterator(finish_)); }
 
 	void resize(size_type count, T value = T())
 	{
@@ -190,17 +192,18 @@ public:
 	{
 		if (count == 0) //make sure that pos is in vector. pos can be end() let distance throw error?
 			return (pos);
-	
+
 		difference_type c_pos = ft::distance(begin(), pos);
 		size_type		n_size = size() + count;
-		pointer			n_start = static_allocator.allocate(size() + n_size);
+		size_type		alloc_size = capacity() > size() + n_size ? capacity() : size() + n_size;
+		pointer			n_start = static_allocator.allocate(alloc_size);
 
 		_copy_destroy_(start_, n_start, c_pos);
 		for (size_type temp_pos = c_pos; temp_pos < c_pos + count; ++temp_pos)
 			static_allocator.construct(n_start + temp_pos, value);
 		_copy_destroy_(start_ + c_pos, n_start + c_pos + count, n_size - count - c_pos);
 		clear();
-		_set_class_vars_(n_start, n_start + n_size, n_start + n_size);
+		_set_class_vars_(n_start, n_start + n_size, n_start + alloc_size);
 		return (begin() + c_pos);
 	}
 

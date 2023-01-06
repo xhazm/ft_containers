@@ -41,24 +41,48 @@ std::vector<T> std_vec;
 vector_test(){}
 ~vector_test(){}
 
+/* =================	    	   Member Functions			   ================= */
+void test_assign(size_t count, T value)
+{
+    ft_vec.assign(count, value);
+    std_vec.assign(count, value);
+    PRINT_ALL("after assigning times: ", count ,ft_vec, std_vec, print_data());
+}
+
+/* =================		   Element Access			   ================= */
 template<class U>
-void test_at_sub(T first, T second, U& test_vec)
+void test_at_sub(T first, const T second, long pos_to_change, U& test_vec)
 {
     try {
         test_vec.at(100) = first;
     } catch (std::out_of_range const& exc) {
         PRINT("exception thrown. exc.what: ", exc.what())}
     try {
-        test_vec.at(4) = second;
+        test_vec.at(pos_to_change) = second;
+        const T const_ref_test = test_vec.at(4);
     } catch (std::out_of_range const& exc) {
         std::cout << exc.what() << '\n';}
 }
 
 void test_at(T first_num, T second_num, long pos_to_change)
 {
-    test_at_sub(first_num, second_num, ft_vec);
-    test_at_sub(first_num, second_num, std_vec);
+    test_at_sub(first_num, second_num, pos_to_change, ft_vec);
+    test_at_sub(first_num, second_num, pos_to_change, std_vec);
     PRINT_ALL("after changing pos: ", pos_to_change ,ft_vec, std_vec, print_data());
+}
+
+void test_brackets(T value, long pos_to_change)
+{
+    ft_vec[pos_to_change] = value;
+    std_vec[pos_to_change] = value;
+    PRINT_ALL("after changing pos: ", pos_to_change ,ft_vec, std_vec, print_data());
+}
+void test_front_back_access()
+{
+    PRINT("ft_front: ", ft_vec.front());
+    PRINT("std_front: ", ft_vec.front());
+    PRINT("ft_back: ", ft_vec.back());
+    PRINT("std_back: ", ft_vec.back());
 }
 
 /* =================				Capacity				================= */
@@ -79,6 +103,13 @@ void reserve(size_t value)
     PRINT_ALL("after reserving: ", value ,ft_vec, std_vec, print_data());
 }
 /* =================			   Modifiers			  ================= */
+
+void clear()
+{
+    ft_vec.clear();
+    std_vec.clear();
+    PRINT_ALL("clearing: ", "" ,ft_vec, std_vec, print_data());
+}
 
 void push_back(T value)
 {
