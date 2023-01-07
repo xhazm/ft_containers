@@ -72,6 +72,8 @@ template<> struct is_integral_base<volatile signed char>: true_type {};
 template< class T >
 struct is_integral: is_integral_base <T> {};
 
+// Returns true if the range [first1, last1) is equal to the range [first2, first2 + (last1 - first1)), 
+// and false otherwise, using binary function 'p' for compare
 template< class InputIt1, class InputIt2, class BinaryPredicate >
 bool equal( InputIt1 first1,
             InputIt1 last1,
@@ -86,6 +88,8 @@ bool equal( InputIt1 first1,
     return true;
 };
 
+// Returns true if the range [first1, last1) is equal to the range [first2, first2 + (last1 - first1)), 
+// and false otherwise, using ==
 template< class InputIt1, class InputIt2 >
 bool equal( InputIt1 first1, InputIt1 last1, InputIt2 first2 )
 {
