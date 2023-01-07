@@ -43,6 +43,9 @@ int main(void)
     vec_tester.clear();
     vec_tester.reserve(900);
     vec_tester.test_assign(5, 12);
+    vec_tester.test_copy_constructor();
+    vec_tester.test_it_constructor(2);
+    vec_tester.test_fill_constructor(5, 99);
 
 
 }

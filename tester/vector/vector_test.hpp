@@ -40,7 +40,27 @@ std::vector<T> std_vec;
 
 vector_test(){}
 ~vector_test(){}
+/* =================	    	   Constructors			   ================= */
+void test_copy_constructor()
+{
+    ft::vector<T>   ft_vec_copy(ft_vec);    
+    std::vector<T>  std_vec_copy(std_vec);
+    PRINT_ALL("copy constructed vecs: ", "" ,ft_vec_copy, std_vec_copy, print_data(ft_vec_copy, std_vec_copy));
+}
 
+void test_fill_constructor(size_t n, T value)
+{
+    ft::vector<T>   ft_vec_copy(n, value);    
+    std::vector<T>  std_vec_copy(n, value);
+    PRINT_ALL("fill constructed vecs: ", "" ,ft_vec_copy, std_vec_copy, print_data(ft_vec_copy, std_vec_copy));
+
+}
+void test_it_constructor(size_t how_much)
+{
+    ft::vector<T>   ft_vec_copy(ft_vec.begin(), ft_vec.begin() + how_much);    
+    std::vector<T>  std_vec_copy(std_vec.begin(), std_vec.begin() + how_much);
+    PRINT_ALL("iterator constructed vecs: ", "" ,ft_vec_copy, std_vec_copy, print_data(ft_vec_copy, std_vec_copy));
+}
 /* =================	    	   Member Functions			   ================= */
 void test_assign(size_t count, T value)
 {
@@ -169,7 +189,7 @@ void test_resize(size_t num)
 template <class U>
 void test_insert_sub(U& test_vec, std::string what)
 {
-    test_vec.insert(test_vec.begin(), 10, test_vec[0]);
+    test_vec.insert(test_vec.begin(), 10, test_vec[0]); // get int out
     test_vec.insert(test_vec.begin(), test_vec[0]);
     test_vec.insert(test_vec.begin() + 1, test_vec.begin(), test_vec.end());
 }
@@ -210,6 +230,17 @@ std::string print_data()
     for(; ft_it != ft_vec.end(); ++ft_it, ++std_it)
     {
         std::cout << "ft_data: " << *ft_it <<  "\t\t\t\tstd_data: " <<  *std_it << std::endl;
+    }
+    return ("");
+}
+
+std::string print_data(ft::vector<T>& test_ft_vec, std::vector<T>& test_std_vec)
+{
+    typename ft::vector<T>::iterator test_ft_it = test_ft_vec.begin();
+    typename std::vector<T>::iterator test_std_it = test_std_vec.begin();
+    for(; test_ft_it != test_ft_vec.end(); ++test_ft_it, ++test_std_it)
+    {
+        std::cout << "ft_data: " << *test_ft_it <<  "\t\t\t\tstd_data: " <<  *test_std_it << std::endl;
     }
     return ("");
 }

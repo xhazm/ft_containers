@@ -37,22 +37,23 @@ public:
 	vector() : start_(0), finish_(0), end_of_storage_(0) { }
 	vector(size_type n, const T& value = T()) {
 	start_ = static_allocator.allocate(n);
-	uninitialized_fill_n(start_, n, value);
+	std::uninitialized_fill_n(start_, n, value);
 	finish_ = start_ + n;
 	end_of_storage_ = finish_;
 	}
+
 	vector(const vector<T>& x) {
-	start_ = static_allocator.allocate(x.end() - x.begin());
-	finish_ = uninitialized_copy(x.begin(), x.end(), start_);
+	start_ = static_allocator.allocate(x.size());
+	finish_ = _copy_(x.begin().base(), start_, x.size()); 
 	end_of_storage_ = finish_;
 	}
 
 	vector(const_iterator first, const_iterator last) {
 	size_type n = 0;
-	distance(first, last, n);
+	n = ft::distance(first, last);
 	start_ = static_allocator.allocate(n);
-	finish_ = uninitialized_copy(first, last, start_);
-	end_of_storage_ = finish_;
+	finish_ = _copy_(first.base(), start_, n);
+	end_of_storage_ = start_ + n;
 	}
 	//enable if is integral input iterator constructor?
 
@@ -249,6 +250,16 @@ public:
 			static_allocator.construct(to + dist, *(from + dist));
 			static_allocator.destroy(from + dist);
 		}
+	}
+
+	pointer _copy_(pointer from, pointer to, size_type count)
+	{
+		size_type dist = 0;
+		for (; dist < count ; ++dist)
+		{
+			static_allocator.construct(to + dist, *(from + dist));
+		}
+		return(to + dist);
 	}
 	
 	void _set_class_vars_(pointer n_start, pointer n_finish, pointer n_end_of_storage)
