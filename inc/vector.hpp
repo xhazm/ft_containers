@@ -8,12 +8,11 @@
 
 namespace ft
 {
-template < class T >
+template < class T, class Allocator = std::allocator<T> >
 class vector {
 public:
-	typedef std::allocator<T> 							Allocator;
-	typedef	Allocator									allocator_type;
 	typedef T											value_type;
+	typedef	Allocator									allocator_type;
 	typedef ft::vector_iterator< value_type >			iterator;
 	typedef ft::vector_iterator< value_type >			const_iterator;
 	typedef typename allocator_type::pointer			pointer;
@@ -40,13 +39,15 @@ public:
 	explicit vector(const Allocator& alloc)
         : start_(0), finish_(0), end_of_storage_(0), static_allocator(alloc) {}
 
-	vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator())
+	explicit vector(size_type count, const T& value = T(),
+						const Allocator& alloc = Allocator())
 		: start_(0), finish_(0), end_of_storage_(0), static_allocator(alloc)
 	{
 		assign(count, value);
 	}
 
-	vector(const_iterator first, const_iterator last, const Allocator& alloc = Allocator())
+	template < class InputIt >
+	vector(InputIt first, InputIt last, const Allocator& alloc = Allocator())
 		: start_(0), finish_(0), end_of_storage_(0), static_allocator(alloc)
 	{
 		assign(first, last);
@@ -315,4 +316,54 @@ public:
 	}
 
 };
+
+/* =================    Non-member functions                ================= */
+
+//  Checks if the contents of lhs and rhs are equal, that is, they have the same number of elements
+//  and each element in lhs compares equal with the element in rhs at the same position.
+template< class T, class Alloc >
+bool    operator==( const ft::vector<T,Alloc>& lhs,
+                    const ft::vector<T,Alloc>& rhs )
+{
+    return (lhs.size() == rhs.size()
+        && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+}
+
+template< class T, class Alloc >
+bool    operator!=( const ft::vector<T,Alloc>& lhs,
+                    const ft::vector<T,Alloc>& rhs )
+{
+    return (!(lhs == rhs));
+}
+
+//  Compares the contents of lhs and rhs lexicographically.
+//  The comparison is performed by a function equivalent to std::lexicographical_compare.
+template< class T, class Alloc >
+bool    operator<( const ft::vector<T,Alloc>& lhs,
+                    const ft::vector<T,Alloc>& rhs )
+{
+    return (ft::lexicographical_compare(lhs.begin(), lhs.end(),
+                                        rhs.begin(), rhs.end()));
+}
+
+template< class T, class Alloc >
+bool    operator<=( const ft::vector<T,Alloc>& lhs,
+                    const ft::vector<T,Alloc>& rhs )
+{
+    return (!(rhs < lhs));
+}
+
+template< class T, class Alloc >
+bool    operator>( const ft::vector<T,Alloc>& lhs,
+                    const ft::vector<T,Alloc>& rhs )
+{
+    return (rhs < lhs);
+}
+
+template< class T, class Alloc >
+bool    operator>=( const ft::vector<T,Alloc>& lhs,
+                    const ft::vector<T,Alloc>& rhs )
+{
+    return (!(lhs < rhs));
+}
 }
