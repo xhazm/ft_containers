@@ -11,7 +11,8 @@ namespace ft
 template < class T >
 class vector {
 public:
-	typedef std::allocator<T> 							allocator_type;
+	typedef std::allocator<T> 							Allocator;
+	typedef	Allocator									allocator_type;
 	typedef T											value_type;
 	typedef ft::vector_iterator< value_type >			iterator;
 	typedef ft::vector_iterator< value_type >			const_iterator;
@@ -34,37 +35,45 @@ public:
 
 /* =================				Constructors				================= */
 
-	vector() : start_(0), finish_(0), end_of_storage_(0) { }
-	vector(size_type n, const T& value = T()) {
-	start_ = static_allocator.allocate(n);
-	std::uninitialized_fill_n(start_, n, value);
-	finish_ = start_ + n;
-	end_of_storage_ = finish_;
+	vector() : start_(0), finish_(0), end_of_storage_(0) {}
+
+	explicit vector(const Allocator& alloc)
+        : start_(0), finish_(0), end_of_storage_(0), static_allocator(alloc) {}
+
+	vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator())
+		: start_(0), finish_(0), end_of_storage_(0), static_allocator(alloc)
+	{
+		assign(count, value);
 	}
 
-	vector(const vector<T>& x) {
-	start_ = static_allocator.allocate(x.size());
-	finish_ = _copy_(x.begin().base(), start_, x.size()); 
-	end_of_storage_ = finish_;
-	}
-
-	vector(const_iterator first, const_iterator last) {
-	size_type n = 0;
-	n = ft::distance(first, last);
-	start_ = static_allocator.allocate(n);
-	finish_ = _copy_(first.base(), start_, n);
-	end_of_storage_ = start_ + n;
+	vector(const_iterator first, const_iterator last, const Allocator& alloc = Allocator())
+		: start_(0), finish_(0), end_of_storage_(0), static_allocator(alloc)
+	{
+		assign(first, last);
 	}
 	//enable if is integral input iterator constructor?
 
+	vector(const vector& other) { *this = other; }
+
 	~vector()
 	{
-		destroy_range(begin(), end(), &finish_);
-		static_allocator.deallocate(&(*start_), capacity());
+		clear();
+		if (start_ != NULL)
+			static_allocator.deallocate(&(*start_), capacity());
 	}
 
-/* =================		 Member Functions		   ================= */
+	vector  &operator=(const vector& other)
+    {
+        if (this != &other)
+        {
+			start_ = static_allocator.allocate(other.size());
+			finish_ = _copy_(other.begin().base(), start_, other.size()); 
+			end_of_storage_ = finish_;
+        }
+        return (*this);
+    }
 
+/* =================		 Member Functions		   ================= */
 	void assign(size_type count, const T& value)
 	{
 		clear();

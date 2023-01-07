@@ -1,5 +1,6 @@
 // #include "./inc/iterator/VectorIterator.hpp"
 #include <vector>
+#include <stack>
 #include <iostream>
 #include "./inc/vector.hpp"
 #include "./inc/utils.hpp"
@@ -46,6 +47,5 @@ int main(void)
     vec_tester.test_copy_constructor();
     vec_tester.test_it_constructor(2);
     vec_tester.test_fill_constructor(5, 99);
-
-
+    std::stack<int>::container_type hi;
 }

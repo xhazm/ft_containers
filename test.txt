@@ -1,0 +1,141 @@
+rm -f main.o
+rm -f ft_containers
+g++    -c -o main.o main.cpp
+c++  main.o -g -o ft_containers
+rm -f valgrind.log
+G_SLICE=always-malloc G_DEBUG=gc-friendly  valgrind -v --tool=memcheck --leak-check=full --num-callers=40 --log-file=valgrind.log /home/sirlin/code/ft_containers/ft_containers
+---------------------------------after reserving: 2---------------------------------
+
+ft_size: 0	ft_capa: 2		std_size: 0	std_capa: 2
+------------------------------------------------------------------------------------
+
+ft_data: 6				std_data: 6
+ft_data: 9				std_data: 9
+ft_data: 99				std_data: 99
+ft_data: 7				std_data: 7
+ft_data: 0				std_data: 0
+ft_data: 5				std_data: 5
+ft_data: 300				std_data: 300
+ft_data: 1				std_data: 1
+start erase from	9
+end erase until		7
+erase beginning	6
+start erase from	9
+end erase until		7
+erase beginning	6
+---------------------------------after erasing---------------------------------
+
+ft_size: 5	ft_capa: 8		std_size: 5	std_capa: 8
+ft_data: 7				std_data: 7
+ft_data: 0				std_data: 0
+ft_data: 5				std_data: 5
+ft_data: 300				std_data: 300
+ft_data: 1				std_data: 1
+-------------------------------------------------------------------------------
+
+exception thrown. exc.what: vetor
+exception thrown. exc.what: vector::_M_range_check: __n (which is 100) >= this->size() (which is 5)
+---------------------------------after changing pos: 4---------------------------------
+
+ft_size: 5	ft_capa: 8		std_size: 5	std_capa: 8
+ft_data: 7				std_data: 7
+ft_data: 0				std_data: 0
+ft_data: 5				std_data: 5
+ft_data: 300				std_data: 300
+ft_data: 99				std_data: 99
+---------------------------------------------------------------------------------------
+
+---------------------------------after pop_back times: 2---------------------------------
+
+ft_size: 3	ft_capa: 8		std_size: 3	std_capa: 8
+ft_data: 7				std_data: 7
+ft_data: 0				std_data: 0
+ft_data: 5				std_data: 5
+-----------------------------------------------------------------------------------------
+
+---------------------------------after swap with inverted vector: ---------------------------------
+
+ft_size: 3	ft_capa: 3		std_size: 3	std_capa: 3
+ft_data: 5				std_data: 5
+ft_data: 0				std_data: 0
+ft_data: 7				std_data: 7
+---------------------------------------------------------------------------------------------------
+
+---------------------------------after resizing to: 3---------------------------------
+
+ft_size: 3	ft_capa: 3		std_size: 3	std_capa: 3
+ft_data: 5				std_data: 5
+ft_data: 0				std_data: 0
+ft_data: 7				std_data: 7
+--------------------------------------------------------------------------------------
+
+ft max_size?: 2305843009213693951
+ft empty?: 0
+std max_size?: 2305843009213693951
+std empty?: 0
+------------------------------------------------------------------
+
+ft_size: 3	ft_capa: 3		std_size: 3	std_capa: 3
+------------------------------------------------------------------
+
+---------------------------------after changing pos: 2---------------------------------
+
+ft_size: 3	ft_capa: 3		std_size: 3	std_capa: 3
+ft_data: 5				std_data: 5
+ft_data: 0				std_data: 0
+ft_data: 200				std_data: 200
+---------------------------------------------------------------------------------------
+
+ft_front: 5
+std_front: 5
+ft_back: 200
+std_back: 200
+---------------------------------clearing: ---------------------------------
+
+ft_size: 0	ft_capa: 3		std_size: 0	std_capa: 3
+----------------------------------------------------------------------------
+
+---------------------------------after reserving: 900---------------------------------
+
+ft_size: 0	ft_capa: 900		std_size: 0	std_capa: 900
+--------------------------------------------------------------------------------------
+
+---------------------------------after assigning times: 5---------------------------------
+
+ft_size: 5	ft_capa: 900		std_size: 5	std_capa: 900
+ft_data: 12				std_data: 12
+ft_data: 12				std_data: 12
+ft_data: 12				std_data: 12
+ft_data: 12				std_data: 12
+ft_data: 12				std_data: 12
+------------------------------------------------------------------------------------------
+
+---------------------------------copy constructed vecs: ---------------------------------
+
+ft_size: 5	ft_capa: 5		std_size: 5	std_capa: 5
+ft_data: 12				std_data: 12
+ft_data: 12				std_data: 12
+ft_data: 12				std_data: 12
+ft_data: 12				std_data: 12
+ft_data: 12				std_data: 12
+-----------------------------------------------------------------------------------------
+
+---------------------------------iterator constructed vecs: ---------------------------------
+
+ft_size: 2	ft_capa: 2		std_size: 2	std_capa: 2
+ft_data: 12				std_data: 12
+ft_data: 12				std_data: 12
+---------------------------------------------------------------------------------------------
+
+---------------------------------fill constructed vecs: ---------------------------------
+
+ft_size: 5	ft_capa: 5		std_size: 5	std_capa: 5
+ft_data: 99				std_data: 99
+ft_data: 99				std_data: 99
+ft_data: 99				std_data: 99
+ft_data: 99				std_data: 99
+ft_data: 99				std_data: 99
+-----------------------------------------------------------------------------------------
+
+tail -1 ./valgrind.log
+==5171== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
