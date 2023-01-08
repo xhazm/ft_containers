@@ -322,16 +322,15 @@ public:
 //  Checks if the contents of lhs and rhs are equal, that is, they have the same number of elements
 //  and each element in lhs compares equal with the element in rhs at the same position.
 template< class T, class Alloc >
-bool    operator==( const ft::vector<T,Alloc>& lhs,
-                    const ft::vector<T,Alloc>& rhs )
+bool operator==(const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs)
 {
     return (lhs.size() == rhs.size()
         && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
 }
 
+// see operator ==
 template< class T, class Alloc >
-bool    operator!=( const ft::vector<T,Alloc>& lhs,
-                    const ft::vector<T,Alloc>& rhs )
+bool operator!=(const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs)
 {
     return (!(lhs == rhs));
 }
@@ -339,30 +338,29 @@ bool    operator!=( const ft::vector<T,Alloc>& lhs,
 //  Compares the contents of lhs and rhs lexicographically.
 //  The comparison is performed by a function equivalent to std::lexicographical_compare.
 template< class T, class Alloc >
-bool    operator<( const ft::vector<T,Alloc>& lhs,
-                    const ft::vector<T,Alloc>& rhs )
+bool operator<(const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs)
 {
     return (ft::lexicographical_compare(lhs.begin(), lhs.end(),
                                         rhs.begin(), rhs.end()));
 }
 
+// see operator <
 template< class T, class Alloc >
-bool    operator<=( const ft::vector<T,Alloc>& lhs,
-                    const ft::vector<T,Alloc>& rhs )
+bool operator<=(const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs)
 {
     return (!(rhs < lhs));
 }
 
+// see operator <
 template< class T, class Alloc >
-bool    operator>( const ft::vector<T,Alloc>& lhs,
-                    const ft::vector<T,Alloc>& rhs )
+bool operator>(const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs)
 {
     return (rhs < lhs);
 }
 
+// see operator <
 template< class T, class Alloc >
-bool    operator>=( const ft::vector<T,Alloc>& lhs,
-                    const ft::vector<T,Alloc>& rhs )
+bool operator>=(const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs)
 {
     return (!(lhs < rhs));
 }
