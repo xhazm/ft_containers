@@ -25,7 +25,7 @@ public:
 	typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
 protected:
-	allocator_type		static_allocator;
+	allocator_type			static_allocator;
 	pointer					start_;
 	pointer					finish_;
 	pointer					end_of_storage_;
@@ -279,15 +279,6 @@ public:
 		start_ = n_start;
 		finish_ = n_finish;
 		end_of_storage_ = n_end_of_storage;
-	}
-
-	void _insert_reserve_(size_type count)
-	{
-		reserve(size() + count);
-		// if (count > 1 && size() > 0)
-		// 	reserve(capacity() * 2);
-		// else if (c)
-		// reserve(count > 1 ? capacity() * 2 : size() + count); //reserve double capacity?
 	}
 
 	inline void _grow_(size_t new_cap)
