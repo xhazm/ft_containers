@@ -88,7 +88,7 @@ public:
 		insert(begin(), first, last);
 	}
 
-	allocator_type get_allocator() const { return (static_allocator); } //or static_allocator::allocator_type ?
+	allocator_type get_allocator() const { return static_allocator; } //or static_allocator::allocator_type ?
 /* =================		   Element Access			   ================= */
 	reference at(size_type pos)
 	{
