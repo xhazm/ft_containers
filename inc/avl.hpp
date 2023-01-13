@@ -4,8 +4,8 @@ namespace ft
 {
     template<
     class key_type,
-    class value_type>
-    struct avl_node
+    class value_type
+    > struct avl_node
     {
         value_type* value;
         key_type*   key;
