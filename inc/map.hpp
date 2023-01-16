@@ -27,19 +27,19 @@ namespace ft
         typedef typename allocator_type::pointer            pointer;
         typedef typename allocator_type::const_pointer      const_pointer;
 
-        typedef avl_node<key_type, value_type>*             node_pointer;
+        typedef avl_tree<value_type, Compare>               tree;
+
+        // typedef avl_node<key_type, value_type>*             node_pointer;
 
     protected:
         allocator_type                  value_allocator_;
         allocator_type                  node_allocator_; //different allocators needed?
-        avl_node<key_type, value_type>  root_node_;
+        tree                            avl_tree_;
         
     public:    
-        map()
-        {
-
-        }
-        explicit map(const Compare& comp, const Allocator& alloc = Allocator())
+        map() {}
+        explicit map(const Compare& comp = Compare(), const Allocator& alloc = Allocator())
+            : avl_tree_(tree(value_compare())
         {
                     
         }
@@ -57,26 +57,7 @@ namespace ft
         }
         allocator_type get_allocator() const { return static_allocator_; }
 
-        private:
-        node_pointer create_node_(value_type value, node_pointer parent)
-        {
-            if (end_node_ != NULL)
-                ++size_;
-            node_pointer new_node = node_allocator.allocate(1);
-            new_node->parent = parent;
-            new_node->left = left;
-            new_node->right = right;
-            new_node->height_diff = 0;
-            value_allocator_.construct(&new_node->value, value);
-            return new_node;
-        }
+        bool        empty() const               { return avl_tree_.begin() == avl_tree_.end();}
 
-        void delete_node_(node_pointer node)
-        {
-            if (node != end_node_)
-                --size_; //?
-            value_allocator_.destroy(&node->value);
-            node_allocator.deallocate(node, 1);
-        }
     };
-}
+} // namespace ft

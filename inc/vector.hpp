@@ -355,4 +355,4 @@ bool operator>=(const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs)
 {
     return (!(lhs < rhs));
 }
-}
+} // namespace ft

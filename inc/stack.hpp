@@ -99,4 +99,4 @@ bool operator>=(const ft::stack<T,Container>& lhs, const ft::stack<T,Container>&
 {
     return (!(lhs < rhs));
 }
-}
+} // namespace ft

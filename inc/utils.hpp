@@ -110,9 +110,9 @@ bool lexicographical_compare( InputIt1 first1, InputIt1 last1,
     for (; (first1 != last1) && (first2 != last2); ++first1, (void) ++first2)
     {
         if (*first1 < *first2)
-            return true;
+            return (true);
         if (*first2 < *first1)
-            return false;
+            return (false);
     }
     return (first1 == last1) && (first2 != last2);
 }
@@ -125,11 +125,10 @@ bool lexicographical_compare( InputIt1 first1, InputIt1 last1,
     for (; (first1 != last1) && (first2 != last2); ++first1, (void) ++first2)
     {
         if (comp(*first1, *first2))
-            return true;
+            return (true);
         if (comp(*first2, *first1))
-            return false;
+            return (false);
     }
     return (first1 == last1) && (first2 != last2);
 }
-
-}
+} // namespace ft
