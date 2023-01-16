@@ -39,10 +39,7 @@ namespace ft
     public:    
         map() {}
         explicit map(const Compare& comp = Compare(), const Allocator& alloc = Allocator())
-            : avl_tree_(tree(value_compare())
-        {
-                    
-        }
+            : avl_tree_(tree()) {}
         template< class InputIt >
         map(InputIt first, InputIt last,
                 const Compare& comp = Compare(),

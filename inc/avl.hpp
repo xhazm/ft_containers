@@ -53,15 +53,16 @@ namespace ft
     
 
     public:
-        avl_tree() : root_(NULL), size(0)
-        {
-            begin_ = NULL;
-            end_ = NULL;
-        }
-        avl_tree(const value_compare& cmp, const value_allocator_type value_alloc = value_allocator_type())
+        // avl_tree() : root_(NULL), size(0)
+        // {
+        //     begin_ = NULL;
+        //     end_ = NULL;
+        // }
+        // avl_tree(const value_compare& cmp, const value_allocator_type value_alloc = value_allocator_type())
+        avl_tree()
             : root_(NULL), size_(0), cmp_(cmp), value_alloc_(value_alloc), begin_(NULL), end_(NULL)
         {
-
+            //init also node alloc? or is it auto inited
         }
         ~avl_tree() { clear(); }
 
@@ -81,14 +82,19 @@ namespace ft
         private:
         node_pointer create_node_(value_type value, node_pointer parent)
         {
-            if (end_node_ != NULL)
-                ++size_;
             node_pointer new_node = node_alloc_.allocate(1);
             new_node->parent = parent;
-            new_node->left = left;
-            new_node->right = right;
-            new_node->height_diff = 0;
+            new_node->left = NULL;
+            new_node->right = NULL;
+            new_node->height_diff = 0; //get height diff function
             value_alloc_.construct(&new_node->value, value);
+            ++size_;
+            if (parent == NULL)
+            {
+                root_ = new_node;
+                end_ = root_;
+                begin_ = root_;
+            }
             return new_node;
         }
 
