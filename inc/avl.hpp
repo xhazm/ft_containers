@@ -77,10 +77,41 @@ namespace ft
         size_type   max_size() const            { return node_alloc_.max_size(); }
         
         
+        delete(node_pointer pos)
+        {
+            if (pos.right == NULL && pos.left == NULL)
+            {
+                if (pos->parent->left == pos)
+                    pos->parent->left = NULL;
+                else if (pos->parent->right == pos)
+                    pos->parent->right = NULL;
+                delete_node_(pos);
+            }
+        }
         
-        
+        insert(value_type& value, node_pointer pos)
+        {
+            //check if pos is there
+            if(cmp_(value, pos->value)) //left
+            {
+                node_pointer new_node = create_node_(value);
+                pos->left = new_node;
+                new_node->height = pos->height + 1;
+                check_rule_violation_(new_node);
+            }
+            else if(cmp_(pos->value, value)) //right
+            {
+                node_pointer new_node = create_node_(value);
+                pos->right = new_node;
+                new_node->height = pos->height + 1;
+                check_rule_violation_(new_node);
+
+            }
+
+        }
+
         private:
-        node_pointer create_node_(value_type value, node_pointer parent)
+        node_pointer create_node_(value_type& value, node_pointer parent)
         {
             node_pointer new_node = node_alloc_.allocate(1);
             new_node->parent = parent;
@@ -104,6 +135,11 @@ namespace ft
                 --size_; //?
             value_alloc_.destroy(&node->value);
             node_allocator.deallocate(node, 1);
+        }
+
+        void check_rule_violation_(node_pointer node)
+        {
+            ; //logic here
         }
     };
 } // namespace ft
