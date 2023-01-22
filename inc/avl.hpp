@@ -19,7 +19,8 @@ namespace ft
         pointer     right;
         pointer     left;
         pointer     parent;
-        short       height_diff;
+        short       balance_factor;
+        long        level;
     };
 
     template<
@@ -111,6 +112,26 @@ namespace ft
         }
 
         private:
+       
+        node_pointer rotate_right_(node_pointer rotation_node)
+        {
+            node_pointer    new_head = rotation_node->left;
+
+            rotation_node->left = new_head->right;
+            new_head->right = rotation_node;
+            rotation_node->parent = new_head;
+        }
+
+
+        node_pointer rotate_left_(node_pointer rotation_node)
+        {
+            node_pointer    new_head = rotation_node->right;
+
+            rotation_node->right = new_head->left;
+            new_head->left = rotation_node;
+            rotation_node->parent = new_head;
+        }
+
         node_pointer create_node_(value_type& value, node_pointer parent)
         {
             node_pointer new_node = node_alloc_.allocate(1);
@@ -143,3 +164,9 @@ namespace ft
         }
     };
 } // namespace ft
+
+//cases:
+// -2 -1 = left rot
+// +2 +1 = right rot
+// -2 +1 = right left rot (bottom starting)
+// +2 -1 = left right rot
