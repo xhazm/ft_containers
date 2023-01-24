@@ -68,7 +68,7 @@ namespace ft
             return (const_iterator(avl_tree_.search(ft::make_pair(key, mapped_type()), NULL)));
         }
 
-        //Returns an iterator pointing to the first element that is not less than key.
+        // Returns an iterator pointing to the first element that is not less than key.
         iterator    lower_bound( const Key& key )
         {
             return (avl_tree_.lower_bound(ft::make_pair(key, mapped_type())));
@@ -79,7 +79,7 @@ namespace ft
             return (avl_tree_.lower_bound(ft::make_pair(key, mapped_type())));
         }
 
-        //Returns an iterator pointing to the first element that is greater than key.
+        // Returns an iterator pointing to the first element that is greater than key.
         iterator    upper_bound( const Key& key )
         {
             return (avl_tree_.upper_bound(ft::make_pair(key, mapped_type())));

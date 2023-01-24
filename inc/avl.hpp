@@ -18,8 +18,6 @@ namespace ft
         pointer     right;
         pointer     left;
         pointer     parent;
-        short       balance_factor;
-        long        level;
     };
 
     template<
@@ -49,7 +47,6 @@ namespace ft
         // node_allocator_type     node_alloc_;
         node_pointer            root_;
         node_pointer            end_;
-        size_type               size_;
         value_compare           cmp_;
     
 
@@ -89,7 +86,6 @@ namespace ft
     
     ft::pair<iterator, bool> insert(value_type& value, node_pointer pos)
     {
-        //check if pos is there
         if (pos == NULL)
             pos = root_;
         if (pos == end_)
@@ -112,7 +108,7 @@ namespace ft
             node_pointer new_node = create_node_(value, pos);
             pos->left = new_node;
             new_node->height = pos->height + 1;
-            check_rule_violation_(new_node);
+            balance_(new_node);
             return (ft::make_pair(iterator(new_node), true));
         }
         else if(cmp_(pos->value, value)) //right
@@ -120,7 +116,7 @@ namespace ft
             node_pointer new_node = create_node_(value, pos);
             pos->right = new_node;
             new_node->height = pos->height + 1;
-            check_rule_violation_(new_node);
+            balance_(new_node);
             return (ft::make_pair(iterator(new_node), true));
         }
         return (ft::make_pair(iterator(pos), false));
@@ -240,13 +236,76 @@ namespace ft
 
     private:
 
+    /**
+    *   Calculates the tree's height.
+    *   @param root     The root of the tree (start with first node, then call itself with left
+    *                   and right node children until meeting leaf).
+    *   @param height   The heigth of the actual node. Increases this param by 1 each time 
+    *                   it's calling itself on a node's child.
+    *   @return         The height of the tree (-1 if empty, 0 if only root node).
+    */
+    size_type tree_height_(node_pointer root, size_type height)
+    {
+        if (root_ == end_)
+            return height - 1;
+        size_type l_height = heightTree(root->left, height + 1);
+        size_type r_height = heightTree(root->right, height + 1);
+        return (l_height > r_height ? l_height : r_height);
+    }
+
+    /**
+    *   Compares height of left and right subtrees.
+    *
+    *   @param node Compare starts here
+    *   @return     Difference between left and right subtrees. Will be negative if right
+    *               subtree > left subtree.
+    */
+    long long balance_of_subtrees(node_pointer node)
+    {
+        if (node == end_)
+            return 0;
+        return tree_height(node->left, 1) - tree_height(node->right, 1);
+    }
+
+    /**
+    *   Checks balance nodes up until root, beginning with given node. 
+    *   When imbalance is found, it will be balanced according to following cases:
+    *
+    *   1. case: right right -> right -2 & right right -1
+    *   2. case: right left  -> right -2 & right left  +1
+    *   3. case: left  left  -> left  +2 & left  left  +1
+    *   4. case: left  right -> left  +2 & left  right -1
+    * 
+    *   @param node Given node to begin with.
+    */
+    void balance_(node_pointer node)
+    {
+        while (node)
+        {
+            size_type balance = balance_of_subtrees(node);
+
+            if (balance <= -2 && balance_of_subtrees(node->right) <= -1)
+                rotate_left(node);
+            else if (balance <= -2 && balance_of_subtrees(node->right) >= 0)
+                rotate_right(rotate_left(node));
+            else if (balance >= 2 && balance_of_subtrees(node->left) >= 1)
+                rotate_right(node);
+            else if (balance >= 2 && balance_of_subtrees(node->left) <= 0)
+                rotate_left(rotate_right(node));
+            node = node->parent;
+        }
+    }
+
     node_pointer rotate_right_(node_pointer rotation_node)
     {
         node_pointer    new_head = rotation_node->left;
 
+        if (rotation_node == root_)
+            root_ = new_head;
         rotation_node->left = new_head->right;
         new_head->right = rotation_node;
         rotation_node->parent = new_head;
+        return (new_head);
     }
 
 
@@ -254,9 +313,12 @@ namespace ft
     {
         node_pointer    new_head = rotation_node->right;
 
+        if (rotation_node == root_)
+            root_ = new_head;
         rotation_node->right = new_head->left;
         new_head->left = rotation_node;
         rotation_node->parent = new_head;
+        return (new_head);
     }
 
     node_pointer create_node_(value_type& value, node_pointer parent)
@@ -268,7 +330,7 @@ namespace ft
         new_node.balance_factor = 0; //get height diff function
         value_alloc_.construct(&new_node->value, value);
         ++size_;
-        return new_node;
+        return (new_node);
     }
 
     void erase_node_(node_pointer node)
