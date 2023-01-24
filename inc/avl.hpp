@@ -37,15 +37,17 @@ namespace ft
 
         typedef typename avl_node< value_type >::node_type      node_type;
         typedef typename node_type::point                       node_pointer;
-        typedef typename value_allocator_type::template rebind<node_type>::other    node_allocator_type;
-        typedef typename node_allocator_type::size_type                             size_type;
+        // typedef typename value_allocator_type::template rebind<node_type>::other    node_allocator_type;
+        // typedef typename node_allocator_type::size_type                             size_type;
+        typedef size_t                             size_type;
 
-        typedef ft::vector_iterator< value_type >			iterator;
-        typedef ft::vector_iterator< value_type >			const_iterator;
+        // typedef ft::vector_iterator< value_type >			iterator;
+        // typedef ft::vector_iterator< value_type >			const_iterator;
 
     private:
         value_allocator_type    value_alloc_;
-        node_allocator_type     node_alloc_;
+        value_allocator_type     node_alloc_;
+        // node_allocator_type     node_alloc_;
         node_pointer            root_;
         node_pointer            begin_;
         node_pointer            end_;
@@ -106,9 +108,24 @@ namespace ft
                 pos->right = new_node;
                 new_node->height = pos->height + 1;
                 check_rule_violation_(new_node);
-
             }
 
+        }
+
+        node_pointer search_node(value_type value, node_pointer node)
+        {
+            if (root_ == NULL)
+                return (NULL);
+            while (n != NULL)
+            {
+                if (cmp_(value, n->value))
+                    n = n->left;
+                else if (cmp_(n->value, value))
+                    n = n->right;
+                else
+                    return (n);
+            }
+            return (NULL);
         }
 
         private:
