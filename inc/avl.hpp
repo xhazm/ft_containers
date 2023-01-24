@@ -15,7 +15,6 @@ namespace ft
         typedef const node_type*                    const_pointer;
 
         value_type  value;
-        // key_type    key;
         pointer     right;
         pointer     left;
         pointer     parent;
@@ -266,7 +265,7 @@ namespace ft
         new_node->parent = parent;
         new_node->left = end_;
         new_node->right = end_;
-        new_node->height_diff = 0; //get height diff function
+        new_node.balance_factor = 0; //get height diff function
         value_alloc_.construct(&new_node->value, value);
         ++size_;
         return new_node;
