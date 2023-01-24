@@ -88,7 +88,7 @@ namespace ft
     
     delete(node_pointer pos)
     {
-        if (pos.right == NULL && pos.left == NULL)
+        if (pos->right == NULL && pos->left == NULL)
         {
             if (pos->parent->left == pos)
                 pos->parent->left = NULL;
@@ -98,15 +98,35 @@ namespace ft
         }
     }
     
-    insert(value_type& value, node_pointer pos)
+
+    ft::pair<iterator, bool> insert(value_type& value, node_pointer pos)
     {
         //check if pos is there
+        if (pos == NULL)
+            pos = root_;
+        if (pos == end_)
+        {
+            root_ = create_node_(value, NULL);
+            begin_ = root_;
+            end_->parent = root_;
+            return (ft::make_pair(iterator(root_), true))
+        }
+        while (pos != end_)
+        {
+            if (cmp_(value, pos->value) && pos->left != end_)
+                pos = pos->left;
+            else if (cmp_(pos->value, value) && pos->right != end_)
+                pos = pos->right;
+            else
+                break ;
+        }
         if(cmp_(value, pos->value)) //left
         {
             node_pointer new_node = create_node_(value);
             pos->left = new_node;
             new_node->height = pos->height + 1;
             check_rule_violation_(new_node);
+            return (ft::make_pair(iterator(new_node), true));
         }
         else if(cmp_(pos->value, value)) //right
         {
@@ -114,8 +134,17 @@ namespace ft
             pos->right = new_node;
             new_node->height = pos->height + 1;
             check_rule_violation_(new_node);
+            return (ft::make_pair(iterator(new_node), true));
         }
+        return (ft::make_pair(iterator(pos), false));
+    }
 
+    void clear()
+    {
+        clear_helper_(root_);
+        root_ = end_;
+        begin_ = end_;
+        end_->parent = NULL;
     }
 
 /* =================				    LookUp        				================= */
@@ -125,7 +154,7 @@ namespace ft
         node_pointer result = end_;
         node_pointer node = root_;
 
-        while (node != NULL)
+        while (node != end_)
         {
             if (!cmp_(node->value, value))
             {
@@ -143,7 +172,7 @@ namespace ft
         node_pointer result = end_;
         node_pointer node = root_;
 
-        while (node != NULL)
+        while (node != end_)
         {
             if (!cmp_(node->value, value))
             {
@@ -161,7 +190,7 @@ namespace ft
         node_pointer result = end_;
         node_pointer node = root_;
 
-        while (node != NULL)
+        while (node != end_)
         {
             if (cmp_(value, node->value))
             {
@@ -179,7 +208,7 @@ namespace ft
         node_pointer result = end_;
         node_pointer node = root_;
 
-        while (node != NULL)
+        while (node != end_)
         {
             if (cmp_(value, node->value))
             {
@@ -196,7 +225,7 @@ namespace ft
     {
         if (root_ == end_)
             return (end_);
-        while (n != NULL)
+        while (n != end_)
         {
             if (cmp_(value, n->value))
                 n = n->left;
@@ -206,14 +235,6 @@ namespace ft
                 return (n);
         }
         return (end_);
-    }
-
-    void clear()
-    {
-        clear_helper_(root_);
-        root_ = end_;
-        begin_ = end_;
-        end_->parent = NULL;
     }
 
     private:
@@ -241,8 +262,8 @@ namespace ft
     {
         node_pointer new_node = node_alloc_.allocate(1);
         new_node->parent = parent;
-        new_node->left = NULL;
-        new_node->right = NULL;
+        new_node->left = end_;
+        new_node->right = end_;
         new_node->height_diff = 0; //get height diff function
         value_alloc_.construct(&new_node->value, value);
         ++size_;
