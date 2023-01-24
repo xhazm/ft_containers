@@ -56,5 +56,39 @@ namespace ft
 
         bool        empty() const               { return avl_tree_.begin() == avl_tree_.end();}
 
+/* =================				    LookUp        				================= */
+
+        iterator find(const Key& key)
+        {
+            return (avl_tree_.search(ft::make_pair(key, mapped_type()), NULL));
+        }
+
+        const iterator find(const Key& key)
+        {
+            return (const_iterator(avl_tree_.search(ft::make_pair(key, mapped_type()), NULL)));
+        }
+
+        //Returns an iterator pointing to the first element that is not less than (i.e. greater or equal to) key.
+        iterator    lower_bound( const Key& key )
+        {
+            return (avl_tree_.lower_bound(ft::make_pair(key, mapped_type())));
+        }
+
+        const_iterator  lower_bound( const Key& key ) const
+        {
+            return (avl_tree_.lower_bound(ft::make_pair(key, mapped_type())));
+        }
+
+        //  Returns an iterator pointing to the first element that is greater than key.
+        iterator    upper_bound( const Key& key )
+        {
+            return (avl_tree_.upper_bound(ft::make_pair(key, mapped_type())));
+        }
+
+        const_iterator  upper_bound( const Key& key ) const
+        {
+            return (avl_tree_.upper_bound(ft::make_pair(key, mapped_type())));
+        }
+
     };
 } // namespace ft

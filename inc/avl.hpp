@@ -79,7 +79,8 @@ namespace ft
     size_type   max_size() const            { return node_alloc_.max_size(); }
     
     
-    delete(node_pointer pos)
+/* =================				    Modifiers        				================= */
+    erase(node_pointer pos)
     {
         if (pos->right == NULL && pos->left == NULL)
         {
@@ -87,7 +88,7 @@ namespace ft
                 pos->parent->left = NULL;
             else if (pos->parent->right == pos)
                 pos->parent->right = NULL;
-            delete_node_(pos);
+            erase_node_(pos);
         }
     }
     
@@ -212,10 +213,10 @@ namespace ft
         return (const_iterator(result));
     }
 
-    node_pointer search_node(value_type value, node_pointer node)
+    node_pointer search_node(value_type value, node_pointer n) const
     {
-        if (root_ == end_)
-            return (end_);
+        if (n == NULL)
+            n = root_;
         while (n != end_)
         {
             if (cmp_(value, n->value))
@@ -261,7 +262,7 @@ namespace ft
         return new_node;
     }
 
-    void delete_node_(node_pointer node)
+    void erase_node_(node_pointer node)
     {
         if (node != end_node_)
             --size_;
