@@ -62,124 +62,206 @@ namespace ft
         //     end_ = NULL;
         // }
         // avl_tree(const value_compare& cmp, const value_allocator_type value_alloc = value_allocator_type())
-        avl_tree()
-            : root_(NULL), size_(0), cmp_(cmp), value_alloc_(value_alloc), begin_(NULL), end_(NULL)
+        avl_tree() : size_(0), cmp_(cmp), value_alloc_(value_alloc)
         {
+            end_ = create_node_(value_type(), NULL);
+            begin_ = end_;
+            root_ = end_;
             //init also node alloc? or is it auto inited
         }
         ~avl_tree() { clear(); }
 
 /* =================				    Iterators   				================= */
-        iterator				begin()			{ return iterator(begin_); }
-        const_iterator			begin() const	{ return const_iterator(begin_); }
-        iterator				end()			{ return iterator(end_); }
-        const_iterator			end() const		{ return const_iterator(end_); }
+    iterator				begin()			{ return iterator(begin_); }
+    const_iterator			begin() const	{ return const_iterator(begin_); }
+    iterator				end()			{ return iterator(end_); }
+    const_iterator			end() const		{ return const_iterator(end_); }
 
 /* =================				    Capacity        				================= */
-        size_type   size() const                { return size_; }
-        size_type   max_size() const            { return node_alloc_.max_size(); }
-        
-        
-        delete(node_pointer pos)
+    size_type   size() const                { return size_; }
+    size_type   max_size() const            { return node_alloc_.max_size(); }
+    
+    
+    delete(node_pointer pos)
+    {
+        if (pos.right == NULL && pos.left == NULL)
         {
-            if (pos.right == NULL && pos.left == NULL)
+            if (pos->parent->left == pos)
+                pos->parent->left = NULL;
+            else if (pos->parent->right == pos)
+                pos->parent->right = NULL;
+            delete_node_(pos);
+        }
+    }
+    
+    insert(value_type& value, node_pointer pos)
+    {
+        //check if pos is there
+        if(cmp_(value, pos->value)) //left
+        {
+            node_pointer new_node = create_node_(value);
+            pos->left = new_node;
+            new_node->height = pos->height + 1;
+            check_rule_violation_(new_node);
+        }
+        else if(cmp_(pos->value, value)) //right
+        {
+            node_pointer new_node = create_node_(value);
+            pos->right = new_node;
+            new_node->height = pos->height + 1;
+            check_rule_violation_(new_node);
+        }
+
+    }
+
+/* =================				    LookUp        				================= */
+
+    iterator    lower_bound(const value_type& value)
+    {
+        node_pointer result = end_;
+        node_pointer node = root_;
+
+        while (node != NULL)
+        {
+            if (!cmp_(node->value, value))
             {
-                if (pos->parent->left == pos)
-                    pos->parent->left = NULL;
-                else if (pos->parent->right == pos)
-                    pos->parent->right = NULL;
-                delete_node_(pos);
+                result = node;
+                node = node->left;
+            }
+            else
+            {
+                node = node->right;
             }
         }
-        
-        insert(value_type& value, node_pointer pos)
+        return (iterator(result));
+    }
+
+    const_iterator  lower_bound( onst value_type& value) const
+    {
+        node_pointer result = end_;
+        node_pointer node = root_;
+
+        while (node != NULL)
         {
-            //check if pos is there
-            if(cmp_(value, pos->value)) //left
+            if (!cmp_(node->value, value))
             {
-                node_pointer new_node = create_node_(value);
-                pos->left = new_node;
-                new_node->height = pos->height + 1;
-                check_rule_violation_(new_node);
+                result = node;
+                node = node->left;
             }
-            else if(cmp_(pos->value, value)) //right
+            else
             {
-                node_pointer new_node = create_node_(value);
-                pos->right = new_node;
-                new_node->height = pos->height + 1;
-                check_rule_violation_(new_node);
+                node = node->right;
             }
-
         }
+        return (const_iterator(result));
+    }
 
-        node_pointer search_node(value_type value, node_pointer node)
+    iterator    upper_bound( const value_type& value )
+    {
+        node_pointer result = end_;
+        node_pointer node = root_;
+        while (node != NULL)
         {
-            if (root_ == NULL)
-                return (NULL);
-            while (n != NULL)
+            if (cmp_(value, node->value))
             {
-                if (cmp_(value, n->value))
-                    n = n->left;
-                else if (cmp_(n->value, value))
-                    n = n->right;
-                else
-                    return (n);
+                result = node;
+                node = node->left;
             }
-            return (NULL);
-        }
-
-        private:
-       
-        node_pointer rotate_right_(node_pointer rotation_node)
-        {
-            node_pointer    new_head = rotation_node->left;
-
-            rotation_node->left = new_head->right;
-            new_head->right = rotation_node;
-            rotation_node->parent = new_head;
-        }
-
-
-        node_pointer rotate_left_(node_pointer rotation_node)
-        {
-            node_pointer    new_head = rotation_node->right;
-
-            rotation_node->right = new_head->left;
-            new_head->left = rotation_node;
-            rotation_node->parent = new_head;
-        }
-
-        node_pointer create_node_(value_type& value, node_pointer parent)
-        {
-            node_pointer new_node = node_alloc_.allocate(1);
-            new_node->parent = parent;
-            new_node->left = NULL;
-            new_node->right = NULL;
-            new_node->height_diff = 0; //get height diff function
-            value_alloc_.construct(&new_node->value, value);
-            ++size_;
-            if (parent == NULL)
+            else
             {
-                root_ = new_node;
-                end_ = root_;
-                begin_ = root_;
+                node = node->right;
             }
-            return new_node;
         }
+        return (iterator(result));
+    }
 
-        void delete_node_(node_pointer node)
+    const_iterator  upper_bound( const value_type& value ) const
+    {
+        node_pointer result = end_;
+        node_pointer node = root_;
+        while (node != NULL)
         {
-            if (node != end_node_)
-                --size_; //?
-            value_alloc_.destroy(&node->value);
-            node_allocator.deallocate(node, 1);
+            if (cmp_(value, node->value))
+            {
+                result = node;
+                node = node->left;
+            }
+            else
+            {
+                node = node->right;
+            }
         }
+        return (const_iterator(result));
+    }
 
-        void check_rule_violation_(node_pointer node)
+    node_pointer search_node(value_type value, node_pointer node)
+    {
+        if (root_ == end_)
+            return (end_);
+        while (n != NULL)
         {
-            ; //logic here
+            if (cmp_(value, n->value))
+                n = n->left;
+            else if (cmp_(n->value, value))
+                n = n->right;
+            else
+                return (n);
         }
-    };
+        return (end_);
+    }
+
+    private:
+    
+    node_pointer rotate_right_(node_pointer rotation_node)
+    {
+        node_pointer    new_head = rotation_node->left;
+
+        rotation_node->left = new_head->right;
+        new_head->right = rotation_node;
+        rotation_node->parent = new_head;
+    }
+
+
+    node_pointer rotate_left_(node_pointer rotation_node)
+    {
+        node_pointer    new_head = rotation_node->right;
+
+        rotation_node->right = new_head->left;
+        new_head->left = rotation_node;
+        rotation_node->parent = new_head;
+    }
+
+    node_pointer create_node_(value_type& value, node_pointer parent)
+    {
+        node_pointer new_node = node_alloc_.allocate(1);
+        new_node->parent = parent;
+        new_node->left = NULL;
+        new_node->right = NULL;
+        new_node->height_diff = 0; //get height diff function
+        value_alloc_.construct(&new_node->value, value);
+        ++size_;
+        if (parent == NULL)
+        {
+            root_ = new_node;
+            end_ = root_;
+            begin_ = root_;
+        }
+        return new_node;
+    }
+
+    void delete_node_(node_pointer node)
+    {
+        if (node != end_node_)
+            --size_; //?
+        value_alloc_.destroy(&node->value);
+        node_allocator.deallocate(node, 1);
+    }
+
+    void check_rule_violation_(node_pointer node)
+    {
+        ; //logic here
+    }
+};
 } // namespace ft
 
 //cases:
