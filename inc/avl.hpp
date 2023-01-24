@@ -69,7 +69,11 @@ namespace ft
             root_ = end_;
             //init also node alloc? or is it auto inited
         }
-        ~avl_tree() { clear(); }
+        ~avl_tree() 
+        {
+            clear();
+            delete_node_(end_);
+        }
 
 /* =================				    Iterators   				================= */
     iterator				begin()			{ return iterator(begin_); }
@@ -204,8 +208,16 @@ namespace ft
         return (end_);
     }
 
+    void clear()
+    {
+        clear_helper_(root_);
+        root_ = end_;
+        begin_ = end_;
+        end_->parent = NULL;
+    }
+
     private:
-    
+
     node_pointer rotate_right_(node_pointer rotation_node)
     {
         node_pointer    new_head = rotation_node->left;
@@ -254,6 +266,15 @@ namespace ft
     void check_rule_violation_(node_pointer node)
     {
         ; //logic here
+    }
+
+    void clear_helper_(node_pointer n)
+    {
+        if (n == NULL || n == end_)
+            return ;
+        _clear_helper(n->left);
+        _clear_helper(n->right);
+        _delete_node(n);
     }
 };
 } // namespace ft
