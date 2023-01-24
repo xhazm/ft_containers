@@ -129,9 +129,7 @@ namespace ft
                 node = node->left;
             }
             else
-            {
                 node = node->right;
-            }
         }
         return (iterator(result));
     }
@@ -149,9 +147,7 @@ namespace ft
                 node = node->left;
             }
             else
-            {
                 node = node->right;
-            }
         }
         return (const_iterator(result));
     }
@@ -160,6 +156,7 @@ namespace ft
     {
         node_pointer result = end_;
         node_pointer node = root_;
+
         while (node != NULL)
         {
             if (cmp_(value, node->value))
@@ -168,9 +165,7 @@ namespace ft
                 node = node->left;
             }
             else
-            {
                 node = node->right;
-            }
         }
         return (iterator(result));
     }
@@ -179,6 +174,7 @@ namespace ft
     {
         node_pointer result = end_;
         node_pointer node = root_;
+
         while (node != NULL)
         {
             if (cmp_(value, node->value))
@@ -187,9 +183,7 @@ namespace ft
                 node = node->left;
             }
             else
-            {
                 node = node->right;
-            }
         }
         return (const_iterator(result));
     }
