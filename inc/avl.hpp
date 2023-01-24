@@ -80,19 +80,14 @@ namespace ft
     
     
 /* =================				    Modifiers        				================= */
-    erase(node_pointer pos)
+   
+    void clear()
     {
-        if (pos->right == NULL && pos->left == NULL)
-        {
-            if (pos->parent->left == pos)
-                pos->parent->left = NULL;
-            else if (pos->parent->right == pos)
-                pos->parent->right = NULL;
-            erase_node_(pos);
-        }
+        clear_helper_(root_);
+        root_ = end_;
+        end_->parent = NULL;
     }
     
-
     ft::pair<iterator, bool> insert(value_type& value, node_pointer pos)
     {
         //check if pos is there
@@ -132,11 +127,26 @@ namespace ft
         return (ft::make_pair(iterator(pos), false));
     }
 
-    void clear()
+    void erase(node_pointer pos)
     {
-        clear_helper_(root_);
-        root_ = end_;
-        end_->parent = NULL;
+        if (pos->right == NULL && pos->left == NULL)
+        {
+            if (pos->parent->left == pos)
+                pos->parent->left = NULL;
+            else if (pos->parent->right == pos)
+                pos->parent->right = NULL;
+            erase_node_(pos);
+        }
+    }
+
+    void swap(avl_tree& other)
+    {
+        ft::swap(value_alloc_, other.value_alloc_);
+        ft::swap(node_alloc_, other.node_alloc_);
+        ft::swap(root_, other.root_);
+        ft::swap(end_, other.end_);
+        ft::swap(size_, other.size_);
+        ft::swap(cmp_, other.cmp_);
     }
 
 /* =================				    LookUp        				================= */
