@@ -18,6 +18,7 @@ namespace ft
         pointer     right;
         pointer     left;
         pointer     parent;
+        //copy operator needed because of delete
     };
 
     template<
@@ -124,6 +125,7 @@ namespace ft
 
     void erase(node_pointer pos)
     {
+        if (search_node(pos.get_value(), pos) == pos)
         if (pos->right == NULL && pos->left == NULL)
         {
             if (pos->parent->left == pos)
@@ -132,6 +134,75 @@ namespace ft
                 pos->parent->right = NULL;
             erase_node_(pos);
         }
+    }
+
+    bool erase_helper_(node_pointer pos, value_type value)
+    {
+        node_pointer    to_delete = search_node(value, pos);
+        node_pointer    new_head = NULL;
+
+        if (to_delete == end_)
+            return (false);
+        //root node is to be deleted
+        if (to_delete == root_)
+        {
+            //no children
+            if (to_delete->left == end_ && to_delete->right == end_)
+                root_ = end_;
+            //either left XOR right child
+            else if ((to_delete->left != end_) != (to_delete->right != end_))
+            {
+                new_head = root_->left != end_ ? root_->left : root_->right;
+                if (new_head == end_)
+                {
+                    new_head = to_delete;
+                    to_delete = NULL;
+                }
+                else
+                    to_delete = new_head;
+                erase_node_(new_head);
+            }
+            //left AND right child
+            else
+            {
+                new_head = min_value_node(root_->right);
+                root_->value = new_head->value; //make copy operator for this
+                // new_head = NULL;
+            }
+        }
+        // //non root node is to be deleted
+        // //leaf node
+        // else if (to_delete->left == end_ && to_delete->right == end_)
+        // {
+        //     new_head = to_delete->parent;
+        //     new_head->left == to_delete ? new_head->left = end_ : new_head->right = end_;
+        // }
+        // //either left XOR right child
+        // else if ((to_delete->left != end_) != (to_delete->right != end_))
+        // {
+        //     new_head = to_delete->parent;
+        //     if (to_delete->left != end_)
+        //         new_head->left = to_delete->left;
+        //     else if (to_delete->right != end)
+        //         new_head->right = to_delete->right;
+        //     if (new_head->left == to_delete)
+        //     {
+        //         new_head->left = to_delete->left
+        //         to_delete->left->parent = new_head;
+        //     }
+        //     else if (new_head->right == to_delete)
+        //     {
+        //         new_head->right = to_delete->right
+        //         to_delete->right->parent = new_head;
+        //     }
+        // }
+        // //left AND right child
+        // else
+        // {
+
+        // }
+        // balance_(new_head);
+        erase_node_(to_delete);
     }
 
     void swap(avl_tree& other)
@@ -230,6 +301,7 @@ namespace ft
                 n = n->right;
             else
                 return (n);
+        //does it work because n may be end?
         }
         return (end_);
     }
@@ -280,6 +352,8 @@ namespace ft
     */
     void balance_(node_pointer node)
     {
+        if (node == end_ || node == root_)
+            return ;
         while (node)
         {
             size_type balance = balance_of_subtrees(node);
@@ -294,6 +368,24 @@ namespace ft
                 rotate_left(rotate_right(node));
             node = node->parent;
         }
+    }
+
+    node_pointer min_value_node_(node_pointer pos)
+    {
+        if (pos == end_)
+            return (pos);
+        while (pos->left != end_)
+            pos = pos->left;
+        return (pos);
+    }
+
+    node_pointer max_value_node_(node_pointer pos)
+    {
+        if (pos == end_)
+            return (pos);
+        while (pos->right != end_)
+            pos = pos->right;
+        return (pos);
     }
 
     node_pointer rotate_right_(node_pointer rotation_node)
@@ -335,8 +427,10 @@ namespace ft
 
     void erase_node_(node_pointer node)
     {
-        if (node != end_node_)
+        if (node != end_)
             --size_;
+        if (node == root_)
+            root_ = end_;
         value_alloc_.destroy(&node->value);
         node_allocator.deallocate(node, 1);
     }
