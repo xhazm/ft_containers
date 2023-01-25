@@ -62,7 +62,7 @@ namespace ft
         ~avl_tree() 
         {
             clear();
-            delete_node_(end_);
+            erase_node_(end_);
         }
 
 /* =================				    Iterators   				================= */
@@ -138,71 +138,41 @@ namespace ft
 
     bool erase_helper_(node_pointer pos, value_type value)
     {
-        node_pointer    to_delete = search_node(value, pos);
-        node_pointer    new_head = NULL;
+        node_pointer    erase = search_node(value, pos);
+        node_pointer    tmp = NULL;
 
-        if (to_delete == end_)
+        if (erase == end_)
             return (false);
-        //root node is to be deleted
-        if (to_delete == root_)
+        //either one or no child
+        if ((erase->left == end_) || (erase->right == end_))
         {
-            //no children
-            if (to_delete->left == end_ && to_delete->right == end_)
-                root_ = end_;
-            //either left XOR right child
-            else if ((to_delete->left != end_) != (to_delete->right != end_))
+            tmp = (erase->left != end_ ? erase->left : erase->right);
+            //no child
+            if (tmp == end_)
             {
-                new_head = root_->left != end_ ? root_->left : root_->right;
-                if (new_head == end_)
-                {
-                    new_head = to_delete;
-                    to_delete = NULL;
-                }
-                else
-                    to_delete = new_head;
-                erase_node_(new_head);
+                if (erase != root_)
+                    erase->parent->right == erase ? erase->parent->right = end_ : erase->parent->left = end_;
             }
-            //left AND right child
+            //one child
             else
             {
-                new_head = min_value_node(root_->right);
-                root_->value = new_head->value; //make copy operator for this
-                // new_head = NULL;
+                tmp->parent = erase->parent;
+                if (erase != root_)
+                    erase->parent->right == erase ? erase->parent->right = tmp : erase->parent->left = tmp;
             }
+            erase_node_(erase);
         }
-        // //non root node is to be deleted
-        // //leaf node
-        // else if (to_delete->left == end_ && to_delete->right == end_)
-        // {
-        //     new_head = to_delete->parent;
-        //     new_head->left == to_delete ? new_head->left = end_ : new_head->right = end_;
-        // }
-        // //either left XOR right child
-        // else if ((to_delete->left != end_) != (to_delete->right != end_))
-        // {
-        //     new_head = to_delete->parent;
-        //     if (to_delete->left != end_)
-        //         new_head->left = to_delete->left;
-        //     else if (to_delete->right != end)
-        //         new_head->right = to_delete->right;
-        //     if (new_head->left == to_delete)
-        //     {
-        //         new_head->left = to_delete->left
-        //         to_delete->left->parent = new_head;
-        //     }
-        //     else if (new_head->right == to_delete)
-        //     {
-        //         new_head->right = to_delete->right
-        //         to_delete->right->parent = new_head;
-        //     }
-        // }
-        // //left AND right child
-        // else
-        // {
-
-        // }
-        // balance_(new_head);
-        erase_node_(to_delete);
+        //left and right child
+        else
+        {
+            tmp = min_value_node(root_->right);
+            erase->value = tmp->value;
+            if (tmp->parent != NULL)
+                tmp->parent->left = end_;
+            node_allocator.deallocate(tmp, 1);
+            tmp = erase;
+        }
+        balance_(tmp);
     }
 
     void swap(avl_tree& other)
@@ -352,7 +322,7 @@ namespace ft
     */
     void balance_(node_pointer node)
     {
-        if (node == end_ || node == root_)
+        if (node == end_)
             return ;
         while (node)
         {
@@ -444,9 +414,9 @@ namespace ft
     {
         if (n == NULL || n == end_)
             return ;
-        _clear_helper(n->left);
-        _clear_helper(n->right);
-        _delete_node(n);
+        clear_helper_(n->left);
+        clear_helper_(n->right);
+        erase_node_(n);
     }
 };
 } // namespace ft
