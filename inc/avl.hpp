@@ -123,20 +123,15 @@ namespace ft
         return (ft::make_pair(iterator(pos), false));
     }
 
-    void erase(node_pointer pos)
-    {
-        if (search_node(pos.get_value(), pos) == pos)
-        if (pos->right == NULL && pos->left == NULL)
-        {
-            if (pos->parent->left == pos)
-                pos->parent->left = NULL;
-            else if (pos->parent->right == pos)
-                pos->parent->right = NULL;
-            erase_node_(pos);
-        }
-    }
-
-    bool erase_helper_(node_pointer pos, value_type value)
+    /**
+    *   Erases node out of tree. Can be determined by value OR value and pos
+    *   @param pos      If NULL, value is searched in whole tree. If set,
+    *                   value will be searched at pos and under.
+    *   @param value    The value(key/val pair) to look for
+    *   @param erase    The node which should be erased, if found
+    *   @param tmp      Saves the node which get on the pos of the erased node
+    */
+    void erase(node_pointer pos, value_type value)
     {
         node_pointer    erase = search_node(value, pos);
         node_pointer    tmp = NULL;
