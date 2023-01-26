@@ -2,6 +2,7 @@
 
 #include <memory>
 #include "./iterator/vector_iterator.hpp"
+#include "./pair.hpp"
 
 namespace ft
 {
@@ -39,8 +40,8 @@ namespace ft
         // typedef typename node_allocator_type::size_type                             size_type;
         typedef size_t                             size_type;
 
-        typedef ft::vector_iterator< value_type >			iterator;
-        typedef ft::vector_iterator< value_type >			const_iterator;
+        typedef ft::vector_iterator< value_type >            iterator;
+        typedef ft::vector_iterator< value_type >            const_iterator;
 
     private:
         value_allocator_type    value_alloc_;
@@ -65,18 +66,18 @@ namespace ft
             erase_node_(end_);
         }
 
-/* =================				    Iterators   				================= */
-    iterator				begin()			{ return iterator(root_); }
-    const_iterator			begin() const	{ return const_iterator(root_); }
-    iterator				end()			{ return iterator(end_); }
-    const_iterator			end() const		{ return const_iterator(end_); }
+/* =================                    Iterators                   ================= */
+    iterator        begin()            { return iterator(root_); }
+    const_iterator  begin() const    { return const_iterator(root_); }
+    iterator        end()            { return iterator(end_); }
+    const_iterator  end() const        { return const_iterator(end_); }
 
-/* =================				    Capacity        				================= */
+/* =================                    Capacity                        ================= */
     size_type   size() const                { return size_; }
     size_type   max_size() const            { return node_alloc_.max_size(); }
     
     
-/* =================				    Modifiers        				================= */
+/* =================                    Modifiers                        ================= */
    
     void clear()
     {
@@ -180,7 +181,7 @@ namespace ft
         ft::swap(cmp_, other.cmp_);
     }
 
-/* =================				    LookUp        				================= */
+/* =================                    LookUp                        ================= */
 
     iterator    lower_bound(const value_type& value)
     {
@@ -266,7 +267,6 @@ namespace ft
                 n = n->right;
             else
                 return (n);
-        //does it work because n may be end?
         }
         return (end_);
     }
@@ -297,7 +297,7 @@ namespace ft
     *   @return     Difference between left and right subtrees. Will be negative if right
     *               subtree > left subtree.
     */
-    long long balance_of_subtrees(node_pointer node)
+    long long balance_of_subtrees_(node_pointer node)
     {
         if (node == end_)
             return 0;
@@ -321,15 +321,15 @@ namespace ft
             return ;
         while (node)
         {
-            size_type balance = balance_of_subtrees(node);
+            size_type balance = balance_of_subtrees_(node);
 
-            if (balance <= -2 && balance_of_subtrees(node->right) <= -1)
+            if (balance <= -2 && balance_of_subtrees_(node->right) <= -1)
                 rotate_left(node);
-            else if (balance <= -2 && balance_of_subtrees(node->right) >= 0)
+            else if (balance <= -2 && balance_of_subtrees_(node->right) >= 0)
                 rotate_right(rotate_left(node));
-            else if (balance >= 2 && balance_of_subtrees(node->left) >= 1)
+            else if (balance >= 2 && balance_of_subtrees_(node->left) >= 1)
                 rotate_right(node);
-            else if (balance >= 2 && balance_of_subtrees(node->left) <= 0)
+            else if (balance >= 2 && balance_of_subtrees_(node->left) <= 0)
                 rotate_left(rotate_right(node));
             node = node->parent;
         }

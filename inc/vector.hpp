@@ -47,29 +47,31 @@ public:
 	}
 
 	template < class InputIt >
-	vector(InputIt first, InputIt last, const Allocator& alloc = Allocator())
+	vector(InputIt first, InputIt last, const Allocator& alloc = Allocator(), typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true)
 		: start_(0), finish_(0), end_of_storage_(0), static_allocator(alloc)
 	{
 		assign(first, last);
 	}
 	//enable if is integral input iterator constructor?
 
-	vector(const vector& other) { *this = other; }
+	vector(const vector& other) : start_(0), finish_(0), end_of_storage_(0) 
+	{ 
+		*this = other;
+	}
 
 	~vector()
 	{
 		clear();
 		if (start_ != NULL)
-			static_allocator.deallocate(&(*start_), capacity());
+			static_allocator.deallocate(start_, capacity());
 	}
 
 	vector  &operator=(const vector& other)
     {
         if (this != &other)
         {
-			start_ = static_allocator.allocate(other.size());
-			finish_ = _copy_(other.begin().base(), start_, other.size()); 
-			end_of_storage_ = finish_;
+			static_allocator = other.static_allocator;
+			assign(other.begin(), other.end());
         }
         return (*this);
     }
@@ -92,15 +94,15 @@ public:
 /* =================		   Element Access			   ================= */
 	reference at(size_type pos)
 	{
-		if (pos >= size() || pos < 0)
-			throw std::out_of_range("vetor"); //change to:std::string ret = "vector::_M_range_check: __n (which is" + pos << ") >= this->size() (which is " << size() << ")";? 
-		return *(begin() + pos);
+		if (pos >= size())
+			throw std::out_of_range("vector"); //change to:std::string ret = "vector::_M_range_check: __n (which is" + pos << ") >= this->size() (which is " << size() << ")";? 
+		return (*(begin() + pos));
 	}
 	const_reference at(size_type pos) const
 	{
-		if (pos >= size() || pos < 0)
+		if (pos >= size())
 			throw std::out_of_range("vector");
-		return *(begin() + pos);
+		return (*(begin() + pos));
 	}
 	reference		operator[](size_type pos)		{ return *(begin() + pos); }
 	const_reference	operator[](size_type pos) const	{ return *(begin() + pos); }
@@ -125,14 +127,17 @@ public:
 /* =================				Capacity Modulator	  ================= */
 	void	reserve(size_type new_cap)
 	{
-		if (new_cap > max_size())
+		if (new_cap > max_size() && (capacity() == 0 || capacity() == max_size()))
 			throw std::length_error("vector");
-		if (capacity() < new_cap)
-			_grow_(new_cap);
+		else if (new_cap > max_size())
+            new_cap = max_size();
+		// else if (capacity() < new_cap)
+		// 	return ;
+		_grow_(new_cap);
 	}
 /* =================			   Modifiers			  ================= */
 	private:
-	void destroy_range(iterator first, iterator last, pointer* finish)
+	void destroy_range(iterator first, iterator last)
 	{
 		difference_type n = ft::distance(first, last);
 		for (iterator it = first; last < end(); ++it, ++last)
@@ -141,9 +146,9 @@ public:
 		}
 		for (difference_type diff = 1; n >= diff ; diff++)
 		{
-			static_allocator.destroy((*finish) - diff);
+			static_allocator.destroy(finish_ - diff);
 		}
-		*finish -= n;
+		finish_ -= n;
 	}
 
 	public:
@@ -178,13 +183,14 @@ public:
 
 	iterator erase( iterator first, iterator last )
 	{
+		int diff = 0;
 		if (first == last)
 			return(first);
-		destroy_range(first, last, &finish_);
+		destroy_range(first, last);
 		return (first);
 	}
 
-	void clear() { erase(iterator(start_), iterator(finish_)); }
+	void clear() { erase(begin(), end()); }
 
 	void resize(size_type count, T value = T())
 	{
@@ -213,6 +219,7 @@ public:
 		for (size_type temp_pos = c_pos; temp_pos < c_pos + count; ++temp_pos)
 			static_allocator.construct(n_start + temp_pos, value);
 		_copy_destroy_(start_ + c_pos, n_start + c_pos + count, n_size - count - c_pos);
+		_copy_destroy_(start_ + c_pos, n_start + c_pos + count, n_size - count - c_pos);
 		clear();
 		_set_class_vars_(n_start, n_start + n_size, n_start + alloc_size);
 		return (begin() + c_pos);
@@ -233,14 +240,15 @@ public:
 
 		difference_type c_pos = ft::distance(begin(), pos);
 		size_type		n_size = size() + count;
-		pointer			n_start = static_allocator.allocate(size() + n_size);
+		size_type		alloc_size = capacity() > size() + n_size ? capacity() : size() + n_size;
+		pointer			n_start = static_allocator.allocate(alloc_size);
 
 		_copy_destroy_(start_, n_start, c_pos);
 		for (size_type dist = c_pos; dist < c_pos + count; ++dist, ++first)
 			static_allocator.construct(n_start + dist, *first);
 		_copy_destroy_(start_ + c_pos, n_start + c_pos + count, n_size - count - c_pos);
 		clear();
-		_set_class_vars_(n_start, n_start + n_size, n_start + n_size);
+		_set_class_vars_(n_start, n_start + n_size, n_start + alloc_size);
 		return (begin() + c_pos);
 	}
 

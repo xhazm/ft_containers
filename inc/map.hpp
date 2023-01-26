@@ -31,13 +31,13 @@ namespace ft
 
         // typedef avl_node<key_type, value_type>*             node_pointer;
 
-    protected:
+    public:
         allocator_type                  value_allocator_;
         allocator_type                  node_allocator_; //different allocators needed?
         tree                            avl_tree_;
         
     public:    
-        map() {}
+        // map() {}
         explicit map(const Compare& comp = Compare(), const Allocator& alloc = Allocator())
             : avl_tree_(tree()) {}
         template< class InputIt >

@@ -1,7 +1,7 @@
 NAME	= ft_containers
 
 SRC_DIR	= ./
-SRC		= main.cpp 
+SRC		= main2.cpp 
 
 HDR	=  ./inc/vector.hpp
 
