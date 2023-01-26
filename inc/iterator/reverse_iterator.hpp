@@ -31,9 +31,11 @@ public:
 	Iter base() const { return current_; }
 
 /* =================                Operator Overloads                    ================= */
-	reverse_iterator	&operator=(const reverse_iterator &other)	{current_ = other.base(); return *this;}
+    template < class U >
+	reverse_iterator&   operator=(const reverse_iterator<U>& other)	{current_ = other.base(); return *this;}
+
 	reference			operator*() const 							{iterator_type tmp = current_; return *(--tmp);}
-	pointer             operator->() const							{return &(*current_);}
+	pointer             operator->() const							{return &(operator*());}
     reverse_iterator&   operator++()                              	{ --current_; return *this; }
     reverse_iterator    operator++(int)                           	{ reverse_iterator tmp(current_); --current_; return tmp; }
     reverse_iterator&   operator--()                              	{ ++current_; return *this; }
