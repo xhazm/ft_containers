@@ -136,10 +136,8 @@ public:
 /* =================				Capacity Modulator	  ================= */
 	void	reserve(size_type new_cap)
 	{
-		if (new_cap > max_size())
-            new_cap = max_size();
-		// else if (capacity() < new_cap)
-		// 	return ;
+		if (new_cap < capacity())
+			return ;
 		_grow_(new_cap);
 	}
 /* =================			   Modifiers			  ================= */
@@ -218,15 +216,14 @@ public:
 
 		difference_type c_pos = ft::distance(begin(), pos);
 		size_type		n_size = size() + count;
-		size_type		alloc_size = capacity() > size() + n_size ? capacity() : size() + n_size;
-		pointer			n_start = _allocate_safe(alloc_size);
+		size_type		alloc_size = capacity() >= size() + n_size ? capacity() : n_size;
+		pointer			n_start = _allocate_safe_(alloc_size);
+
 
 		_copy_destroy_(start_, n_start, c_pos);
 		for (size_type temp_pos = c_pos; temp_pos < c_pos + count; ++temp_pos)
 			static_allocator.construct(n_start + temp_pos, value);
 		_copy_destroy_(start_ + c_pos, n_start + c_pos + count, n_size - count - c_pos);
-		_copy_destroy_(start_ + c_pos, n_start + c_pos + count, n_size - count - c_pos);
-		clear();
 		_set_class_vars_(n_start, n_start + n_size, n_start + alloc_size);
 		return (begin() + c_pos);
 	}
@@ -239,23 +236,7 @@ public:
 	template< class InputIt >
 	iterator insert(const_iterator pos, InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true)
 	{
-		difference_type count = ft::distance(first, last);
-
-		if (count == 0) //make sure that pos is in vector. pos can be end() let distance throw error?
-			return (pos);
-
-		difference_type c_pos = ft::distance(begin(), pos);
-		size_type		n_size = size() + count;
-		size_type		alloc_size = capacity() > size() + n_size ? capacity() : size() + n_size;
-		pointer			n_start = _allocate_safe(alloc_size);
-
-		_copy_destroy_(start_, n_start, c_pos);
-		for (difference_type dist = c_pos; dist < c_pos + count; ++dist, ++first)
-			static_allocator.construct(n_start + dist, *first);
-		_copy_destroy_(start_ + c_pos, n_start + c_pos + count, n_size - count - c_pos);
-		clear();
-		_set_class_vars_(n_start, n_start + n_size, n_start + alloc_size);
-		return (begin() + c_pos);
+ 		return (_insert_range_(pos, first, last, typename ft::iterator_traits<InputIt>::iterator_category()));
 	}
 
 	void swap(vector& other)
@@ -289,7 +270,7 @@ public:
 	template< typename InputIterator >
     void _assign_range_( InputIterator first, InputIterator last, input_iterator_tag  )
     {
-        for ( ; first != last; first++)
+        for ( ; first != last; ++first)
             push_back(*first);
     }
 
@@ -299,7 +280,38 @@ public:
 		insert(begin(), first, last);
     }
 
-	pointer _allocate_safe(size_type new_cap)
+	template< typename InputIterator >
+    iterator _insert_range_( iterator pos, InputIterator first, InputIterator last, input_iterator_tag )
+    {
+        // size_type   dist = ft::distance(first, last);
+		// reserve(size() + dist); //is this faster than without?
+        for ( ; first != last; ++first, ++pos)
+            pos = insert(pos, 1, *first);
+        return (pos);
+    }
+
+	template< typename InputIterator >
+    iterator _insert_range_( iterator pos, InputIterator first, InputIterator last, random_access_iterator_tag )
+    {
+		difference_type count = ft::distance(first, last);
+
+		if (count == 0) //make sure that pos is in vector. pos can be end() let distance throw error?
+			return (pos);
+
+		difference_type c_pos = ft::distance(begin(), pos);
+		size_type		n_size = size() + count;
+		size_type		alloc_size = capacity() > size() + n_size ? capacity() : n_size;
+		pointer			n_start = _allocate_safe_(alloc_size);
+
+		_copy_destroy_(start_, n_start, c_pos);
+		for (difference_type dist = c_pos; dist < c_pos + count; ++dist, ++first)
+			static_allocator.construct(n_start + dist, *first);
+		_copy_destroy_(start_ + c_pos, n_start + c_pos + count, n_size - count - c_pos);
+		_set_class_vars_(n_start, n_start + n_size, n_start + alloc_size);
+		return (begin() + c_pos);
+    }
+
+	pointer _allocate_safe_(size_type new_cap)
 	{
 		if (new_cap > max_size())
 			throw std::length_error("vector");
@@ -317,11 +329,11 @@ public:
 
 	inline void _grow_(size_t new_cap)
 	{
-		pointer	new_start = _allocate_safe(new_cap);
 		if (start_ + new_cap <= end_of_storage_)
 			return ;
-		int i = 0;
-		for(iterator it = begin(); it != end(); ++it, i++)
+		pointer	new_start = _allocate_safe_(new_cap);
+		size_type i = 0;
+		for(iterator it = begin(); it != end(); ++it, ++i)
 		{
 			static_allocator.construct(new_start + i, *it);
 			static_allocator.destroy(start_ + i);
