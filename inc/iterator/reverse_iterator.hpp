@@ -35,9 +35,9 @@ public:
 	reference			operator*() const 							{iterator_type tmp = current_; return *(--tmp);}
 	pointer             operator->() const							{return &(*current_);}
     reverse_iterator&   operator++()                              	{ --current_; return *this; }
-    reverse_iterator&   operator++(int)                           	{ reverse_iterator tmp(current_); --current_; return tmp; }
+    reverse_iterator    operator++(int)                           	{ reverse_iterator tmp(current_); --current_; return tmp; }
     reverse_iterator&   operator--()                              	{ ++current_; return *this; }
-    reverse_iterator&   operator--(int)                           	{ reverse_iterator tmp(current_); ++current_; return tmp; }
+    reverse_iterator    operator--(int)                           	{ reverse_iterator tmp(current_); ++current_; return tmp; }
     reverse_iterator    operator+ (difference_type __n) const     	{ return reverse_iterator(current_ - __n); }
     reverse_iterator    operator+=(difference_type __n)           	{ current_ -= __n; return this; }
     reverse_iterator    operator- (difference_type __n) const     	{ return reverse_iterator(current_ + __n); }
