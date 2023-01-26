@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <iostream>
 #include "./iterator/vector_iterator.hpp"
 #include "./iterator/reverse_iterator.hpp"
 #include "./utils.hpp"
@@ -54,7 +55,7 @@ public:
 	}
 	//enable if is integral input iterator constructor?
 
-	vector(const vector& other) : start_(NULL), finish_(NULL), end_of_storage_(NULL) 
+	vector(const vector& other) : start_(NULL), finish_(NULL), end_of_storage_(NULL), static_allocator(Allocator())
 	{ 
 		*this = other;
 	}
@@ -86,11 +87,13 @@ public:
 		insert(begin(), count, value);
 	}
 
+	// Emptys vector, can be used with iterator tags: input | random
 	template< class InputIt >
 	void assign( InputIt first, InputIt last, typename ft::enable_if<!is_integral<InputIt>::value, bool>::type = true)
 	{
 		clear();
-		insert(begin(), first, last);
+		finish_ = start_;
+		_assign_range_(first, last, typename ft::iterator_traits<InputIt>::iterator_category());
 	}
 
 	allocator_type get_allocator() const { return static_allocator; } //or static_allocator::allocator_type ?
@@ -133,9 +136,7 @@ public:
 /* =================				Capacity Modulator	  ================= */
 	void	reserve(size_type new_cap)
 	{
-		if (new_cap > max_size() && (capacity() == 0 || capacity() == max_size()))
-			throw std::length_error("vector");
-		else if (new_cap > max_size())
+		if (new_cap > max_size())
             new_cap = max_size();
 		// else if (capacity() < new_cap)
 		// 	return ;
@@ -218,7 +219,7 @@ public:
 		difference_type c_pos = ft::distance(begin(), pos);
 		size_type		n_size = size() + count;
 		size_type		alloc_size = capacity() > size() + n_size ? capacity() : size() + n_size;
-		pointer			n_start = static_allocator.allocate(alloc_size);
+		pointer			n_start = _allocate_safe(alloc_size);
 
 		_copy_destroy_(start_, n_start, c_pos);
 		for (size_type temp_pos = c_pos; temp_pos < c_pos + count; ++temp_pos)
@@ -246,7 +247,7 @@ public:
 		difference_type c_pos = ft::distance(begin(), pos);
 		size_type		n_size = size() + count;
 		size_type		alloc_size = capacity() > size() + n_size ? capacity() : size() + n_size;
-		pointer			n_start = static_allocator.allocate(alloc_size);
+		pointer			n_start = _allocate_safe(alloc_size);
 
 		_copy_destroy_(start_, n_start, c_pos);
 		for (difference_type dist = c_pos; dist < c_pos + count; ++dist, ++first)
@@ -284,6 +285,26 @@ public:
 		}
 		return(to + dist);
 	}
+
+	template< typename InputIterator >
+    void _assign_range_( InputIterator first, InputIterator last, input_iterator_tag  )
+    {
+        for ( ; first != last; first++)
+            push_back(*first);
+    }
+
+    template< typename InputIterator >
+    void _assign_range_( InputIterator first, InputIterator last, random_access_iterator_tag )
+    {
+		insert(begin(), first, last);
+    }
+
+	pointer _allocate_safe(size_type new_cap)
+	{
+		if (new_cap > max_size())
+			throw std::length_error("vector");
+		return (static_allocator.allocate(new_cap));
+	}
 	
 	void _set_class_vars_(pointer n_start, pointer n_finish, pointer n_end_of_storage)
 	{
@@ -296,7 +317,7 @@ public:
 
 	inline void _grow_(size_t new_cap)
 	{
-		pointer	new_start = static_allocator.allocate(new_cap);;
+		pointer	new_start = _allocate_safe(new_cap);
 		if (start_ + new_cap <= end_of_storage_)
 			return ;
 		int i = 0;
@@ -310,13 +331,6 @@ public:
 		start_ = new_start;
 		finish_ = start_ + i;
 		end_of_storage_ = start_ + new_cap;
-	}
-
-	inline void	_allocate_n_(size_type n)
-	{
-		start_ = static_allocator.allocate(n);
-		finish_ = start_;
-		end_of_storage_ = start_ + n;
 	}
 
 };
