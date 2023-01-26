@@ -72,12 +72,4 @@ ft::pair<T1, T2> make_pair(T1 t, T2 u)
     return (ft::pair<T1, T2>(t, u));
 }
 
-template< class T >
-void swap(T& lhs, T& rhs)
-{
-    T   tmp(lhs);
-    lhs = rhs;
-    rhs = tmp;
-}
-
 } // namespace ft

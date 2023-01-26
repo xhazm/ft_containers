@@ -12,7 +12,7 @@ struct enable_if< true, T >{ typedef T type; };
 template< class T, T v >
 struct integral_constant
 {
-    static constexpr    T   value = v;
+    static const        T   value = v;
     typedef             T   value_type;
 };
 
@@ -32,8 +32,6 @@ template<> struct is_integral_base<unsigned short int>: true_type {};
 template<> struct is_integral_base<unsigned int>: true_type {};
 template<> struct is_integral_base<unsigned long int>: true_type {};
 template<> struct is_integral_base<unsigned long long int>: true_type {};
-template<> struct is_integral_base<char16_t>: true_type {};
-template<> struct is_integral_base<char32_t>: true_type {};
 template<> struct is_integral_base<wchar_t>: true_type {};
 template<> struct is_integral_base<signed char>: true_type {};
 
@@ -48,8 +46,6 @@ template<> struct is_integral_base<const unsigned short int>: true_type {};
 template<> struct is_integral_base<const unsigned int>: true_type {};
 template<> struct is_integral_base<const unsigned long int>: true_type {};
 template<> struct is_integral_base<const unsigned long long int>: true_type {};
-template<> struct is_integral_base<const char16_t>: true_type {};
-template<> struct is_integral_base<const char32_t>: true_type {};
 template<> struct is_integral_base<const wchar_t>: true_type {};
 template<> struct is_integral_base<const signed char>: true_type {};
 
@@ -64,8 +60,6 @@ template<> struct is_integral_base<volatile unsigned short int>: true_type {};
 template<> struct is_integral_base<volatile unsigned int>: true_type {};
 template<> struct is_integral_base<volatile unsigned long int>: true_type {};
 template<> struct is_integral_base<volatile unsigned long long int>: true_type {};
-template<> struct is_integral_base<volatile char16_t>: true_type {};
-template<> struct is_integral_base<volatile char32_t>: true_type {};
 template<> struct is_integral_base<volatile wchar_t>: true_type {};
 template<> struct is_integral_base<volatile signed char>: true_type {};
 
@@ -130,5 +124,13 @@ bool lexicographical_compare( InputIt1 first1, InputIt1 last1,
             return (false);
     }
     return (first1 == last1) && (first2 != last2);
+}
+
+template< class T >
+void swap(T& lhs, T& rhs)
+{
+    T   tmp(lhs);
+    lhs = rhs;
+    rhs = tmp;
 }
 } // namespace ft

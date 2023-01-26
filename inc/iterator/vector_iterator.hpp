@@ -41,9 +41,9 @@ class vector_iterator
         reference        operator*( void ) const                    { return *current_; }
         pointer          operator->() const                         { return &(*current_); }
         vector_iterator& operator++()                               { ++current_; return *this; }
-        vector_iterator& operator++(int)                            { vector_iterator tmp(current_); ++current_; return tmp; }
+        vector_iterator  operator++(int)                            { vector_iterator tmp(current_); ++current_; return tmp; }
         vector_iterator& operator--()                               { --current_; return *this; }
-        vector_iterator& operator--(int)                            { vector_iterator tmp(current_); --current_; return tmp; }
+        vector_iterator  operator--(int)                            { vector_iterator tmp(current_); --current_; return tmp; }
         vector_iterator  operator+ (difference_type __n) const      { return vector_iterator(current_ + __n); }
         vector_iterator  operator+=(difference_type __n)            { current_ += __n; return *this; }
         vector_iterator  operator- (difference_type __n) const      { return vector_iterator(current_ - __n); }

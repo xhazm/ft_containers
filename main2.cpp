@@ -7,6 +7,7 @@
 #include "./tester/vector/vector_test.hpp"
 
 #define _ratio 1
+
 #define _vector ft::vector
 
 
@@ -45,9 +46,9 @@ std::string print_data(std::vector<T> test_ft_vec, std::vector<T> test_std_vec)
 }
 
 template <typename T>
-std::vector<int> assign_test(std::vector<T> vector) {
-    std::vector<int> v;
-    std::vector<int> tmp, tmp2;
+std::vector<long long> assign_test(std::vector<T> vector) {
+    std::vector<long long> v;
+    std::vector<long long> tmp, tmp2;
     vector.assign(3, 3);
     tmp.assign(4000 * _ratio, 1);
     tmp2.assign(4 * _ratio, 1);
@@ -64,9 +65,9 @@ std::vector<int> assign_test(std::vector<T> vector) {
 }
 
 template <typename T>
-std::vector<int> assign_test(_vector<T> vector) {
-    std::vector<int> v;
-    _vector<int> tmp, tmp2;
+std::vector<long long> assign_test(_vector<T> vector) {
+    std::vector<long long> v;
+    _vector<long long> tmp, tmp2;
     vector.assign(3, 3);
     tmp.assign(4000 * _ratio, 1);
     tmp2.assign(4 * _ratio, 1);
@@ -83,47 +84,47 @@ std::vector<int> assign_test(_vector<T> vector) {
 }
 
 template <typename T>
-std::vector<int> constructor_test(std::vector<T> vector) {
-    std::vector<int> v;
-    std::vector<int> tmp0(vector);
-    std::vector<int> tmp(1000 * _ratio, 4), tmp2(1000 * _ratio, 5);
+std::vector<long long> constructor_test(std::vector<T> vector) {
+    std::vector<long long> v;
+    std::vector<long long> tmp0(vector);
+    std::vector<long long> tmp(1000 * _ratio, 4), tmp2(1000 * _ratio, 5);
     tmp = tmp2;
-    std::vector<int> tmp3(tmp);
-    std::vector<int> tmp4(tmp.begin(), tmp.end());
+    std::vector<long long> tmp3(tmp);
+    std::vector<long long> tmp4(tmp.begin(), tmp.end());
     v.push_back(tmp4.size());
     v.push_back(tmp4.capacity());
     v.push_back(tmp[2]);
     v.push_back(tmp3[2]);
     v.push_back(tmp4[2]);
-    try { std::vector<int> tmp5(-1, -1); }
+    try { std::vector<long long> tmp5(-1, -1); }
     catch (std::exception &e) { v.push_back(1); }
     return v;
 }
 
 template <typename T>
-std::vector<int> constructor_test(_vector<T> vector) {
-    std::vector<int> v;
-	_vector<int> tmp0(vector);
-    _vector<int> tmp(1000 * _ratio, 4), tmp2(1000 * _ratio, 5);
+std::vector<long long> constructor_test(_vector<T> vector) {
+    std::vector<long long> v;
+	_vector<long long> tmp0(vector);
+    _vector<long long> tmp(1000 * _ratio, 4), tmp2(1000 * _ratio, 5);
     tmp = tmp2;
-    _vector<int> tmp3(tmp);
-    _vector<int> tmp4(tmp.begin(), tmp.end());
+    _vector<long long> tmp3(tmp);
+    _vector<long long> tmp4(tmp.begin(), tmp.end());
     v.push_back(tmp4.size());
     v.push_back(tmp4.capacity());
     v.push_back(tmp[2]);
     v.push_back(tmp3[2]);
     v.push_back(tmp4[2]);
-    try { _vector<int> tmp5(-1, -1); }
+    try { _vector<long long> tmp5(-1, -1); }
     catch (std::exception &e) { v.push_back(1); }
     return v;
 }
 
 template <typename T>
-std::vector<int> constructor_std_test(std::vector<T> vector) {
-	std::vector<int> v;
+std::vector<long long> constructor_std_test(std::vector<T> vector) {
+	std::vector<long long> v;
 	vector.assign(3, 3);
-	std::vector<int> tmp(1000 * _ratio, 4);
-	std::vector<int> tmp2(tmp.begin(), tmp.end());
+	std::vector<long long> tmp(1000 * _ratio, 4);
+	std::vector<long long> tmp2(tmp.begin(), tmp.end());
 	v.push_back(tmp2.size());
 	v.push_back(tmp2.capacity());
 	for (size_t i = 0; i < tmp.size(); ++i)
@@ -132,12 +133,12 @@ std::vector<int> constructor_std_test(std::vector<T> vector) {
 }
 
 template <typename T>
-std::vector<int> constructor_std_test(_vector<T> vecto) {
+std::vector<long long> constructor_std_test(_vector<T> vecto) {
 	(void)vecto;
-	std::vector<int> v;
+	std::vector<long long> v;
 	_vector<T> vector(3, 3);
-	std::vector<int> tmp(1000 * _ratio, 4);
-	_vector<int> tmp2(tmp.begin(), tmp.end());
+	std::vector<long long> tmp(1000 * _ratio, 4);
+	_vector<long long> tmp2(tmp.begin(), tmp.end());
 	v.push_back(tmp2.size());
 	v.push_back(tmp2.capacity());
 	for (size_t i = 0; i < tmp.size(); ++i)
@@ -145,9 +146,9 @@ std::vector<int> constructor_std_test(_vector<T> vecto) {
 	return v;
 }
 template <typename T>
-std::vector<int> assign_std_test(std::vector<T> vector) {
-	std::vector<int> v;
-	std::vector<int> tmp;
+std::vector<long long> assign_std_test(std::vector<T> vector) {
+	std::vector<long long> v;
+	std::vector<long long> tmp;
 	vector.assign(3, 3);
 	tmp.assign(4000 * _ratio, 1);
 	vector.assign(tmp.begin(), tmp.end());
@@ -159,9 +160,9 @@ std::vector<int> assign_std_test(std::vector<T> vector) {
 }
 
 template <typename T>
-std::vector<int> assign_std_test(_vector<T> vector) {
-	std::vector<int> v;
-	std::vector<int> tmp;
+std::vector<long long> assign_std_test(_vector<T> vector) {
+	std::vector<long long> v;
+	std::vector<long long> tmp;
 	vector.assign(3, 3);
 	tmp.assign(4000 * _ratio, 1);
 	vector.assign(tmp.begin(), tmp.end());
@@ -175,13 +176,12 @@ std::vector<int> assign_std_test(_vector<T> vector) {
 
 int main(void)
 {
-    ft::vector<int> vec;
-    std::vector<int> vec2;
+    ft::vector<long long> vec;
+    std::vector<long long> vec2;
     print_data(assign_test(vec), assign_test(vec2));
     print_data(assign_std_test(vec), assign_std_test(vec2));
     print_data(constructor_test(vec), constructor_test(vec2));
     print_data(constructor_std_test(vec), constructor_std_test(vec2));
-    // print_data(constructor_test(vec));
     
 
 

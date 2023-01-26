@@ -25,10 +25,10 @@ public:
 	typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
 protected:
-	allocator_type			static_allocator;
 	pointer					start_;
 	pointer					finish_;
 	pointer					end_of_storage_;
+	allocator_type			static_allocator;
 
 public:
 
@@ -63,7 +63,10 @@ public:
 	{
 		clear();
 		if (start_ != NULL)
+		{
 			static_allocator.deallocate(start_, capacity());
+			start_ = NULL;
+		}
 	}
 
 	vector  &operator=(const vector& other)
@@ -186,7 +189,6 @@ public:
 
 	iterator erase( iterator first, iterator last )
 	{
-		int diff = 0;
 		if (first == last)
 			return(first);
 		destroy_range(first, last);
@@ -201,7 +203,7 @@ public:
 		if (count > size)
 		{
 			reserve(count);
-			for (int i = 0; i < (count - size); ++i)
+			for (size_type i = 0; i < (count - size); ++i)
 				push_back(value);
 		}
 		else if (count < size)
@@ -247,7 +249,7 @@ public:
 		pointer			n_start = static_allocator.allocate(alloc_size);
 
 		_copy_destroy_(start_, n_start, c_pos);
-		for (size_type dist = c_pos; dist < c_pos + count; ++dist, ++first)
+		for (difference_type dist = c_pos; dist < c_pos + count; ++dist, ++first)
 			static_allocator.construct(n_start + dist, *first);
 		_copy_destroy_(start_ + c_pos, n_start + c_pos + count, n_size - count - c_pos);
 		clear();
@@ -257,10 +259,10 @@ public:
 
 	void swap(vector& other)
 	{
-		std::swap(start_, other.start_);
-		std::swap(finish_, other.finish_);
-		std::swap(end_of_storage_, other.end_of_storage_);
-		std::swap(static_allocator, other.static_allocator);
+		ft::swap(start_, other.start_);
+		ft::swap(finish_, other.finish_);
+		ft::swap(end_of_storage_, other.end_of_storage_);
+		ft::swap(static_allocator, other.static_allocator);
 	}
 
 /* =================			 Helper Functions			  ================= */
