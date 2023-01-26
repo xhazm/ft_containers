@@ -5,3 +5,4 @@ ft_containers
 *.o
 main
 ft_containers-unit-test
+*.txt
