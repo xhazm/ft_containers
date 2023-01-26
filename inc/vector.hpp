@@ -34,27 +34,27 @@ public:
 
 /* =================				Constructors				================= */
 
-	vector() : start_(0), finish_(0), end_of_storage_(0) {}
+	vector() : start_(NULL), finish_(NULL), end_of_storage_(NULL) {}
 
 	explicit vector(const Allocator& alloc)
-        : start_(0), finish_(0), end_of_storage_(0), static_allocator(alloc) {}
+        : start_(NULL), finish_(NULL), end_of_storage_(NULL), static_allocator(alloc) {}
 
 	explicit vector(size_type count, const T& value = T(),
 						const Allocator& alloc = Allocator())
-		: start_(0), finish_(0), end_of_storage_(0), static_allocator(alloc)
+		: start_(NULL), finish_(NULL), end_of_storage_(NULL), static_allocator(alloc)
 	{
 		assign(count, value);
 	}
 
 	template < class InputIt >
 	vector(InputIt first, InputIt last, const Allocator& alloc = Allocator(), typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true)
-		: start_(0), finish_(0), end_of_storage_(0), static_allocator(alloc)
+		: start_(NULL), finish_(NULL), end_of_storage_(NULL), static_allocator(alloc)
 	{
 		assign(first, last);
 	}
 	//enable if is integral input iterator constructor?
 
-	vector(const vector& other) : start_(0), finish_(0), end_of_storage_(0) 
+	vector(const vector& other) : start_(NULL), finish_(NULL), end_of_storage_(NULL) 
 	{ 
 		*this = other;
 	}
@@ -110,6 +110,9 @@ public:
 	const_reference	front() const					{ return *begin(); }
 	reference		back()							{ return *(end() - 1); }
 	const_reference	back() const					{ return *(end() - 1); }
+	T*  			data() 							{ return (start_); }
+    const T*		data() const 					{ return (start_); }
+
 /* =================				Iterators			   ================= */
 	iterator				begin()			{ return iterator(start_); }
 	const_iterator			begin() const	{ return const_iterator(start_); }
@@ -300,7 +303,7 @@ public:
 			static_allocator.construct(new_start + i, *it);
 			static_allocator.destroy(start_ + i);
 		}
-		if (start_ != 0)
+		if (start_ != NULL)
 			static_allocator.deallocate(start_, end_of_storage_ - start_);
 		start_ = new_start;
 		finish_ = start_ + i;
