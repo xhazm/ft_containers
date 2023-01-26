@@ -45,9 +45,9 @@ class vector_iterator
         vector_iterator& operator--()                               { --current_; return *this; }
         vector_iterator  operator--(int)                            { vector_iterator tmp(current_); --current_; return tmp; }
         vector_iterator  operator+ (difference_type __n) const      { return vector_iterator(current_ + __n); }
-        vector_iterator  operator+=(difference_type __n)            { current_ += __n; return *this; }
+        vector_iterator& operator+=(difference_type __n)            { current_ += __n; return *this; }
         vector_iterator  operator- (difference_type __n) const      { return vector_iterator(current_ - __n); }
-        vector_iterator  operator-=(difference_type __n)            { current_ -= __n; return *this; }
+        vector_iterator& operator-=(difference_type __n)            { current_ -= __n; return *this; }
         reference        operator[](difference_type __n) const      { return *(*this + __n); }
 };
 
