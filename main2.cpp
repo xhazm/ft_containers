@@ -56,7 +56,7 @@ std::vector<int> assign_test(std::vector<T> vector) {
     v.push_back(vector.size());
     v.push_back(vector.capacity());
     vector.assign(tmp2.begin(), tmp2.end());
-    v.push_back(vector[444]);
+    // v.push_back(vector[444]);
     v.push_back(vector.at(1));
     v.push_back(vector.size());
     v.push_back(vector.capacity());
@@ -75,7 +75,7 @@ std::vector<int> assign_test(_vector<T> vector) {
     v.push_back(vector.size());
     v.push_back(vector.capacity());
     vector.assign(tmp2.begin(), tmp2.end());
-    v.push_back(vector[444]); //undefined behavior?? or because it shouldnt realloc?
+    // v.push_back(vector[444]); //undefined behavior?? or because it shouldnt realloc?
     v.push_back(vector.at(1));
     v.push_back(vector.size());
     v.push_back(vector.capacity());
@@ -119,6 +119,32 @@ std::vector<int> constructor_test(_vector<T> vector) {
 }
 
 template <typename T>
+std::vector<int> constructor_std_test(std::vector<T> vector) {
+	std::vector<int> v;
+	vector.assign(3, 3);
+	std::vector<int> tmp(1000 * _ratio, 4);
+	std::vector<int> tmp2(tmp.begin(), tmp.end());
+	v.push_back(tmp2.size());
+	v.push_back(tmp2.capacity());
+	for (size_t i = 0; i < tmp.size(); ++i)
+		v.push_back(tmp2[i]);
+	return v;
+}
+
+template <typename T>
+std::vector<int> constructor_std_test(_vector<T> vecto) {
+	(void)vecto;
+	std::vector<int> v;
+	_vector<T> vector(3, 3);
+	std::vector<int> tmp(1000 * _ratio, 4);
+	_vector<int> tmp2(tmp.begin(), tmp.end());
+	v.push_back(tmp2.size());
+	v.push_back(tmp2.capacity());
+	for (size_t i = 0; i < tmp.size(); ++i)
+		v.push_back(tmp2[i]);
+	return v;
+}
+template <typename T>
 std::vector<int> assign_std_test(std::vector<T> vector) {
 	std::vector<int> v;
 	std::vector<int> tmp;
@@ -151,9 +177,11 @@ int main(void)
 {
     ft::vector<int> vec;
     std::vector<int> vec2;
-    // print_data(assign_test(vec), assign_test(vec2));
-    // print_data(assign_std_test(vec), assign_std_test(vec2));
-    print_data(constructor_test(vec));
+    print_data(assign_test(vec), assign_test(vec2));
+    print_data(assign_std_test(vec), assign_std_test(vec2));
+    print_data(constructor_test(vec), constructor_test(vec2));
+    print_data(constructor_std_test(vec), constructor_std_test(vec2));
+    // print_data(constructor_test(vec));
     
 
 

@@ -190,7 +190,7 @@ public:
 		return (first);
 	}
 
-	void clear() { erase(begin(), end()); }
+	void clear() { erase(begin(), end()); finish_ = start_; }
 
 	void resize(size_type count, T value = T())
 	{
