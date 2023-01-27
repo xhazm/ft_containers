@@ -27,9 +27,8 @@ namespace ft
         typedef ft::avl_iterator< value_type >			        iterator;
         typedef ft::avl_iterator< value_type >			        const_iterator;
 
-    private:
+    public:
         value_allocator_type    value_alloc_;
-        // value_allocator_type    node_alloc_;
         node_allocator_type     node_alloc_;
         node_pointer            root_;
         node_pointer            end_;
@@ -78,7 +77,7 @@ namespace ft
         if (pos == end_)
         {
             root_ = create_node_(value, NULL);
-            end_->parent = root_;
+            // end_->parent = root_;
             return (ft::make_pair(iterator(root_), true));
         }
         while (pos != end_)
@@ -267,7 +266,7 @@ namespace ft
     */
     size_type tree_height_(node_pointer root, size_type height)
     {
-        if (root_ == end_)
+        if (root == end_)
             return height - 1;
         size_type l_height = tree_height_(root->left, height + 1);
         size_type r_height = tree_height_(root->right, height + 1);
@@ -305,7 +304,7 @@ namespace ft
             return ;
         while (node)
         {
-            size_type balance = balance_of_subtrees_(node);
+            long long balance = balance_of_subtrees_(node);
 
             if (balance <= -2 && balance_of_subtrees_(node->right) <= -1)
                 rotate_left_(node);
@@ -315,6 +314,7 @@ namespace ft
                 rotate_right_(node);
             else if (balance >= 2 && balance_of_subtrees_(node->left) <= 0)
                 rotate_left_(rotate_right_(node));
+
             node = node->parent;
         }
     }
@@ -345,6 +345,7 @@ namespace ft
             root_ = new_head;
         rotation_node->left = new_head->right;
         new_head->right = rotation_node;
+        new_head->parent = rotation_node->parent;
         rotation_node->parent = new_head;
         return (new_head);
     }
@@ -358,6 +359,7 @@ namespace ft
             root_ = new_head;
         rotation_node->right = new_head->left;
         new_head->left = rotation_node;
+        new_head->parent = rotation_node->parent;
         rotation_node->parent = new_head;
         return (new_head);
     }

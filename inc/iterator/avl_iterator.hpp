@@ -19,8 +19,9 @@ class avl_iterator
         typedef typename iterator::reference                                    reference;
         typedef typename iterator::pointer                                      pointer;
         typedef typename iterator::iterator_category                            iterator_category;
+        typedef typename ft::avl_node<T>::pointer                               node_pointer;   
 
-        typedef typename ft::avl_node<T>::pointer                              node_pointer;            
+        //reference == avl_node reference??         
 
     private:
         node_pointer current_;
