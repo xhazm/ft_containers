@@ -307,13 +307,13 @@ namespace ft
             long long balance = balance_of_subtrees_(node);
 
             if (balance <= -2 && balance_of_subtrees_(node->right) <= -1)
-                rotate_left_(node);
+                rotate_left_(node->right);
             else if (balance <= -2 && balance_of_subtrees_(node->right) >= 0)
-                rotate_left_(rotate_right_(node));
+                rotate_left_(rotate_right_(node->right->left));
             else if (balance >= 2 && balance_of_subtrees_(node->left) >= 1)
-                rotate_right_(node);
+                rotate_right_(node->left);
             else if (balance >= 2 && balance_of_subtrees_(node->left) <= 0)
-                rotate_right_(rotate_left_(node));
+                rotate_right_(rotate_left_(node->left->right));
 
             node = node->parent;
         }
@@ -337,14 +337,22 @@ namespace ft
         return (pos);
     }
 
-    node_pointer rotate_right_(node_pointer rotation_node)
+    node_pointer rotate_right_(node_pointer new_head)
     {
-        node_pointer    new_head = rotation_node->left;
+        node_pointer    rotation_node = new_head->parent;
 
         if (rotation_node == root_)
             root_ = new_head;
+        else if(rotation_node != root_)
+        {
+            if (rotation_node->parent->right == rotation_node)
+                rotation_node->parent->right = new_head;
+            else
+                rotation_node->parent->left = new_head;
+        }
         rotation_node->left = new_head->right;
-        rotation_node->left->parent = rotation_node;
+        if (rotation_node->left != end_)
+            rotation_node->left->parent = rotation_node;
         new_head->right = rotation_node;
         new_head->parent = rotation_node->parent;
         rotation_node->parent = new_head;
@@ -352,14 +360,22 @@ namespace ft
     }
 
 
-    node_pointer rotate_left_(node_pointer rotation_node)
+    node_pointer rotate_left_(node_pointer new_head)
     {
-        node_pointer    new_head = rotation_node->right;
+        node_pointer    rotation_node = new_head->parent;
 
         if (rotation_node == root_)
             root_ = new_head;
+        else if(rotation_node != root_)
+        {
+            if (rotation_node->parent->right == rotation_node)
+                rotation_node->parent->right = new_head;
+            else
+                rotation_node->parent->left = new_head;
+        }
         rotation_node->right = new_head->left;
-        rotation_node->right->parent = rotation_node;
+        if (rotation_node->right != end_)
+            rotation_node->right->parent = rotation_node;
         new_head->left = rotation_node;
         new_head->parent = rotation_node->parent;
         rotation_node->parent = new_head;
