@@ -1,60 +1,45 @@
 #pragma once
 
 #include <memory>
-#include "./iterator/vector_iterator.hpp"
+#include "./iterator/avl_iterator.hpp"
 #include "./pair.hpp"
+#include "./utils.hpp"
+#include "./avl_node.hpp"
+
 
 namespace ft
 {
-    template<
-    class value_type
-    > struct avl_node
-    {
-        typedef T                                   value_type;
-        typedef avl_node<value_type>                node_type;
-        typedef node_type*                          pointer;
-        typedef const node_type*                    const_pointer;
-
-        value_type  value;
-        pointer     right;
-        pointer     left;
-        pointer     parent;
-        //copy operator needed because of delete
-    };
-
     template<
         class Value,
         class Compare,
         class Allocator = std::allocator< Value >
     > class avl_tree
     {
+    public:
         typedef Value                                           value_type;
         typedef Allocator                                       value_allocator_type;
         typedef typename value_allocator_type::difference_type  difference_type;
-
         typedef Compare                                         value_compare;
-
         typedef typename avl_node< value_type >::node_type      node_type;
-        typedef typename node_type::point                       node_pointer;
-        // typedef typename value_allocator_type::template rebind<node_type>::other    node_allocator_type;
-        // typedef typename node_allocator_type::size_type                             size_type;
-        typedef size_t                             size_type;
-
-        typedef ft::vector_iterator< value_type >            iterator;
-        typedef ft::vector_iterator< value_type >            const_iterator;
+        typedef typename node_type::pointer                     node_pointer;
+        typedef typename value_allocator_type::template rebind<node_type>::other    node_allocator_type;
+        typedef typename value_allocator_type::size_type        size_type;
+        typedef ft::avl_iterator< value_type >			        iterator;
+        typedef ft::avl_iterator< value_type >			        const_iterator;
 
     private:
         value_allocator_type    value_alloc_;
-        value_allocator_type     node_alloc_;
-        // node_allocator_type     node_alloc_;
+        // value_allocator_type    node_alloc_;
+        node_allocator_type     node_alloc_;
         node_pointer            root_;
         node_pointer            end_;
         value_compare           cmp_;
+        size_type               size_;
     
 
     public:
         // avl_tree(const value_compare& cmp, const value_allocator_type value_alloc = value_allocator_type())
-        avl_tree() : size_(0), cmp_(cmp), value_alloc_(value_alloc)
+        avl_tree() : size_(0)
         {
             end_ = create_node_(value_type(), NULL);
             root_ = end_;
@@ -94,7 +79,7 @@ namespace ft
         {
             root_ = create_node_(value, NULL);
             end_->parent = root_;
-            return (ft::make_pair(iterator(root_), true))
+            return (ft::make_pair(iterator(root_), true));
         }
         while (pos != end_)
         {
@@ -109,7 +94,6 @@ namespace ft
         {
             node_pointer new_node = create_node_(value, pos);
             pos->left = new_node;
-            new_node->height = pos->height + 1;
             balance_(new_node);
             return (ft::make_pair(iterator(new_node), true));
         }
@@ -117,7 +101,6 @@ namespace ft
         {
             node_pointer new_node = create_node_(value, pos);
             pos->right = new_node;
-            new_node->height = pos->height + 1;
             balance_(new_node);
             return (ft::make_pair(iterator(new_node), true));
         }
@@ -132,7 +115,7 @@ namespace ft
     *   @param erase    The node which should be erased, if found
     *   @param tmp      Saves the node which get on the pos of the erased node
     */
-    void erase(node_pointer pos, value_type value)
+    bool erase(node_pointer pos, value_type value)
     {
         node_pointer    erase = search_node(value, pos);
         node_pointer    tmp = NULL;
@@ -157,6 +140,7 @@ namespace ft
                     erase->parent->right == erase ? erase->parent->right = tmp : erase->parent->left = tmp;
             }
             erase_node_(erase);
+            return (true);
         }
         //left and right child
         else
@@ -165,7 +149,7 @@ namespace ft
             erase->value = tmp->value;
             if (tmp->parent != NULL)
                 tmp->parent->left = end_;
-            node_allocator.deallocate(tmp, 1);
+            node_alloc_.deallocate(tmp, 1);
             tmp = erase;
         }
         balance_(tmp);
@@ -201,7 +185,7 @@ namespace ft
         return (iterator(result));
     }
 
-    const_iterator  lower_bound( onst value_type& value) const
+    const_iterator  lower_bound(const value_type& value) const
     {
         node_pointer result = end_;
         node_pointer node = root_;
@@ -219,7 +203,7 @@ namespace ft
         return (const_iterator(result));
     }
 
-    iterator    upper_bound( const value_type& value )
+    iterator    upper_bound(const value_type& value)
     {
         node_pointer result = end_;
         node_pointer node = root_;
@@ -237,7 +221,7 @@ namespace ft
         return (iterator(result));
     }
 
-    const_iterator  upper_bound( const value_type& value ) const
+    const_iterator  upper_bound(const value_type& value) const
     {
         node_pointer result = end_;
         node_pointer node = root_;
@@ -285,8 +269,8 @@ namespace ft
     {
         if (root_ == end_)
             return height - 1;
-        size_type l_height = heightTree(root->left, height + 1);
-        size_type r_height = heightTree(root->right, height + 1);
+        size_type l_height = tree_height_(root->left, height + 1);
+        size_type r_height = tree_height_(root->right, height + 1);
         return (l_height > r_height ? l_height : r_height);
     }
 
@@ -301,7 +285,7 @@ namespace ft
     {
         if (node == end_)
             return 0;
-        return tree_height(node->left, 1) - tree_height(node->right, 1);
+        return tree_height_(node->left, 1) - tree_height_(node->right, 1);
     }
 
     /**
@@ -324,13 +308,13 @@ namespace ft
             size_type balance = balance_of_subtrees_(node);
 
             if (balance <= -2 && balance_of_subtrees_(node->right) <= -1)
-                rotate_left(node);
+                rotate_left_(node);
             else if (balance <= -2 && balance_of_subtrees_(node->right) >= 0)
-                rotate_right(rotate_left(node));
+                rotate_right_(rotate_left_(node));
             else if (balance >= 2 && balance_of_subtrees_(node->left) >= 1)
-                rotate_right(node);
+                rotate_right_(node);
             else if (balance >= 2 && balance_of_subtrees_(node->left) <= 0)
-                rotate_left(rotate_right(node));
+                rotate_left_(rotate_right_(node));
             node = node->parent;
         }
     }
@@ -378,13 +362,24 @@ namespace ft
         return (new_head);
     }
 
-    node_pointer create_node_(value_type& value, node_pointer parent)
+    // node_pointer create_node_(value_type& value, node_pointer parent)
+    // {
+    //     node_pointer new_node = node_alloc_.allocate(1);
+    //     new_node->parent = parent;
+    //     new_node->left = end_;
+    //     new_node->right = end_;
+    //     new_node.balance_factor = 0; //get height diff function
+    //     value_alloc_.construct(&new_node->value, value);
+    //     ++size_;
+    //     return (new_node);
+    // }
+
+    node_pointer create_node_(value_type value, node_pointer parent)
     {
         node_pointer new_node = node_alloc_.allocate(1);
         new_node->parent = parent;
         new_node->left = end_;
         new_node->right = end_;
-        new_node.balance_factor = 0; //get height diff function
         value_alloc_.construct(&new_node->value, value);
         ++size_;
         return (new_node);
@@ -397,7 +392,7 @@ namespace ft
         if (node == root_)
             root_ = end_;
         value_alloc_.destroy(&node->value);
-        node_allocator.deallocate(node, 1);
+        node_alloc_.deallocate(node, 1);
     }
 
     void check_rule_violation_(node_pointer node)

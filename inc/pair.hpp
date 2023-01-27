@@ -1,3 +1,5 @@
+#pragma once
+
 namespace ft
 {
 template<
@@ -13,10 +15,12 @@ public:
 
 public:
     pair() : first(first_type()), second(second_type()) {}
+    
     pair(const T1& x, const T2& y) : first(x), second(y) {} //make pair?
 
     template< class U1, class U2 >
     pair(const pair<U1, U2>& p) : first(p.first), second(p.second) {}
+    
     pair(const pair& p) = default; //makes copy of member vars
 
     pair& operator=(const pair& other)

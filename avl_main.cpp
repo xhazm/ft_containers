@@ -1,4 +1,4 @@
-#include "map.hpp"
+#include "./inc/map.hpp"
 #include <math.h>
 
 int main()
@@ -9,13 +9,5 @@ int main()
     ft::avl_tree<ft::pair<int, int>, std::less<ft::pair<int,int>>> avl;
     ft::pair<int, int> test(arr1[0], arr2[0]);
     avl.insert(test, NULL);
-
-    // size_t height = 0;
-    // size_t width = pow(0, 2);
-    // size_t pitch = (width / 2);
-    // for(int i = 0; i < height; ++i, pitch = (width / height + 1))
-    // {
-    // }
-
 
 }

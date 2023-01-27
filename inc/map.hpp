@@ -3,6 +3,8 @@
 #include <functional>
 #include <iostream>
 #include "./avl.hpp"
+#include "./utils.hpp"
+#include "./iterator/reverse_iterator.hpp"
 
 namespace ft
 {
@@ -29,30 +31,40 @@ namespace ft
 
         typedef avl_tree<value_type, Compare>               tree;
 
+        typedef typename tree::iterator                         iterator;
+        typedef typename tree::const_iterator                   const_iterator;
+        typedef typename ft::reverse_iterator<iterator>         reverse_iterator;
+        typedef typename ft::reverse_iterator<const_iterator>   const_reverse_iterator;
         // typedef avl_node<key_type, value_type>*             node_pointer;
 
     public:
+        Compare                         cmp_;
         allocator_type                  value_allocator_;
-        allocator_type                  node_allocator_; //different allocators needed?
         tree                            avl_tree_;
         
     public:    
         // map() {}
         explicit map(const Compare& comp = Compare(), const Allocator& alloc = Allocator())
-            : avl_tree_(tree()) {}
+            : avl_tree_(tree()), value_allocator_(alloc), cmp_(comp) {}
+
         template< class InputIt >
         map(InputIt first, InputIt last,
                 const Compare& comp = Compare(),
                 const Allocator& alloc = Allocator())
+                : cmp_(comp), value_allocator_(alloc)
         {
-
+            insert(first, last);
         }
-        map(const map& other) { this = &other }
+
+        map(const map& other) { this = &other; }
+
         map& operator=(const map& other)
         {
-
+            cmp_ = other.cmp_; 
+            value_allocator_ = other.value_allocator_; 
+            avl_tree_ = other.avl_tree_; 
         }
-        allocator_type get_allocator() const { return static_allocator_; }
+        allocator_type get_allocator() const { return value_allocator_; }
 
         bool        empty() const               { return avl_tree_.begin() == avl_tree_.end();}
 
@@ -60,12 +72,12 @@ namespace ft
 
         iterator find(const Key& key)
         {
-            return (avl_tree_.search(ft::make_pair(key, mapped_type()), NULL));
+            return (avl_tree_.search_node(ft::make_pair(key, mapped_type()), NULL));
         }
 
-        const iterator find(const Key& key)
+        const_iterator find(const Key& key) const
         {
-            return (const_iterator(avl_tree_.search(ft::make_pair(key, mapped_type()), NULL)));
+            return (const_iterator(avl_tree_.search_node(ft::make_pair(key, mapped_type()), NULL)));
         }
 
         // Returns an iterator pointing to the first element that is not less than key.
