@@ -6,8 +6,8 @@
 namespace ft
 {
 /* =================	Iterator tags						================= */
-// Typedefining the std::tags enables compatibility with std::containers.
 
+// Typedef std::iterator_tags as ft::iterator_tags.
 typedef std::input_iterator_tag					input_iterator_tag;
 typedef std::output_iterator_tag				output_iterator_tag;
 typedef std::forward_iterator_tag				forward_iterator_tag;
@@ -16,16 +16,18 @@ typedef std::random_access_iterator_tag			random_access_iterator_tag;
 
 /* =================	Iterator traits						================= */
 
+// Used that given iterator can access traits without writing the iterator in front
 template< typename Iterator >
 struct iterator_traits
 {
-	typedef typename Iterator::difference_type		difference_type;
 	typedef typename Iterator::value_type			value_type;
 	typedef typename Iterator::pointer				pointer;
 	typedef typename Iterator::reference			reference;
+	typedef typename Iterator::difference_type		difference_type;
 	typedef typename Iterator::iterator_category	iterator_category;
 };
 
+// Container conform variable naming
 template< typename T >
 struct iterator_traits< T* >
 {
@@ -36,6 +38,7 @@ struct iterator_traits< T* >
 	typedef ft::random_access_iterator_tag	iterator_category;
 };
 
+// Container conform const variable naming
 template< typename T >
 struct iterator_traits< const T* >
 {
@@ -48,6 +51,7 @@ struct iterator_traits< const T* >
 
 /* =================	Iterator base					   ================= */
 
+// base class which has a default for most types
 template< typename Category,
 	typename T,
 	typename Distance = std::ptrdiff_t,
@@ -62,6 +66,16 @@ template< typename Category,
 	typedef Category	iterator_category;
 };
 
+
+// distance helpers to get distance between iterators
+template< typename InputIterator >
+typename iterator_traits< InputIterator >::difference_type
+distance( InputIterator first, InputIterator last )
+{
+    return _distance_helper(first, last, typename iterator_traits< InputIterator >::iterator_category());
+}
+
+// input_iterator_tag because most standard libs use it
 template< typename InputIterator >
 typename iterator_traits< InputIterator >::difference_type
 _distance_helper( InputIterator first, InputIterator last, input_iterator_tag )
@@ -73,18 +87,12 @@ _distance_helper( InputIterator first, InputIterator last, input_iterator_tag )
     return dist;
 }
 
+// random_access_iterator_tag for vector iterator
 template< typename InputIterator >
 typename iterator_traits< InputIterator >::difference_type
-_distance_helper( InputIterator first, InputIterator last, random_access_iterator_tag ) // only callable with random_access_iterator_tag -> thats why third argument in distance
+_distance_helper( InputIterator first, InputIterator last, random_access_iterator_tag ) 
 {
     return last - first;
-}
-
-template< typename InputIterator >
-typename iterator_traits< InputIterator >::difference_type
-distance( InputIterator first, InputIterator last )
-{
-    return _distance_helper(first, last, typename iterator_traits< InputIterator >::iterator_category());
 }
 
 }
