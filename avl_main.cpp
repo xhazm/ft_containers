@@ -21,11 +21,11 @@
 
 int main()
 {
-    int arr1[] = {10,20,30,25,35,40};
+    int arr1[] = {10,20,30,25,35,40, 2, 9, 88, 77, 1, 3};
     int arr2[] = {11,22,33,44,55};
     ft::map<int, int> map;
     ft::avl_tree<ft::pair<int, int>, std::less<ft::pair<int,int>>> avl;
-    int argc = 6;
+    int argc = 11;
     for(int i = 0; i < argc; ++i)
     {
         ft::pair<int, int> test(arr1[i], arr2[0]);

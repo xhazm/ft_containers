@@ -309,11 +309,11 @@ namespace ft
             if (balance <= -2 && balance_of_subtrees_(node->right) <= -1)
                 rotate_left_(node);
             else if (balance <= -2 && balance_of_subtrees_(node->right) >= 0)
-                rotate_right_(rotate_left_(node));
+                rotate_left_(rotate_right_(node));
             else if (balance >= 2 && balance_of_subtrees_(node->left) >= 1)
                 rotate_right_(node);
             else if (balance >= 2 && balance_of_subtrees_(node->left) <= 0)
-                rotate_left_(rotate_right_(node));
+                rotate_right_(rotate_left_(node));
 
             node = node->parent;
         }
@@ -344,6 +344,7 @@ namespace ft
         if (rotation_node == root_)
             root_ = new_head;
         rotation_node->left = new_head->right;
+        rotation_node->left->parent = rotation_node;
         new_head->right = rotation_node;
         new_head->parent = rotation_node->parent;
         rotation_node->parent = new_head;
@@ -358,6 +359,7 @@ namespace ft
         if (rotation_node == root_)
             root_ = new_head;
         rotation_node->right = new_head->left;
+        rotation_node->right->parent = rotation_node;
         new_head->left = rotation_node;
         new_head->parent = rotation_node->parent;
         rotation_node->parent = new_head;
