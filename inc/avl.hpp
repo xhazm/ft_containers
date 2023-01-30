@@ -51,14 +51,14 @@ namespace ft
         }
 
 /* =================                    Iterators                   ================= */
-    iterator        begin()            { return iterator(root_); }
-    const_iterator  begin() const    { return const_iterator(root_); }
-    iterator        end()            { return iterator(end_); }
-    const_iterator  end() const        { return const_iterator(end_); }
+    iterator        begin()         { return iterator(root_); }
+    const_iterator  begin() const   { return const_iterator(root_); }
+    iterator        end()           { return iterator(end_); }
+    const_iterator  end() const     { return const_iterator(end_); }
 
 /* =================                    Capacity                        ================= */
-    size_type   size() const                { return size_; }
-    size_type   max_size() const            { return node_alloc_.max_size(); }
+    size_type   size() const        { return size_; }
+    size_type   max_size() const    { return node_alloc_.max_size(); }
     
     
 /* =================                    Modifiers                        ================= */
@@ -114,7 +114,7 @@ namespace ft
     *   @param erase    The node which should be erased, if found
     *   @param tmp      Saves the node which get on the pos of the erased node
     */
-    bool erase(node_pointer pos, value_type value)
+    bool erase(value_type value, node_pointer pos)
     {
         node_pointer    erase = search_node(value, pos);
         node_pointer    tmp = NULL;
@@ -139,19 +139,22 @@ namespace ft
                     erase->parent->right == erase ? erase->parent->right = tmp : erase->parent->left = tmp;
             }
             erase_node_(erase);
-            return (true);
+            // return (true);
         }
         //left and right child
         else
         {
-            tmp = min_value_node(root_->right);
+            tmp = max_value_node_(erase->left);
+            if (tmp->parent == erase)
+                erase->left = end_;
+            else if (tmp->parent != NULL)
+                tmp->parent->right = end_;
             erase->value = tmp->value;
-            if (tmp->parent != NULL)
-                tmp->parent->left = end_;
             node_alloc_.deallocate(tmp, 1);
             tmp = erase;
         }
         balance_(tmp);
+        return (true);
     }
 
     void swap(avl_tree& other)
