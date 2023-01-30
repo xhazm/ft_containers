@@ -125,8 +125,24 @@ namespace ft
     // Any past-the-end iterator remains valid. 
     void clear() { avl_tree_.clear(); }
 
-    
+    // void erase(iterator pos) {avl_tree_.erase()}
 
+    // void erase( iterator first, iterator last )
+    // {
+        
+    // }
+
+    size_type erase(const Key& key) 
+    {
+        return (avl_tree_.erase(ft::make_pair(key, mapped_type()), NULL));
+    }
+
+    void swap(map& other)
+    {
+        ft::swap(cmp_, other.cmp_);
+        ft::swap(value_allocator_, other.value_allocator_);
+        avl_tree_.swap(other.avl_tree_);
+    }
 
 /* =================				    LookUp        				================= */
 
@@ -183,8 +199,11 @@ namespace ft
         return (avl_tree_.upper_bound(ft::make_pair(key, mapped_type())));
     }
 
-    
-    
+/* =================				    Observers        				================= */
+
+    key_compare key_comp() const        { return (key_compare()); }
+    value_compare value_comp() const    { return (value_compare()); }
+	
     
     };
 } // namespace ft
