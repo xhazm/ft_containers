@@ -241,6 +241,13 @@ namespace ft
         return (const_iterator(result));
     }
 
+    /**
+    *   Searches node in tree. Can be determined by value OR value and pos
+    *   @param pos      If NULL, value is searched in whole tree. If set,
+    *                   value will be searched at pos and under.
+    *   @param value    The value(key/val pair) to look for
+    *   @return         If found, returns pointer to node. If not returns end()
+    */
     node_pointer search_node(value_type value, node_pointer n) const
     {
         if (n == NULL)
@@ -433,7 +440,6 @@ namespace ft
     }
 };
 } // namespace ft
-
 //cases:
 // -2 -1 = left rot
 // +2 +1 = right rot

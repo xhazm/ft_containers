@@ -19,7 +19,7 @@ namespace ft
 
         typedef T											mapped_type;
         typedef Key											key_type;
-        typedef std::pair<const Key, T>						value_type;
+        typedef std::pair<const Key, mapped_type>   		value_type;
 	    typedef	Allocator									allocator_type;
         typedef Compare                                     key_compare;
         typedef std::size_t                                 size_type;
@@ -29,16 +29,38 @@ namespace ft
         typedef typename allocator_type::pointer            pointer;
         typedef typename allocator_type::const_pointer      const_pointer;
 
-        typedef avl_tree<value_type, Compare>               tree;
+        class value_compare : std::binary_function<value_type, value_type, bool>
+        {
+            protected:  
+                key_compare comp;
 
+            public:
+            // Initializes the internal instance of the comparator to c.
+                value_compare() : comp() {}
+                value_compare(key_compare c) : comp(c) {}
+
+            public:
+            // Compares lhs.first and rhs.first by calling the stored comparator.
+            bool    operator()( const value_type& lhs, const value_type& rhs ) const
+            {
+                return (comp(lhs.first, rhs.first));
+            }
+        };
+
+    private:
+        typedef avl_tree<value_type, value_compare>             tree;
+    
+    public:
         typedef typename tree::iterator                         iterator;
         typedef typename tree::const_iterator                   const_iterator;
         typedef typename ft::reverse_iterator<iterator>         reverse_iterator;
         typedef typename ft::reverse_iterator<const_iterator>   const_reverse_iterator;
         // typedef avl_node<key_type, value_type>*             node_pointer;
 
+
+    
     public:
-        Compare                         cmp_;
+        value_compare                   cmp_;
         allocator_type                  value_allocator_;
         tree                            avl_tree_;
         
@@ -66,10 +88,16 @@ namespace ft
         }
         allocator_type get_allocator() const { return value_allocator_; }
 
-        bool        empty() const               { return avl_tree_.begin() == avl_tree_.end();}
+
+/* =================                    Iterators                   ================= */
+    iterator        begin()         { return avl_tree_.begin(); }
+    const_iterator  begin() const   { return avl_tree_.begin(); }
+    iterator        end()           { return avl_tree_.end(); }
+    const_iterator  end() const     { return avl_tree_.end(); }
 
 /* =================				    LookUp        				================= */
 
+        // Finds an element with key equivalent to key. 
         iterator find(const Key& key)
         {
             return (avl_tree_.search_node(ft::make_pair(key, mapped_type()), NULL));
@@ -80,27 +108,61 @@ namespace ft
             return (const_iterator(avl_tree_.search_node(ft::make_pair(key, mapped_type()), NULL)));
         }
 
+        // Returns the number of elements with key that compares equivalent to the specified argument.
+        // Count max: 1. Since this implementation is not allowed to have the same key stored 2 times.
+        size_type count( const Key& key ) const
+        {
+            return (find(key) != end());
+        }
+
+        // Returns a range containing all elements with the given key in the container. 
+        // The range is defined by two iterators, one pointing to the first element that is not less than key and another pointing to the first element greater than key. 
+        // Alternatively, the first iterator may be obtained with lower_bound(), and the second with upper_bound().
+        ft::pair<iterator, iterator> equal_range( const key_type& key )
+        {
+            return (ft::pair<iterator, iterator>(lower_bound(key), upper_bound(key)));
+        }
+    
+        ft::pair<const_iterator, const_iterator> equal_range( const key_type& key ) const
+        {
+            return (ft::pair<const_iterator, const_iterator>(lower_bound(key), upper_bound(key)));
+        }
+
         // Returns an iterator pointing to the first element that is not less than key.
-        iterator    lower_bound( const Key& key )
+        iterator lower_bound( const Key& key )
         {
             return (avl_tree_.lower_bound(ft::make_pair(key, mapped_type())));
         }
 
-        const_iterator  lower_bound( const Key& key ) const
+        const_iterator lower_bound( const Key& key ) const
         {
             return (avl_tree_.lower_bound(ft::make_pair(key, mapped_type())));
         }
 
         // Returns an iterator pointing to the first element that is greater than key.
-        iterator    upper_bound( const Key& key )
+        iterator upper_bound( const Key& key )
         {
             return (avl_tree_.upper_bound(ft::make_pair(key, mapped_type())));
         }
 
-        const_iterator  upper_bound( const Key& key ) const
+        const_iterator upper_bound( const Key& key ) const
         {
             return (avl_tree_.upper_bound(ft::make_pair(key, mapped_type())));
         }
 
+/* =================				    Capacity       				================= */
+
+    //  Checks if the container has no elements.
+    bool        empty() const       { return (avl_tree_.size() == 0); }
+
+    //  Returns the number of elements in the container.
+    size_type   size() const        { return (avl_tree_.size()); }
+
+    //  Returns the maximum number of elements the container is able to hold due to system or library implementation limitations.
+    size_type   max_size() const    { return (avl_tree_.max_size()); }
+    
+    
+    
+    
     };
 } // namespace ft
