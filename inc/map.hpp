@@ -156,17 +156,39 @@ namespace ft
     // Any past-the-end iterator remains valid. 
     void clear() { avl_tree_.clear(); }
 
+    std::pair<iterator, bool> insert(const value_type& value)
+    { 
+        return(avl_tree_.insert(value, NULL));
+    }
+
+    iterator insert(iterator pos, const value_type& value)
+    {
+        void(pos);
+        return ((avl_tree_.insert(value, NULL)).first);
+    };
+
+    template< class InputIt >
+    void insert(InputIt first, InputIt last)
+    {
+        for (InputIt it = first; it < last; ++it)
+        {
+            if(avl_tree_.insert(value, NULL)).first->second == false)
+                break ;
+        }
+    };
+
+    size_type erase(const Key& key) 
+    {
+        return (avl_tree_.erase(ft::make_pair(key, mapped_type()), NULL));
+    }
+
+    
     // void erase(iterator pos) {avl_tree_.erase()}
 
     // void erase( iterator first, iterator last )
     // {
         
     // }
-
-    size_type erase(const Key& key) 
-    {
-        return (avl_tree_.erase(ft::make_pair(key, mapped_type()), NULL));
-    }
 
     void swap(map& other)
     {
