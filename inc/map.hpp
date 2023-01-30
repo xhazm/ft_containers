@@ -29,6 +29,10 @@ namespace ft
         typedef typename allocator_type::pointer            pointer;
         typedef typename allocator_type::const_pointer      const_pointer;
 
+/* =================				Member class        				================= */
+
+        // std::map::value_compare is a function object that compares objects of type 
+        // std::map::value_type (key-value pairs) by comparing of the first components of the pairs. 
         class value_compare : std::binary_function<value_type, value_type, bool>
         {
             protected:  
@@ -65,6 +69,8 @@ namespace ft
         tree                            avl_tree_;
         
     public:    
+
+/* =================				Member class        				================= */
         // map() {}
         explicit map(const Compare& comp = Compare(), const Allocator& alloc = Allocator())
             : avl_tree_(tree()), value_allocator_(alloc), cmp_(comp) {}
@@ -86,6 +92,7 @@ namespace ft
             value_allocator_ = other.value_allocator_; 
             avl_tree_ = other.avl_tree_; 
         }
+
         allocator_type get_allocator() const { return value_allocator_; }
 
 
@@ -94,61 +101,10 @@ namespace ft
     const_iterator  begin() const   { return avl_tree_.begin(); }
     iterator        end()           { return avl_tree_.end(); }
     const_iterator  end() const     { return avl_tree_.end(); }
-
-/* =================				    LookUp        				================= */
-
-        // Finds an element with key equivalent to key. 
-        iterator find(const Key& key)
-        {
-            return (avl_tree_.search_node(ft::make_pair(key, mapped_type()), NULL));
-        }
-
-        const_iterator find(const Key& key) const
-        {
-            return (const_iterator(avl_tree_.search_node(ft::make_pair(key, mapped_type()), NULL)));
-        }
-
-        // Returns the number of elements with key that compares equivalent to the specified argument.
-        // Count max: 1. Since this implementation is not allowed to have the same key stored 2 times.
-        size_type count( const Key& key ) const
-        {
-            return (find(key) != end());
-        }
-
-        // Returns a range containing all elements with the given key in the container. 
-        // The range is defined by two iterators, one pointing to the first element that is not less than key and another pointing to the first element greater than key. 
-        // Alternatively, the first iterator may be obtained with lower_bound(), and the second with upper_bound().
-        ft::pair<iterator, iterator> equal_range( const key_type& key )
-        {
-            return (ft::pair<iterator, iterator>(lower_bound(key), upper_bound(key)));
-        }
-    
-        ft::pair<const_iterator, const_iterator> equal_range( const key_type& key ) const
-        {
-            return (ft::pair<const_iterator, const_iterator>(lower_bound(key), upper_bound(key)));
-        }
-
-        // Returns an iterator pointing to the first element that is not less than key.
-        iterator lower_bound( const Key& key )
-        {
-            return (avl_tree_.lower_bound(ft::make_pair(key, mapped_type())));
-        }
-
-        const_iterator lower_bound( const Key& key ) const
-        {
-            return (avl_tree_.lower_bound(ft::make_pair(key, mapped_type())));
-        }
-
-        // Returns an iterator pointing to the first element that is greater than key.
-        iterator upper_bound( const Key& key )
-        {
-            return (avl_tree_.upper_bound(ft::make_pair(key, mapped_type())));
-        }
-
-        const_iterator upper_bound( const Key& key ) const
-        {
-            return (avl_tree_.upper_bound(ft::make_pair(key, mapped_type())));
-        }
+    iterator        rbegin()         { return avl_tree_.rbegin(); }
+    const_iterator  rbegin() const   { return avl_tree_.rbegin(); }
+    iterator        rend()           { return avl_tree_.rend(); }
+    const_iterator  rend() const     { return avl_tree_.rend(); }
 
 /* =================				    Capacity       				================= */
 
@@ -161,6 +117,72 @@ namespace ft
     //  Returns the maximum number of elements the container is able to hold due to system or library implementation limitations.
     size_type   max_size() const    { return (avl_tree_.max_size()); }
     
+
+/* =================				    Modifiers      				================= */
+    
+    // Erases all elements from the container. After this call, size() returns zero. 
+    // Invalidates any references, pointers, or iterators referring to contained elements.
+    // Any past-the-end iterator remains valid. 
+    void clear() { avl_tree_.clear(); }
+
+    
+
+
+/* =================				    LookUp        				================= */
+
+    // Finds an element with key equivalent to key. 
+    iterator find(const Key& key)
+    {
+        return (avl_tree_.search_node(ft::make_pair(key, mapped_type()), NULL));
+    }
+
+    const_iterator find(const Key& key) const
+    {
+        return (const_iterator(avl_tree_.search_node(ft::make_pair(key, mapped_type()), NULL)));
+    }
+
+    // Returns the number of elements with key that compares equivalent to the specified argument.
+    // Count max: 1. Since this implementation is not allowed to have the same key stored 2 times.
+    size_type count( const Key& key ) const
+    {
+        return (find(key) != end());
+    }
+
+    // Returns a range containing all elements with the given key in the container. 
+    // The range is defined by two iterators, one pointing to the first element that is not less than key and another pointing to the first element greater than key. 
+    // Alternatively, the first iterator may be obtained with lower_bound(), and the second with upper_bound().
+    ft::pair<iterator, iterator> equal_range( const key_type& key )
+    {
+        return (ft::pair<iterator, iterator>(lower_bound(key), upper_bound(key)));
+    }
+
+    ft::pair<const_iterator, const_iterator> equal_range( const key_type& key ) const
+    {
+        return (ft::pair<const_iterator, const_iterator>(lower_bound(key), upper_bound(key)));
+    }
+
+    // Returns an iterator pointing to the first element that is not less than key.
+    iterator lower_bound( const Key& key )
+    {
+        return (avl_tree_.lower_bound(ft::make_pair(key, mapped_type())));
+    }
+
+    const_iterator lower_bound( const Key& key ) const
+    {
+        return (avl_tree_.lower_bound(ft::make_pair(key, mapped_type())));
+    }
+
+    // Returns an iterator pointing to the first element that is greater than key.
+    iterator upper_bound( const Key& key )
+    {
+        return (avl_tree_.upper_bound(ft::make_pair(key, mapped_type())));
+    }
+
+    const_iterator upper_bound( const Key& key ) const
+    {
+        return (avl_tree_.upper_bound(ft::make_pair(key, mapped_type())));
+    }
+
     
     
     
