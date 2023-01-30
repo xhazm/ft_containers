@@ -71,40 +71,71 @@ namespace ft
     public:    
 
 /* =================				Member class        				================= */
-        // map() {}
-        explicit map(const Compare& comp = Compare(), const Allocator& alloc = Allocator())
-            : avl_tree_(tree()), value_allocator_(alloc), cmp_(comp) {}
 
-        template< class InputIt >
-        map(InputIt first, InputIt last,
-                const Compare& comp = Compare(),
-                const Allocator& alloc = Allocator())
-                : cmp_(comp), value_allocator_(alloc)
-        {
-            insert(first, last);
-        }
+    explicit map(const Compare& comp = Compare(), const Allocator& alloc = Allocator())
+        : cmp_(comp), value_allocator_(alloc), avl_tree_(tree()) {}
 
-        map(const map& other) { this = &other; }
+    template< class InputIt >
+    map(InputIt first, InputIt last,
+            const Compare& comp = Compare(),
+            const Allocator& alloc = Allocator())
+            : cmp_(comp), value_allocator_(alloc)
+    {
+        insert(first, last);
+    }
 
-        map& operator=(const map& other)
-        {
-            cmp_ = other.cmp_; 
-            value_allocator_ = other.value_allocator_; 
-            avl_tree_ = other.avl_tree_; 
-        }
+    map(const map& other) { *this = other; }
 
-        allocator_type get_allocator() const { return value_allocator_; }
+    map& operator=(const map& other)
+    {
+        cmp_ = other.cmp_; 
+        value_allocator_ = other.value_allocator_; 
+        avl_tree_ = other.avl_tree_; 
+    }
 
+    ~map() {}
+
+    allocator_type get_allocator() const { return value_allocator_; }
+
+
+/* =================                 Element Access                   ================= */
+    
+    // Returns a reference to the mapped value of the element with key equivalent to key. 
+    // If no such element exists, an exception of type std::out_of_range is thrown. 
+    T& at(const key_type& key)
+    {
+        iterator    it = find(key);
+        if (it == end())
+            throw std::out_of_range("map::at:  key not found");
+        else
+            return (it->second);
+    }
+
+    const T& at(const key_type& key) const
+    {
+        const_iterator  it = find(key);
+        if (it == end())
+            throw std::out_of_range("map::at:  key not found");
+        else
+            return (it->second);
+    }
+    
+    // Returns a reference to the value that is mapped to a key equivalent to key, 
+    // performing an insertion if such key does not already exist. 
+    T& operator[](const Key& key)
+    {
+        return (insert(ft::make_pair(key, mapped_type()), NULL).first->second);
+    }
 
 /* =================                    Iterators                   ================= */
     iterator        begin()         { return avl_tree_.begin(); }
     const_iterator  begin() const   { return avl_tree_.begin(); }
     iterator        end()           { return avl_tree_.end(); }
     const_iterator  end() const     { return avl_tree_.end(); }
-    iterator        rbegin()         { return avl_tree_.rbegin(); }
-    const_iterator  rbegin() const   { return avl_tree_.rbegin(); }
-    iterator        rend()           { return avl_tree_.rend(); }
-    const_iterator  rend() const     { return avl_tree_.rend(); }
+    iterator        rbegin()        { return avl_tree_.rbegin(); }
+    const_iterator  rbegin() const  { return avl_tree_.rbegin(); }
+    iterator        rend()          { return avl_tree_.rend(); }
+    const_iterator  rend() const    { return avl_tree_.rend(); }
 
 /* =================				    Capacity       				================= */
 

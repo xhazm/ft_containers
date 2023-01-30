@@ -21,8 +21,6 @@ public:
     template< class U1, class U2 >
     pair(const pair<U1, U2>& p) : first(p.first), second(p.second) {}
     
-    pair(const pair& p) = default; //makes copy of member vars
-
     pair& operator=(const pair& other)
     {
         if (this != &other)

@@ -432,11 +432,6 @@ namespace ft
         node_alloc_.deallocate(node, 1);
     }
 
-    void check_rule_violation_(node_pointer node)
-    {
-        ; //logic here
-    }
-
     void clear_helper_(node_pointer n)
     {
         if (n == NULL || n == end_)
