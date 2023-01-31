@@ -42,18 +42,18 @@ class avl_iterator
 /* =================                Operator Overloads                    ================= */
         operator        avl_iterator< const T >( void ) const    { return (avl_iterator< const T >(current_)); }
 
-        avl_iterator  &operator=( const avl_iterator &other ) { current_ = other.base(); return (*this); }
-        reference        operator*( void ) const                    { return *current_; }
-        node_pointer          operator->() const                         { return &(*current_); }
-        avl_iterator& operator++()                               { ++current_; return *this; }
-        avl_iterator  operator++(int)                            { avl_iterator tmp(current_); ++current_; return tmp; }
-        avl_iterator& operator--()                               { --current_; return *this; }
-        avl_iterator  operator--(int)                            { avl_iterator tmp(current_); --current_; return tmp; }
-        avl_iterator  operator+ (difference_type __n) const      { return avl_iterator(current_ + __n); }
-        avl_iterator& operator+=(difference_type __n)            { current_ += __n; return *this; }
-        avl_iterator  operator- (difference_type __n) const      { return avl_iterator(current_ - __n); }
-        avl_iterator& operator-=(difference_type __n)            { current_ -= __n; return *this; }
-        reference        operator[](difference_type __n) const      { return *(*this + __n); }
+        avl_iterator& operator=( const avl_iterator &other )    { current_ = other.base(); return (*this); }
+        reference     operator*() const                         { return current_->value; }
+        node_pointer  operator->() const                        { return &(currrent->value); }
+        avl_iterator& operator++()                              { ++current_; return *this; }
+        avl_iterator  operator++(int)                           { avl_iterator tmp(current_); ++current_; return tmp; }
+        avl_iterator& operator--()                              { --current_; return *this; }
+        avl_iterator  operator--(int)                           { avl_iterator tmp(current_); --current_; return tmp; }
+        avl_iterator  operator+ (difference_type __n) const     { return avl_iterator(current_ + __n); }
+        avl_iterator& operator+=(difference_type __n)           { current_ += __n; return *this; }
+        avl_iterator  operator- (difference_type __n) const     { return avl_iterator(current_ - __n); }
+        avl_iterator& operator-=(difference_type __n)           { current_ -= __n; return *this; }
+        reference        operator[](difference_type __n) const  { return *(*this + __n); }
 };
 
 /* =================                Non Member Operators                    ================= */

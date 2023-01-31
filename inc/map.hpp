@@ -12,15 +12,15 @@ namespace ft
     class Key,
     class T,
     class Compare = std::less<Key>,
-    class Allocator = std::allocator<std::pair<const Key, T>>
+    class Allocator = std::allocator<std::pair<const Key, T> >
     > class map
     {
         public:
 
-        typedef T											mapped_type;
-        typedef Key											key_type;
-        typedef std::pair<const Key, mapped_type>   		value_type;
-	    typedef	Allocator									allocator_type;
+        typedef T                                           mapped_type;
+        typedef Key                                         key_type;
+        typedef ft::pair<const key_type, mapped_type>       value_type;
+        typedef Allocator                                   allocator_type;
         typedef Compare                                     key_compare;
         typedef std::size_t                                 size_type;
         typedef std::ptrdiff_t                              difference_type;
@@ -163,7 +163,7 @@ namespace ft
 
     iterator insert(iterator pos, const value_type& value)
     {
-        void(pos);
+        pos = NULL;
         return ((avl_tree_.insert(value, NULL)).first);
     };
 
@@ -172,7 +172,7 @@ namespace ft
     {
         for (InputIt it = first; it < last; ++it)
         {
-            if(avl_tree_.insert(value, NULL)).first->second == false)
+            if((avl_tree_.insert(*it, NULL)).second == false)
                 break ;
         }
     };
@@ -183,11 +183,14 @@ namespace ft
     }
 
     
-    // void erase(iterator pos) {avl_tree_.erase()}
+    // void erase(iterator pos) {avl_tree_.erase(pos)}
 
     // void erase( iterator first, iterator last )
     // {
-        
+        // for (iterator it = first; it < last; ++it)
+        // {
+        //     avl_tree_.erase(it);
+        // }
     // }
 
     void swap(map& other)
@@ -211,7 +214,7 @@ namespace ft
     }
 
     // Returns the number of elements with key that compares equivalent to the specified argument.
-    // Count max: 1. Since this implementation is not allowed to have the same key stored 2 times.
+    // Count max: 1. Since this implementation is not allowed to have duplicates.
     size_type count( const Key& key ) const
     {
         return (find(key) != end());
@@ -257,6 +260,52 @@ namespace ft
     key_compare key_comp() const        { return (key_compare()); }
     value_compare value_comp() const    { return (value_compare()); }
 	
-    
     };
+
+/* =================                Non-member functions                ================= */
+
+template< class Key, class T, class Compare, class Alloc >
+bool    operator==( const ft::map< Key, T, Compare, Alloc >& lhs,
+                    const ft::map< Key, T, Compare, Alloc >& rhs )
+{
+    return (lhs.size() == rhs.size()
+            && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+}
+
+template< class Key, class T, class Compare, class Alloc >
+bool    operator!=( const ft::map< Key, T, Compare, Alloc >& lhs,
+                    const ft::map< Key, T, Compare, Alloc >& rhs )
+{
+    return (!(lhs == rhs));
+}
+
+template< class Key, class T, class Compare, class Alloc >
+bool    operator<( const ft::map< Key, T, Compare, Alloc >& lhs,
+                    const ft::map< Key, T, Compare, Alloc >& rhs )
+{
+    return (ft::lexicographical_compare(lhs.begin(), lhs.end(),
+                                        rhs.begin(), rhs.end()));
+}
+
+template< class Key, class T, class Compare, class Alloc >
+bool    operator<=( const ft::map< Key, T, Compare, Alloc >& lhs,
+                    const ft::map< Key, T, Compare, Alloc >& rhs )
+{
+    return (!(rhs < lhs));
+}
+
+template< class Key, class T, class Compare, class Alloc >
+bool    operator>( const ft::map< Key, T, Compare, Alloc >& lhs,
+                    const ft::map< Key, T, Compare, Alloc >& rhs )
+{
+    return (rhs < lhs);
+}
+
+template< class Key, class T, class Compare, class Alloc >
+bool    operator>=( const ft::map< Key, T, Compare, Alloc >& lhs,
+                    const ft::map< Key, T, Compare, Alloc >& rhs )
+{
+    return (!(lhs < rhs));
+}
+
 } // namespace ft

@@ -77,7 +77,7 @@ namespace ft
         end_->parent = NULL;
     }
     
-    ft::pair<iterator, bool> insert(value_type& value, node_pointer pos)
+    ft::pair<iterator, bool> insert(const value_type& value, node_pointer pos)
     {
         if (pos == NULL)
             pos = root_;
