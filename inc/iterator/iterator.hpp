@@ -67,13 +67,7 @@ template< typename Category,
 };
 
 
-// distance helpers to get distance between iterators
-template< typename InputIterator >
-typename iterator_traits< InputIterator >::difference_type
-distance( InputIterator first, InputIterator last )
-{
-    return _distance_helper(first, last, typename iterator_traits< InputIterator >::iterator_category());
-}
+
 
 // input_iterator_tag because most standard libs use it
 template< typename InputIterator >
@@ -83,7 +77,7 @@ _distance_helper( InputIterator first, InputIterator last, input_iterator_tag )
     typename iterator_traits< InputIterator >::difference_type dist = 0;
 
     for (; first != last; ++first)
-    ++dist;
+    	++dist;
     return dist;
 }
 
@@ -93,6 +87,14 @@ typename iterator_traits< InputIterator >::difference_type
 _distance_helper( InputIterator first, InputIterator last, random_access_iterator_tag ) 
 {
     return last - first;
+}
+
+// distance helpers to get distance between iterators
+template< typename InputIterator >
+typename iterator_traits< InputIterator >::difference_type
+distance( InputIterator first, InputIterator last )
+{
+    return _distance_helper(first, last, typename iterator_traits< InputIterator >::iterator_category());
 }
 
 }
