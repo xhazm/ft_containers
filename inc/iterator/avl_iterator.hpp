@@ -6,6 +6,42 @@
 
 namespace ft {
 
+template < class node_ptr >
+node_ptr avl_tree_max(node_ptr node)
+{
+    while (node->right->right != NULL)
+        node = node->right;
+    return node;
+}
+
+template < class node_ptr >
+node_ptr avl_tree_min(node_ptr node)
+{
+    while (node->left->left != NULL)
+        node = node->left;
+    return node;
+}
+
+template < class node_ptr >
+node_ptr avl_tree_prev(node_ptr x)
+{
+    if (x->left != NULL)
+        return avl_tree_max(x->left);
+    while (x == x->parent->left)
+        x = x->parent;
+    return x->parent;
+}
+
+template < class node_ptr >
+node_ptr avl_tree_next(node_ptr node)
+{
+    if (node->right != NULL)
+        return avl_tree_min(node->right);
+    while (node == node->parent->right)
+        node = node->parent;
+    return node->parent;
+}
+
 template < class T >
 class avl_iterator
 {
@@ -42,18 +78,21 @@ class avl_iterator
 /* =================                Operator Overloads                    ================= */
         operator        avl_iterator< const T >( void ) const    { return (avl_iterator< const T >(current_)); }
 
-        avl_iterator& operator=( const avl_iterator &other )    { current_ = other.base(); return (*this); }
+        avl_iterator& operator=(const avl_iterator &other)      { current_ = other.base(); return (*this); }
         reference     operator*() const                         { return current_->value; }
-        node_pointer  operator->() const                        { return &(currrent->value); }
-        avl_iterator& operator++()                              { ++current_; return *this; }
+        pointer       operator->() const                        { return &(current_->value); }
+        avl_iterator& operator++()                              
+        {
+            current_ = avl_tree_next< node_pointer >(current_);
+            return *this;
+        }
         avl_iterator  operator++(int)                           { avl_iterator tmp(current_); ++current_; return tmp; }
-        avl_iterator& operator--()                              { --current_; return *this; }
+        avl_iterator& operator--()                              
+        {
+            current_ = avl_tree_prev< node_pointer >(current_);
+            return *this; 
+        }
         avl_iterator  operator--(int)                           { avl_iterator tmp(current_); --current_; return tmp; }
-        avl_iterator  operator+ (difference_type __n) const     { return avl_iterator(current_ + __n); }
-        avl_iterator& operator+=(difference_type __n)           { current_ += __n; return *this; }
-        avl_iterator  operator- (difference_type __n) const     { return avl_iterator(current_ - __n); }
-        avl_iterator& operator-=(difference_type __n)           { current_ -= __n; return *this; }
-        reference        operator[](difference_type __n) const  { return *(*this + __n); }
 };
 
 /* =================                Non Member Operators                    ================= */
@@ -61,56 +100,5 @@ template < typename T >
 bool operator==(const avl_iterator<T>& lhs, const avl_iterator<T>& rhs) { return lhs.base() == rhs.base(); }
 template < typename T >
 bool operator!=(const avl_iterator<T>& lhs, const avl_iterator<T>& rhs) { return !(lhs == rhs); }
-template < typename T >
-bool operator> (const avl_iterator<T>& lhs, const avl_iterator<T>& rhs) { return lhs.base() > rhs.base(); }
-template < typename T >
-bool operator>=(const avl_iterator<T>& lhs, const avl_iterator<T>& rhs) { return !(lhs < rhs); }
-template < typename T >
-bool operator< (const avl_iterator<T>& lhs, const avl_iterator<T>& rhs) { return lhs.base() < rhs.base(); }
-template < typename T >
-bool operator<=(const avl_iterator<T>& lhs, const avl_iterator<T>& rhs) { return !(lhs > rhs); }
-
-
-template< typename T >
-avl_iterator< T >    operator+( const typename avl_iterator< T >::difference_type& i,
-                                    const avl_iterator< T >& iter )
-{
-    return (avl_iterator< T >(iter.base() + i));
-}
-
-template< typename T >
-avl_iterator< T >    operator-( const typename avl_iterator< T >::difference_type& i,
-                                    const avl_iterator< T >& iter )
-{
-    return (avl_iterator< T >(iter.base() - i));
-}
-
-template< typename T >
-typename avl_iterator< T >::difference_type  operator+( const avl_iterator< T >& lhs,
-                                                            const avl_iterator< T >& rhs )
-{
-    return (lhs.base() + rhs.base());
-}
-
-template< typename T >
-typename avl_iterator< T >::difference_type  operator-( const avl_iterator< T >& lhs,
-                                                            const avl_iterator< T >& rhs )
-{
-    return (lhs.base() - rhs.base());
-}
-
-template< typename T1, typename T2 >
-typename avl_iterator< T1 >::difference_type operator+( const avl_iterator< T1 >& lhs,
-                                                            const avl_iterator< T2 >& rhs )
-{
-    return (lhs.base() + rhs.base());
-}
-
-template< typename T1, typename T2 >
-typename avl_iterator< T1 >::difference_type operator-( const avl_iterator< T1 >& lhs,
-                                                            const avl_iterator< T2 >& rhs )
-{
-    return (lhs.base() - rhs.base());
-}
 
 }
