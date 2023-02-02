@@ -84,14 +84,15 @@ namespace ft
         if (pos == end_)
         {
             root_ = create_node_(value, NULL);
+            root_->right = end_;
             // end_->parent = root_;
             return (ft::make_pair(iterator(root_), true));
         }
-        while (pos != end_)
+        while (pos != NULL)
         {
-            if (cmp_(value, pos->value) && pos->left != end_)
+            if (cmp_(value, pos->value) && pos->left != NULL)
                 pos = pos->left;
-            else if (cmp_(pos->value, value) && pos->right != end_)
+            else if (cmp_(pos->value, value) && pos->right != NULL && pos->right != end_)
                 pos = pos->right;
             else
                 break ;
@@ -106,7 +107,13 @@ namespace ft
         else if(cmp_(pos->value, value)) //right
         {
             node_pointer new_node = create_node_(value, pos);
-            pos->right = new_node;
+            if (pos->right == end_)
+            {
+                pos->right = new_node;
+                pos->right->right = end_;
+            }
+            else
+                pos->right = new_node;
             balance_(new_node);
             return (ft::make_pair(iterator(new_node), true));
         }
@@ -129,14 +136,14 @@ namespace ft
         if (erase == end_)
             return (false);
         //either one or no child
-        if ((erase->left == end_) || (erase->right == end_))
+        if ((erase->left == NULL) || (erase->right == end_ || erase->right == NULL))
         {
-            tmp = (erase->left != end_ ? erase->left : erase->right);
+            tmp = (erase->left != NULL ? erase->left : erase->right);
             //no child
             if (tmp == end_)
             {
                 if (erase != root_)
-                    erase->parent->right == erase ? erase->parent->right = end_ : erase->parent->left = end_;
+                    erase->parent->right == erase ? erase->parent->right = end_ : erase->parent->left = NULL;
             }
             //one child
             else
@@ -144,6 +151,8 @@ namespace ft
                 tmp->parent = erase->parent;
                 if (erase != root_)
                     erase->parent->right == erase ? erase->parent->right = tmp : erase->parent->left = tmp;
+                if(erase->right == end_)
+                    tmp->right = end_;
             }
             erase_node_(erase);
             // return (true);
@@ -153,9 +162,9 @@ namespace ft
         {
             tmp = max_value_node_(erase->left);
             if (tmp->parent == erase)
-                erase->left = end_;
+                erase->left = NULL;
             else if (tmp->parent != NULL)
-                tmp->parent->right = end_;
+                tmp->parent->right = NULL; //maybe end in some cases?
             erase->value = tmp->value;
             node_alloc_.deallocate(tmp, 1);
             tmp = erase;
@@ -181,7 +190,7 @@ namespace ft
         node_pointer result = end_;
         node_pointer node = root_;
 
-        while (node != end_)
+        while (node != NULL)
         {
             if (!cmp_(node->value, value))
             {
@@ -199,7 +208,7 @@ namespace ft
         node_pointer result = end_;
         node_pointer node = root_;
 
-        while (node != end_)
+        while (node != NULL)
         {
             if (!cmp_(node->value, value))
             {
@@ -217,7 +226,7 @@ namespace ft
         node_pointer result = end_;
         node_pointer node = root_;
 
-        while (node != end_)
+        while (node != NULL)
         {
             if (cmp_(value, node->value))
             {
@@ -235,7 +244,7 @@ namespace ft
         node_pointer result = end_;
         node_pointer node = root_;
 
-        while (node != end_)
+        while (node != NULL)
         {
             if (cmp_(value, node->value))
             {
@@ -259,7 +268,7 @@ namespace ft
     {
         if (n == NULL)
             n = root_;
-        while (n != end_)
+        while (n != NULL)
         {
             if (cmp_(value, n->value))
                 n = n->left;
@@ -283,7 +292,7 @@ namespace ft
     */
     size_type tree_height_(node_pointer root, size_type height)
     {
-        if (root == end_)
+        if (root == NULL || root == end_)
             return height - 1;
         size_type l_height = tree_height_(root->left, height + 1);
         size_type r_height = tree_height_(root->right, height + 1);
@@ -299,7 +308,7 @@ namespace ft
     */
     long long balance_of_subtrees_(node_pointer node)
     {
-        if (node == end_)
+        if (node == NULL)
             return 0;
         return tree_height_(node->left, 1) - tree_height_(node->right, 1);
     }
@@ -336,24 +345,6 @@ namespace ft
         }
     }
 
-    node_pointer min_value_node_(node_pointer pos)
-    {
-        if (pos == end_)
-            return (pos);
-        while (pos->left != end_)
-            pos = pos->left;
-        return (pos);
-    }
-
-    node_pointer max_value_node_(node_pointer pos)
-    {
-        if (pos == end_)
-            return (pos);
-        while (pos->right != end_)
-            pos = pos->right;
-        return (pos);
-    }
-
     node_pointer rotate_right_(node_pointer new_head)
     {
         node_pointer    rotation_node = new_head->parent;
@@ -368,7 +359,7 @@ namespace ft
                 rotation_node->parent->left = new_head;
         }
         rotation_node->left = new_head->right;
-        if (rotation_node->left != end_)
+        if (rotation_node->left != NULL)
             rotation_node->left->parent = rotation_node;
         new_head->right = rotation_node;
         new_head->parent = rotation_node->parent;
@@ -391,7 +382,7 @@ namespace ft
                 rotation_node->parent->left = new_head;
         }
         rotation_node->right = new_head->left;
-        if (rotation_node->right != end_)
+        if (rotation_node->right != end_ && rotation_node->right != NULL)
             rotation_node->right->parent = rotation_node;
         new_head->left = rotation_node;
         new_head->parent = rotation_node->parent;
@@ -399,24 +390,12 @@ namespace ft
         return (new_head);
     }
 
-    // node_pointer create_node_(value_type& value, node_pointer parent)
-    // {
-    //     node_pointer new_node = node_alloc_.allocate(1);
-    //     new_node->parent = parent;
-    //     new_node->left = end_;
-    //     new_node->right = end_;
-    //     new_node.balance_factor = 0; //get height diff function
-    //     value_alloc_.construct(&new_node->value, value);
-    //     ++size_;
-    //     return (new_node);
-    // }
-
     node_pointer create_node_(value_type value, node_pointer parent)
     {
         node_pointer new_node = node_alloc_.allocate(1);
         new_node->parent = parent;
-        new_node->left = end_;
-        new_node->right = end_;
+        new_node->left = NULL;
+        new_node->right = NULL;
         value_alloc_.construct(&new_node->value, value);
         ++size_;
         return (new_node);
@@ -430,6 +409,15 @@ namespace ft
             root_ = end_;
         value_alloc_.destroy(&node->value);
         node_alloc_.deallocate(node, 1);
+    }
+
+    node_pointer max_value_node_(node_pointer pos)
+    {
+        if (pos == end_)
+            return (pos);
+        while (pos->right != end_ && pos->right != NULL)
+            pos = pos->right;
+        return (pos);
     }
 
     void clear_helper_(node_pointer n)

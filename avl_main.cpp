@@ -32,20 +32,20 @@ int main()
         ft::pair<int, int> test(arr1[i], arr2[0]);
         avl.insert(test, NULL);
     }
-    // ft::pair<int, int> test(arr1[5], arr2[0]);
-    // std::cout << test.first << std::endl;
-    // avl.erase(test, NULL);
-    // test.first = 77;
-    // avl.erase(test, NULL);
-    // test.first = 20;
-    // avl.erase(test, NULL);
-    // test.first = 30;
-    // avl.erase(test, NULL);
+    ft::pair<int, int> test(arr1[5], arr2[0]);
+    test.first = 40;
+    avl.erase(test, NULL);
+    test.first = 77;
+    avl.erase(test, NULL);
+    test.first = 20;
+    avl.erase(test, NULL);
+    test.first = 30;
+    avl.erase(test, NULL);
 
     for(ft::avl_tree<ft::pair<int, int>, std::less<ft::pair<int,int>>>::iterator it = avl.begin(); it != avl.end(); ++it)
     {
         std::cout << it->first << std::endl;
     }
-    // std::cout << avl.root_->value.first << std::endl;
+    std::cout << avl.root_->value.first << std::endl;
 
 }
