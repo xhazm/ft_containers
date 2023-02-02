@@ -10,50 +10,60 @@
 
 namespace ft
 {
-    template<
-        class Value,
-        class Compare,
-        class Allocator = std::allocator< Value >
-    > class avl_tree
+
+template<
+    class Value,
+    class Compare,
+    class Allocator = std::allocator< Value >
+> class avl_tree
+{
+public:
+    typedef Value                                           value_type;
+    typedef Allocator                                       value_allocator_type;
+    typedef typename value_allocator_type::difference_type  difference_type;
+    typedef Compare                                         value_compare;
+    typedef typename avl_node< value_type >::node_type      node_type;
+    typedef typename node_type::pointer                     node_pointer;
+    typedef typename value_allocator_type::template rebind<node_type>::other    node_allocator_type;
+    typedef typename value_allocator_type::size_type        size_type;
+    typedef ft::avl_iterator< value_type >			        iterator;
+    typedef ft::avl_iterator< value_type >			        const_iterator;
+    typedef ft::reverse_iterator<iterator>                  reverse_iterator;
+    typedef ft::reverse_iterator<const_iterator>            const_reverse_iterator;
+
+public:
+    value_allocator_type    value_alloc_;
+    node_allocator_type     node_alloc_;
+    node_pointer            root_;
+    node_pointer            end_;
+    node_pointer            begin_;
+    value_compare           cmp_;
+    size_type               size_;
+
+
+public:
+    // avl_tree(const value_compare& cmp, const value_allocator_type value_alloc = value_allocator_type())
+    avl_tree() : size_(0)
     {
-    public:
-        typedef Value                                           value_type;
-        typedef Allocator                                       value_allocator_type;
-        typedef typename value_allocator_type::difference_type  difference_type;
-        typedef Compare                                         value_compare;
-        typedef typename avl_node< value_type >::node_type      node_type;
-        typedef typename node_type::pointer                     node_pointer;
-        typedef typename value_allocator_type::template rebind<node_type>::other    node_allocator_type;
-        typedef typename value_allocator_type::size_type        size_type;
-        typedef ft::avl_iterator< value_type >			        iterator;
-        typedef ft::avl_iterator< value_type >			        const_iterator;
-        typedef ft::reverse_iterator<iterator>                  reverse_iterator;
-        typedef ft::reverse_iterator<const_iterator>            const_reverse_iterator;
+        end_ = create_node_(value_type(), NULL);
+        root_ = end_;
+        begin_ = end_;
+        //init also node alloc? or is it auto inited
+    }
+    ~avl_tree() 
+    {
+        clear();
+        erase_node_(end_);
+    }
 
-    public:
-        value_allocator_type    value_alloc_;
-        node_allocator_type     node_alloc_;
-        node_pointer            root_;
-        node_pointer            end_;
-        node_pointer            begin_;
-        value_compare           cmp_;
-        size_type               size_;
-    
+    avl_tree& operator=(const avl_tree& other)
+    {
+        avl_tree tmp(x);
+        this->swap(tmp);
 
-    public:
-        // avl_tree(const value_compare& cmp, const value_allocator_type value_alloc = value_allocator_type())
-        avl_tree() : size_(0)
-        {
-            end_ = create_node_(value_type(), NULL);
-            root_ = end_;
-            begin_ = end_;
-            //init also node alloc? or is it auto inited
-        }
-        ~avl_tree() 
-        {
-            clear();
-            erase_node_(end_);
-        }
+        return *this;
+    }
+
 
 /* =================                    Iterators                   ================= */
     iterator                begin()         { return iterator(begin_); }

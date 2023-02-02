@@ -46,6 +46,5 @@ int main()
     {
         std::cout << it->first << std::endl;
     }
-    std::cout << avl.root_->value.first << std::endl;
 
 }
