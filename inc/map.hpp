@@ -205,7 +205,7 @@ namespace ft
     // Finds an element with key equivalent to key. 
     iterator find(const Key& key)
     {
-        return (avl_tree_.search_node(ft::make_pair(key, mapped_type()), NULL));
+        return (iterator(avl_tree_.search_node(ft::make_pair(key, mapped_type()), NULL)));
     }
 
     const_iterator find(const Key& key) const

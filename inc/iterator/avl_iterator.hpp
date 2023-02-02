@@ -56,6 +56,7 @@ class avl_iterator
         typedef typename iterator::pointer                                      pointer;
         typedef typename iterator::iterator_category                            iterator_category;
         typedef typename ft::avl_node<T>::pointer                               node_pointer;   
+        typedef typename ft::avl_node<T>::const_pointer                         const_node_pointer;   
 
         //reference == avl_node reference??         
 
@@ -65,7 +66,7 @@ class avl_iterator
 /* =================                Constructors                ================= */
     public:
 
-        avl_iterator(node_pointer& ptr = NULL) : current_(ptr) {}
+        avl_iterator(node_pointer ptr = NULL) : current_(ptr) {}
 
         avl_iterator(const avl_iterator &other) : current_(other.base()) {}
 
@@ -76,7 +77,7 @@ class avl_iterator
         node_pointer base( void ) const { return (current_); }
 
 /* =================                Operator Overloads                    ================= */
-        operator        avl_iterator< const T >( void ) const    { return (avl_iterator< const T >(current_)); }
+        // operator        avl_iterator< const T >( void ) const    { return (avl_iterator< const T >(current_)); }
 
         avl_iterator& operator=(const avl_iterator &other)      { current_ = other.base(); return (*this); }
         reference     operator*() const                         { return current_->value; }

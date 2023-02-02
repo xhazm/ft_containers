@@ -58,7 +58,7 @@ public:
 
     avl_tree& operator=(const avl_tree& other)
     {
-        avl_tree tmp(x);
+        avl_tree tmp(other);
         this->swap(tmp);
 
         return *this;
