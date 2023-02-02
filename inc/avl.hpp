@@ -85,6 +85,7 @@ namespace ft
         {
             root_ = create_node_(value, NULL);
             root_->right = end_;
+            // begin_ = root_;
             // end_->parent = root_;
             return (ft::make_pair(iterator(root_), true));
         }
@@ -101,6 +102,8 @@ namespace ft
         {
             node_pointer new_node = create_node_(value, pos);
             pos->left = new_node;
+            // if (pos == begin_)
+                // begin_ = new_node;
             balance_(new_node);
             return (ft::make_pair(iterator(new_node), true));
         }
@@ -409,6 +412,15 @@ namespace ft
             root_ = end_;
         value_alloc_.destroy(&node->value);
         node_alloc_.deallocate(node, 1);
+    }
+
+    node_pointer min_value_node_(node_pointer pos)
+    {
+        if (pos == NULL || pos == end_)
+            return (pos);
+        while (pos->left != NULL)
+            pos = pos->left;
+        return (pos);
     }
 
     node_pointer max_value_node_(node_pointer pos)

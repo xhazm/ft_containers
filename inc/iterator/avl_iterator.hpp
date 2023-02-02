@@ -9,7 +9,7 @@ namespace ft {
 template < class node_ptr >
 node_ptr avl_tree_max(node_ptr node)
 {
-    while (node->right->right != NULL)
+    while (node->right != NULL)
         node = node->right;
     return node;
 }
@@ -17,7 +17,7 @@ node_ptr avl_tree_max(node_ptr node)
 template < class node_ptr >
 node_ptr avl_tree_min(node_ptr node)
 {
-    while (node->left->left != NULL)
+    while (node->left != NULL)
         node = node->left;
     return node;
 }
