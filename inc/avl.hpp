@@ -35,6 +35,7 @@ namespace ft
         node_allocator_type     node_alloc_;
         node_pointer            root_;
         node_pointer            end_;
+        node_pointer            begin_;
         value_compare           cmp_;
         size_type               size_;
     
@@ -45,6 +46,7 @@ namespace ft
         {
             end_ = create_node_(value_type(), NULL);
             root_ = end_;
+            begin_ = end_;
             //init also node alloc? or is it auto inited
         }
         ~avl_tree() 
@@ -54,8 +56,8 @@ namespace ft
         }
 
 /* =================                    Iterators                   ================= */
-    iterator                begin()         { return iterator(root_); }
-    const_iterator          begin() const   { return const_iterator(root_); }
+    iterator                begin()         { return iterator(begin_); }
+    const_iterator          begin() const   { return const_iterator(begin_); }
     iterator                end()           { return iterator(end_); }
     const_iterator          end() const     { return const_iterator(end_); }
     reverse_iterator        rbegin()        { return reverse_iterator(end()); }
@@ -85,8 +87,8 @@ namespace ft
         {
             root_ = create_node_(value, NULL);
             root_->right = end_;
-            // begin_ = root_;
-            // end_->parent = root_;
+            begin_ = root_;
+            end_->parent = root_;
             return (ft::make_pair(iterator(root_), true));
         }
         while (pos != NULL)
@@ -102,8 +104,8 @@ namespace ft
         {
             node_pointer new_node = create_node_(value, pos);
             pos->left = new_node;
-            // if (pos == begin_)
-                // begin_ = new_node;
+            if (pos == begin_)
+                begin_ = new_node;
             balance_(new_node);
             return (ft::make_pair(iterator(new_node), true));
         }
@@ -181,6 +183,7 @@ namespace ft
         ft::swap(value_alloc_, other.value_alloc_);
         ft::swap(node_alloc_, other.node_alloc_);
         ft::swap(root_, other.root_);
+        ft::swap(begin_, other.begin_);
         ft::swap(end_, other.end_);
         ft::swap(size_, other.size_);
         ft::swap(cmp_, other.cmp_);
