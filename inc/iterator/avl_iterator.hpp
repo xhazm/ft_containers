@@ -74,10 +74,9 @@ class avl_iterator
         ~avl_iterator() {}
 
 /* =================                Accessor                    ================= */
-        node_pointer base( void ) const { return (current_); }
+        node_pointer base( void ) const     { return (current_); }
 
 /* =================                Operator Overloads                    ================= */
-        // operator        avl_iterator< const T >( void ) const    { return (avl_iterator< const T >(current_)); }
 
         avl_iterator& operator=(const avl_iterator &other)      { current_ = other.base(); return (*this); }
         reference     operator*() const                         { return current_->value; }
@@ -94,12 +93,68 @@ class avl_iterator
             return *this; 
         }
         avl_iterator  operator--(int)                           { avl_iterator tmp(current_); --current_; return tmp; }
+        
+        bool    operator==(const avl_iterator& other) {return current_ == other.current_;}
+        bool    operator!=(const avl_iterator& other) {return current_ != other.current_;}
 };
 
-/* =================                Non Member Operators                    ================= */
-template < typename T >
-bool operator==(const avl_iterator<T>& lhs, const avl_iterator<T>& rhs) { return lhs.base() == rhs.base(); }
-template < typename T >
-bool operator!=(const avl_iterator<T>& lhs, const avl_iterator<T>& rhs) { return !(lhs == rhs); }
+template < class T >
+class const_avl_iterator
+{
+   private:
+        typedef typename ft::iterator<ft::bidirectional_iterator_tag, const T >       iterator_base;
+
+    public:
+        // typedef Iter                                                            iterator_type;
+        typedef typename iterator_base::value_type                                   value_type;
+        typedef typename iterator_base::difference_type                              difference_type;
+        typedef typename iterator_base::reference                                    reference;
+        typedef typename iterator_base::pointer                                      pointer;
+        typedef typename iterator_base::iterator_category                            iterator_category;
+        typedef typename ft::avl_node<const T>::const_pointer                   node_pointer;
+        typedef avl_iterator<T>                                                 iterator;
+        typedef const_avl_iterator                                              const_iterator;
+        //reference == avl_node reference??         
+
+    private:
+        node_pointer current_;
+
+/* =================                Constructors                ================= */
+    public:
+
+        const_avl_iterator(node_pointer& ptr = NULL) : current_(ptr) {}
+
+        const_avl_iterator(const const_iterator &other) : current_(other.base()) {}
+        
+        const_avl_iterator(const iterator &other) : current_(reinterpret_cast<node_pointer>(other.base())) {}
+
+/* =================                Destructor                  ================= */
+        ~const_avl_iterator() {}
+
+/* =================                Accessor                    ================= */
+        node_pointer base( void ) const { return (current_); }
+
+/* =================                Operator Overloads                    ================= */
+        // operator        const_avl_iterator< const T >( void ) const    { return (const_avl_iterator< const T >(current_)); }
+
+        const_iterator& operator=(const const_iterator &other)      { current_ = other.base(); return (*this); }
+        reference       operator*() const                         { return current_->value; }
+        pointer         operator->() const                        { return &(current_->value); }
+        const_iterator& operator++()                              
+        {
+            current_ = avl_tree_next< node_pointer >(current_);
+            return *this;
+        }
+        const_iterator  operator++(int)                           { const_iterator tmp(current_); ++current_; return tmp; }
+        const_iterator& operator--()                              
+        {
+            current_ = avl_tree_prev< node_pointer >(current_);
+            return *this;
+        }
+        const_iterator  operator--(int)                           { const_iterator tmp(current_); --current_; return tmp; }
+        
+        bool    operator==(const const_iterator& other) {return current_ == other.current_;}
+        bool    operator!=(const const_iterator& other) {return current_ != other.current_;}
+};
 
 }

@@ -24,8 +24,8 @@ int main()
     ft::map<int,int>::iterator it = map.begin();
     for(; it != map.end(); ++it)
     {
-        // if (it->first == 4)
-        //     it->second = 99;
+        if (it->first == 4)
+            it->second = 99;
         std::cout << it->first << std::endl;
     }
 

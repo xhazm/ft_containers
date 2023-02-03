@@ -90,7 +90,8 @@ namespace ft
     {
         cmp_ = other.cmp_; 
         value_allocator_ = other.value_allocator_; 
-        avl_tree_ = other.avl_tree_; 
+        avl_tree_ = other.avl_tree_;
+        return *this;
     }
 
     ~map() {}
