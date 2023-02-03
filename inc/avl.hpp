@@ -56,10 +56,17 @@ public:
         erase_node_(end_);
     }
 
-    avl_tree& operator=(const avl_tree& other)
+    avl_tree& operator=(const avl_tree& other) 
     {
-        avl_tree tmp(other);
-        this->swap(tmp);
+        if (this != &other)
+        {
+            clear();
+            value_alloc_ = other.value_alloc_;
+            node_alloc_ = other.node_alloc_;
+            cmp_ = other.cmp_;
+            for (const_iterator it = other.begin(); it != other.end(); ++it)
+                insert(*it, NULL);
+        }
 
         return *this;
     }
@@ -417,14 +424,15 @@ public:
         return (new_node);
     }
 
-    void erase_node_(node_pointer node)
+    void erase_node_(node_pointer& node)
     {
         if (node != end_)
             --size_;
-        if (node == root_)
-            root_ = end_;
+        // if (node == root_)
+        //     root_ = end_;
         value_alloc_.destroy(&node->value);
         node_alloc_.deallocate(node, 1);
+        node = NULL;
     }
 
     node_pointer min_value_node_(node_pointer pos)
@@ -449,6 +457,7 @@ public:
     {
         if (n == NULL || n == end_)
             return ;
+        // n = root_
         clear_helper_(n->left);
         clear_helper_(n->right);
         erase_node_(n);

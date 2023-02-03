@@ -12,7 +12,7 @@ namespace ft
     class Key,
     class T,
     class Compare = std::less<Key>,
-    class Allocator = std::allocator<std::pair<const Key, T> >
+    class Allocator = std::allocator<ft::pair<const Key, T> >
     > class map
     {
         public:
@@ -157,7 +157,7 @@ namespace ft
     // Any past-the-end iterator remains valid. 
     void clear() { avl_tree_.clear(); }
 
-    std::pair<iterator, bool> insert(const value_type& value)
+    ft::pair<iterator, bool> insert(const value_type& value)
     { 
         return(avl_tree_.insert(value, NULL));
     }

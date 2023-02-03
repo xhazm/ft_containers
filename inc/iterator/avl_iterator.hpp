@@ -86,13 +86,13 @@ class avl_iterator
             current_ = avl_tree_next< node_pointer >(current_);
             return *this;
         }
-        avl_iterator  operator++(int)                           { avl_iterator tmp(current_); ++current_; return tmp; }
+        avl_iterator  operator++(int)                           { avl_iterator tmp(current_); ++*this; return tmp; }
         avl_iterator& operator--()                              
         {
             current_ = avl_tree_prev< node_pointer >(current_);
             return *this; 
         }
-        avl_iterator  operator--(int)                           { avl_iterator tmp(current_); --current_; return tmp; }
+        avl_iterator  operator--(int)                           { avl_iterator tmp(current_); --*this; return tmp; }
         
         bool    operator==(const avl_iterator& other) {return current_ == other.current_;}
         bool    operator!=(const avl_iterator& other) {return current_ != other.current_;}
@@ -145,16 +145,15 @@ class const_avl_iterator
             current_ = avl_tree_next< node_pointer >(current_);
             return *this;
         }
-        const_iterator  operator++(int)                           { const_iterator tmp(current_); ++current_; return tmp; }
+        const_iterator  operator++(int)                           { const_iterator tmp(current_); ++*this; return tmp; }
         const_iterator& operator--()                              
         {
             current_ = avl_tree_prev< node_pointer >(current_);
             return *this;
         }
-        const_iterator  operator--(int)                           { const_iterator tmp(current_); --current_; return tmp; }
+        const_iterator  operator--(int)                           { const_iterator tmp(current_); --*this; return tmp; }
         
-        bool    operator==(const const_iterator& other) {return current_ == other.current_;}
-        bool    operator!=(const const_iterator& other) {return current_ != other.current_;}
+        bool    operator==(const const_avl_iterator& other) {return current_ == other.current_;}
+        bool    operator!=(const const_avl_iterator& other) {return current_ != other.current_;}
 };
-
 }
