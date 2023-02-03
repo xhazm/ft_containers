@@ -43,11 +43,12 @@ public:
 
 public:
     // avl_tree(const value_compare& cmp, const value_allocator_type value_alloc = value_allocator_type())
-    avl_tree() : size_(0)
+    avl_tree()
     {
         end_ = create_node_(value_type(), NULL);
         root_ = end_;
         begin_ = end_;
+        size_ = 0;
         //init also node alloc? or is it auto inited
     }
     ~avl_tree() 

@@ -116,7 +116,7 @@ int main()
 
     ft::map<int,int> map_ft_test;
     std::map<int,int> map_std_test;
-    print_data(assign_overload_test(map_std_test), assign_overload_test(map_ft_test));
+    print_data(assign_overload_test(map_ft_test), assign_overload_test(map_std_test));
     
 
 
