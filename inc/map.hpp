@@ -171,7 +171,7 @@ namespace ft
     template< class InputIt >
     void insert(InputIt first, InputIt last)
     {
-        for (InputIt it = first; it < last; ++it)
+        for (InputIt it = first; it != last; ++it)
         {
             if((avl_tree_.insert(*it, NULL)).second == false)
                 break ;
@@ -184,14 +184,14 @@ namespace ft
     }
 
     
-    // void erase(iterator pos) {avl_tree_.erase(pos)}
+    void erase(iterator pos) { avl_tree_.erase(pos); }
 
     // void erase( iterator first, iterator last )
     // {
-        // for (iterator it = first; it < last; ++it)
-        // {
-        //     avl_tree_.erase(it);
-        // }
+    //     for (iterator it = first; it < last; ++it)
+    //     {
+    //         avl_tree_.erase(it);
+    //     }
     // }
 
     void swap(map& other)

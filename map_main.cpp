@@ -72,12 +72,14 @@ std::vector<int> assign_overload_test(_map<T, V> mp) {
     for (int i = 20 * _ratio, j = 200010; i < 40 * _ratio; ++i, ++j)
         mp2.insert(_make_pair(i, j));
     mp2 = mp;
+    mp2.clear();
     typename _map<T, V>::iterator it = mp2.begin();
     for (; it != mp2.end(); it++) {
         v.push_back(it->first);
         v.push_back(it->second);
     }
     v.push_back(mp2.size());
+    mp.clear();
     return v;
 }
 

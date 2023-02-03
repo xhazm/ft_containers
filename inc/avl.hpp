@@ -94,6 +94,7 @@ public:
     {
         clear_helper_(root_);
         root_ = end_;
+        begin_ = root_;
         end_->parent = NULL;
     }
     
@@ -151,6 +152,13 @@ public:
     *   @param erase    The node which should be erased, if found
     *   @param tmp      Saves the node which get on the pos of the erased node
     */
+
+    bool erase(iterator pos)
+    {
+        node_pointer    del = (node_pointer)(pos.base());
+        return erase(del->value, NULL);
+    }
+
     bool erase(value_type value, node_pointer pos)
     {
         node_pointer    erase = search_node(value, pos);
@@ -188,7 +196,9 @@ public:
                 erase->left = NULL;
             else if (tmp->parent != NULL)
                 tmp->parent->right = NULL; //maybe end in some cases?
-            erase->value = tmp->value;
+            value_alloc_.destroy(&erase->value);
+            value_alloc_.construct(&erase->value, tmp->value);
+            // erase->value = tmp->value;
             node_alloc_.deallocate(tmp, 1);
             tmp = erase;
         }
@@ -458,7 +468,6 @@ public:
     {
         if (n == NULL || n == end_)
             return ;
-        // n = root_
         clear_helper_(n->left);
         clear_helper_(n->right);
         erase_node_(n);
