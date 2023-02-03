@@ -27,7 +27,7 @@ public:
     typedef typename value_allocator_type::template rebind<node_type>::other    node_allocator_type;
     typedef typename value_allocator_type::size_type        size_type;
     typedef ft::avl_iterator< value_type >			        iterator;
-    typedef ft::const_avl_iterator< value_type >			        const_iterator;
+    typedef ft::const_avl_iterator< value_type >			const_iterator;
     typedef ft::reverse_iterator<iterator>                  reverse_iterator;
     typedef ft::reverse_iterator<const_iterator>            const_reverse_iterator;
 
@@ -155,7 +155,7 @@ public:
 
     bool erase(iterator pos)
     {
-        node_pointer    del = (node_pointer)(pos.base());
+        node_pointer    del = pos.base();
         return erase(del->value, NULL);
     }
 
@@ -171,7 +171,7 @@ public:
         {
             tmp = (erase->left != NULL ? erase->left : erase->right);
             //no child
-            if (tmp == end_)
+            if (tmp == end_ || tmp == NULL)
             {
                 if (erase != root_)
                     erase->parent->right == erase ? erase->parent->right = end_ : erase->parent->left = NULL;

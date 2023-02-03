@@ -56,7 +56,6 @@ class avl_iterator
         typedef typename iterator::pointer                                      pointer;
         typedef typename iterator::iterator_category                            iterator_category;
         typedef typename ft::avl_node<T>::pointer                               node_pointer;   
-        typedef typename ft::avl_node<T>::const_pointer                         const_node_pointer;   
 
         //reference == avl_node reference??         
 
@@ -66,7 +65,7 @@ class avl_iterator
 /* =================                Constructors                ================= */
     public:
 
-        avl_iterator(node_pointer ptr = NULL) : current_(ptr) {}
+        avl_iterator(const node_pointer& ptr = NULL) : current_(ptr) {}
 
         avl_iterator(const avl_iterator &other) : current_(other.base()) {}
 
@@ -79,6 +78,8 @@ class avl_iterator
 /* =================                Operator Overloads                    ================= */
 
         avl_iterator& operator=(const avl_iterator &other)      { current_ = other.base(); return (*this); }
+        reference     operator*()                               { return current_->value; }
+        pointer       operator->()                              { return &(current_->value); }
         reference     operator*() const                         { return current_->value; }
         pointer       operator->() const                        { return &(current_->value); }
         avl_iterator& operator++()                              
@@ -138,6 +139,8 @@ class const_avl_iterator
         // operator        const_avl_iterator< const T >( void ) const    { return (const_avl_iterator< const T >(current_)); }
 
         const_iterator& operator=(const const_iterator &other)      { current_ = other.base(); return (*this); }
+        reference     operator*()                               { return current_->value; }
+        pointer       operator->()                              { return &(current_->value); }
         reference       operator*() const                         { return current_->value; }
         pointer         operator->() const                        { return &(current_->value); }
         const_iterator& operator++()                              
