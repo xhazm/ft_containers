@@ -176,7 +176,17 @@ public:
             {
                 tmp = root_;
                 if (erase != root_)
-                    erase->parent->right == erase ? erase->parent->right = end_ : erase->parent->left = NULL;
+                {
+                    if (erase->parent->right == erase)
+                    {
+                        if (erase->right == end_)
+                            erase->parent->right = end_;
+                        else
+                            erase->parent->right = NULL;
+                    }
+                    else
+                        erase->parent->left = NULL;
+                }
                 else if (erase == root_)
                 {
                     tmp = end_;
@@ -203,12 +213,18 @@ public:
         {
             tmp = max_value_node_(erase->left);
             if (tmp->parent == erase)
-                erase->left = NULL;
+            {
+                erase->left = tmp->left;
+                if (erase->left != NULL)
+                    erase->left->parent = erase;
+            }
             else if (tmp->parent != NULL)
                 tmp->parent->right = NULL; //maybe end in some cases?
+            if (tmp == begin_)
+                erased_begin = true;
             value_alloc_.destroy(&erase->value);
             value_alloc_.construct(&erase->value, tmp->value);
-            node_alloc_.deallocate(tmp, 1);
+            erase_node_(tmp);
             tmp = erase;
         }
         balance_(tmp);
@@ -450,8 +466,6 @@ public:
     {
         if (node != end_)
             --size_;
-        // if (node == root_)
-        //     root_ = end_;
         value_alloc_.destroy(&node->value);
         node_alloc_.deallocate(node, 1);
         node = NULL;

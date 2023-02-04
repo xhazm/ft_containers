@@ -1,9 +1,9 @@
 NAME	= ft_containers
 
 SRC_DIR	= ./
-SRC		= map_main.cpp ./tester/map/erase_key.cpp
+SRC		= map_main.cpp erase_key.cpp
 
-HDR	=  ./inc/vector.hpp
+# HDR	=  ./inc/vector.hpp
 
 OBJ_DIR	= obj/
 OBJ		= $(addprefix $(OBJDIR), $(SRC:.cpp=.o))
