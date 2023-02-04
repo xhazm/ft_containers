@@ -73,12 +73,18 @@ std::vector<int> assign_overload_test(_map<T, V> mp) {
         mp2.insert(_make_pair(i, j));
     mp2 = mp;
     typename _map<T, V>::iterator it = mp2.begin();
-    for (; it != mp2.end(); it++) {
+    typename _map<T, V>::iterator it_del;
+    for (; it != mp2.end(); ) {
         v.push_back(it->first);
         v.push_back(it->second);
+        it_del = it;
+        ++it;
+        mp2.erase(it_del);
+        if (it == mp2.end())
+            break;
     }
     v.push_back(mp2.size());
-    mp2.erase(mp2.begin());
+
     return v;
 }
 

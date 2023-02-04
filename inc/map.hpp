@@ -186,13 +186,16 @@ namespace ft
     
     void erase(iterator pos) { avl_tree_.erase(pos); }
 
-    // void erase(iterator first, iterator last)
-    // {
-    //     for (iterator it = first; it < last; ++it)
-    //     {
-    //         avl_tree_.erase(it);
-    //     }
-    // }
+    void erase(iterator first, iterator last)
+    {
+        iterator    tmp;
+        while (first != last)
+        {
+            tmp = first;
+            ++first;
+            avl_tree_.erase(tmp);
+        }
+    }
 
     void swap(map& other)
     {

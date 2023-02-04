@@ -163,6 +163,7 @@ public:
     {
         node_pointer    erase = search_node(value, pos);
         node_pointer    tmp = NULL;
+        bool            erased_begin = false;
 
         if (erase == end_)
             return (false);
@@ -173,8 +174,14 @@ public:
             //no child
             if (tmp == end_ || tmp == NULL)
             {
+                tmp = root_;
                 if (erase != root_)
                     erase->parent->right == erase ? erase->parent->right = end_ : erase->parent->left = NULL;
+                else if (erase == root_)
+                {
+                    tmp = end_;
+                    root_ = end_;
+                }
             }
             //one child
             else
@@ -182,11 +189,14 @@ public:
                 tmp->parent = erase->parent;
                 if (erase != root_)
                     erase->parent->right == erase ? erase->parent->right = tmp : erase->parent->left = tmp;
+                else if (erase == root_)
+                    root_ = tmp;
                 if(erase->right == end_)
                     tmp->right = end_;
             }
+            if (begin_ == erase)
+                erased_begin = true;
             erase_node_(erase);
-            // return (true);
         }
         //left and right child
         else
@@ -198,11 +208,12 @@ public:
                 tmp->parent->right = NULL; //maybe end in some cases?
             value_alloc_.destroy(&erase->value);
             value_alloc_.construct(&erase->value, tmp->value);
-            // erase->value = tmp->value;
             node_alloc_.deallocate(tmp, 1);
             tmp = erase;
         }
         balance_(tmp);
+        if (erased_begin == true)
+            begin_ = min_value_node_(root_);
         return (true);
     }
 
