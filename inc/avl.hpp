@@ -134,7 +134,8 @@ public:
             if (pos->right == end_)
             {
                 pos->right = new_node;
-                pos->right->right = end_;
+                new_node->right = end_;
+                end_->parent = new_node;
             }
             else
                 pos->right = new_node;
@@ -180,7 +181,10 @@ public:
                     if (erase->parent->right == erase)
                     {
                         if (erase->right == end_)
+                        {
                             erase->parent->right = end_;
+                            end_->parent = erase->parent;
+                        }
                         else
                             erase->parent->right = NULL;
                     }
@@ -191,6 +195,7 @@ public:
                 {
                     tmp = end_;
                     root_ = end_;
+                    end_->parent = NULL;
                 }
             }
             //one child
@@ -202,7 +207,10 @@ public:
                 else if (erase == root_)
                     root_ = tmp;
                 if(erase->right == end_)
+                {
                     tmp->right = end_;
+                    end_->parent = tmp;
+                }
             }
             if (begin_ == erase)
                 erased_begin = true;

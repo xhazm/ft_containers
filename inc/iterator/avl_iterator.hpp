@@ -123,7 +123,7 @@ class const_avl_iterator
 /* =================                Constructors                ================= */
     public:
 
-        const_avl_iterator(node_pointer& ptr = NULL) : current_(ptr) {}
+        const_avl_iterator(const node_pointer& ptr = NULL) : current_(ptr) {}
 
         const_avl_iterator(const const_iterator &other) : current_(other.base()) {}
         

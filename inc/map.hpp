@@ -57,8 +57,8 @@ namespace ft
     public:
         typedef typename tree::iterator                         iterator;
         typedef typename tree::const_iterator                   const_iterator;
-        typedef typename ft::reverse_iterator<iterator>         reverse_iterator;
-        typedef typename ft::reverse_iterator<const_iterator>   const_reverse_iterator;
+        typedef typename tree::reverse_iterator                         reverse_iterator;
+        typedef typename tree::const_reverse_iterator                   const_reverse_iterator;
         // typedef avl_node<key_type, value_type>*             node_pointer;
 
 
