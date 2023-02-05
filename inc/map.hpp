@@ -133,10 +133,10 @@ namespace ft
     const_iterator  begin() const   { return avl_tree_.begin(); }
     iterator        end()           { return avl_tree_.end(); }
     const_iterator  end() const     { return avl_tree_.end(); }
-    iterator        rbegin()        { return avl_tree_.rbegin(); }
-    const_iterator  rbegin() const  { return avl_tree_.rbegin(); }
-    iterator        rend()          { return avl_tree_.rend(); }
-    const_iterator  rend() const    { return avl_tree_.rend(); }
+    reverse_iterator        rbegin()        { return avl_tree_.rbegin(); }
+    const_reverse_iterator  rbegin() const  { return avl_tree_.rbegin(); }
+    reverse_iterator        rend()          { return avl_tree_.rend(); }
+    const_reverse_iterator  rend() const    { return avl_tree_.rend(); }
 
 /* =================				    Capacity       				================= */
 
