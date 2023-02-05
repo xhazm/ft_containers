@@ -125,7 +125,7 @@ namespace ft
     // performing an insertion if such key does not already exist. 
     T& operator[](const Key& key)
     {
-        return (insert(ft::make_pair(key, mapped_type()), NULL).first->second);
+        return (insert(value_type(key, mapped_type())).first->second);
     }
 
 /* =================                    Iterators                   ================= */
