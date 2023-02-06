@@ -172,10 +172,7 @@ namespace ft
     void insert(InputIt first, InputIt last)
     {
         for (InputIt it = first; it != last; ++it)
-        {
-            if((avl_tree_.insert(*it, NULL)).second == false)
-                break ;
-        }
+            avl_tree_.insert(*it, NULL);
     };
 
     size_type erase(const Key& key) 
@@ -188,12 +185,12 @@ namespace ft
 
     void erase(iterator first, iterator last)
     {
-        iterator    tmp;
         while (first != last)
         {
-            tmp = first;
-            ++first;
-            avl_tree_.erase(tmp);
+            iterator    it = first;
+            ++it;
+            avl_tree_.erase(first);
+            first = it;
         }
     }
 

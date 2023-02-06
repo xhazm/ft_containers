@@ -62,11 +62,14 @@ public:
         if (this != &other)
         {
             clear();
+            erase_node_(end_);
             value_alloc_ = other.value_alloc_;
             node_alloc_ = other.node_alloc_;
             cmp_ = other.cmp_;
-            for (const_iterator it = other.begin(); it != other.end(); ++it)
-                insert(*it, NULL);
+            root_ = _copy_tree(other.root_, NULL);
+            begin_ = min_value_node_(root_);
+            end_->parent = max_value_node_(root_);
+            size_ = other.size_;
         }
 
         return *this;
@@ -154,9 +157,9 @@ public:
     *   @param tmp      Saves the node which get on the pos of the erased node
     */
 
-    bool erase(iterator pos)
+    bool erase(const_iterator pos)
     {
-        node_pointer    del = pos.base();
+        node_pointer    del = const_cast<node_pointer>(pos.base());
         return erase(del->value, NULL);
     }
 
@@ -505,6 +508,18 @@ public:
         clear_helper_(n->right);
         erase_node_(n);
     }
+
+    node_pointer    _copy_tree(node_pointer from, node_pointer parent)
+    {
+        if (from == NULL)
+            return (NULL);
+        node_pointer new_node = create_node_(from->value, parent);
+        new_node->left = _copy_tree(from->left, new_node);
+        end_ = new_node;                                                     // sets the new end_iterator. should be done differently cause it's not self explainatory ;)
+        new_node->right = _copy_tree(from->right, new_node);
+        return (new_node);
+    }
+
 };
 } // namespace ft
 //cases:
