@@ -299,7 +299,6 @@ public:
 		for ( ; dist < count ; ++dist)
 		{
 			static_allocator.construct(to + dist, *(from + dist));
-			finish_ += 1;
 		}
 	}
 
@@ -318,7 +317,7 @@ public:
 	}
 
 	template< typename InputIterator >
-	void _assign_construct_(InputIterator from, pointer to, size_type count)
+	void _assign_construct_(InputIterator from, pointer to, size_type count, random_access_iterator_tag)
 	{
 		size_type dist = 0;
 		for ( ; dist < count && (to + dist) < end().base(); ++dist)
@@ -331,8 +330,6 @@ public:
 			finish_ += 1;
 		}
 	}
-
-
 
 	template< typename InputIterator >
     void _assign_range_( InputIterator first, InputIterator last, input_iterator_tag  )
@@ -350,11 +347,33 @@ public:
 	template< typename InputIterator >
     iterator _insert_range_( iterator pos, InputIterator first, InputIterator last, input_iterator_tag )
     {
-        // size_type   dist = ft::distance(first, last);
-		// reserve(size() + dist); //is this faster than without?
-        for ( ; first != last; ++first, ++pos)
+		for ( ; first != last; ++first, ++pos)
             pos = insert(pos, 1, *first);
         return (pos);
+		// difference_type c_pos = ft::distance(begin(), pos);
+		// size_type		n_size = size() + count;
+		// size_type		alloc_size = capacity() > n_size ? capacity() : n_size;
+		// size_type		count = 0;
+
+		// if (capacity() >= n_size)
+		// {
+		// 	if (size())
+		// 		_assign_construct_(start_ + c_pos, start_ + c_pos + count, size());
+		// 	_assign_construct_(first, start_ + c_pos, count, typename iterator_traits< InputIterator >::iterator_category());
+		// 	_set_class_vars_(start_, start_ + n_size, start_ + alloc_size);
+		// }
+		// else
+		// {
+		// 	pointer n_start = _allocate_safe_(alloc_size);
+		// 	_copy_destroy_(start_, n_start, c_pos);
+		// 	for (count = cpos; first != last; ++count, ++first)
+		// 		static_allocator.construct(n_start + count, *first);
+		// 	_copy_destroy_(start_ + c_pos, n_start + c_pos + count, n_size - count - c_pos);
+		// 	if (start_ != NULL)
+		// 		static_allocator.deallocate(start_, capacity());
+		// 	_set_class_vars_(n_start, n_start + n_size, n_start + alloc_size);
+		// }
+		// return (begin() + c_pos);
     }
 
 	template< typename InputIterator >
@@ -373,7 +392,8 @@ public:
 		{
 			if (size())
 				_assign_construct_(start_ + c_pos, start_ + c_pos + count, count);
-			_assign_construct_(first, start_ + c_pos, count);
+			_assign_construct_(first, start_ + c_pos, count, typename iterator_traits< InputIterator >::iterator_category());
+			_set_class_vars_(start_, start_ + n_size, start_ + alloc_size);
 		}
 		else
 		{

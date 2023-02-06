@@ -1,7 +1,7 @@
 NAME	= ft_containers
 
 SRC_DIR	= ./
-SRC		= map_main.cpp ./tester/map/erase_key.cpp
+SRC		= vector_test.cpp
 
 HDR	=  ./inc/vector.hpp
 

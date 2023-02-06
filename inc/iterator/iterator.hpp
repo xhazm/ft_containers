@@ -81,6 +81,7 @@ _distance_helper( InputIterator first, InputIterator last, input_iterator_tag )
     return dist;
 }
 
+
 // random_access_iterator_tag for vector iterator
 template< typename InputIterator >
 typename iterator_traits< InputIterator >::difference_type
