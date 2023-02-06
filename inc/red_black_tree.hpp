@@ -168,6 +168,7 @@ public:
         node_pointer    erase = search_node(value, pos);
         node_pointer    tmp = NULL;
         bool            erased_begin = false;
+        bool            prev_color = RED;
 
         if (erase == end_)
             return (false);
@@ -223,6 +224,7 @@ public:
         else
         {
             tmp = max_value_node_(erase->left);
+            prev_color = tmp->color;
             if (tmp->parent == erase)
             {
                 erase->left = tmp->left;
@@ -238,7 +240,7 @@ public:
             erase_node_(tmp);
             tmp = erase;
         }
-        if (tmp->color == BLACK)
+        if (prev_color == BLACK)
             balance_erase(tmp);
         if (erased_begin == true)
             begin_ = min_value_node_(root_);
@@ -550,13 +552,12 @@ public:
     {
         if (n == root_ || n == NULL)
             return;
-    
+
         node_pointer    parent = n->parent;
         node_pointer    sibling = parent->left;
         if (_IS_LEFT_CHILD(n))
             sibling = parent->right;
-
-        if (sibling == NULL)                                                    //  No sibiling, double black pushed up
+        if (sibling == NULL)                                                    
         {
             balance_erase(parent);
         }
@@ -572,10 +573,12 @@ public:
                     left_rotate(parent);
                 balance_erase(n);
             }
-            else                                                                //  Sibling has color black
+            // black sibling
+            else
             {
+                // at least one red child
                 if ((sibling->left != NULL && sibling->left->color == RED)
-                    || (sibling->right != NULL && sibling->right->color == RED))    //  node has at least one red child
+                    || (sibling->right != NULL && sibling->right->color == RED))
                 {
                     if (sibling->left != NULL && sibling->left->color == RED) {
                         if (_IS_LEFT_CHILD(sibling))
@@ -608,7 +611,8 @@ public:
                     }
                     parent->color = BLACK;
                 }
-                else                                                            //  node has two black children
+                //  node has two black children
+                else
                 {
                     sibling->color = RED;
                     if (parent->color == BLACK)

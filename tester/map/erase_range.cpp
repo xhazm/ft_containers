@@ -10,20 +10,6 @@
 #define _ratio 1
 
 #define _make_pair ft::make_pair
-
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   erase_range.cpp                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mleblanc <mleblanc@student.42quebec.com    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/05/18 13:23:58 by mleblanc          #+#    #+#             */
-/*   Updated: 2022/05/18 14:37:03 by mleblanc         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "map_prelude.hpp"
 
 void map_test_erase_range()
