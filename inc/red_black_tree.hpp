@@ -5,7 +5,7 @@
 #include "./iterator/reverse_iterator.hpp"
 #include "./pair.hpp"
 #include "./utils.hpp"
-#include "./avl_node.hpp"
+#include "./red_black_node.hpp"
 
 
 namespace ft
@@ -45,7 +45,7 @@ public:
     // avl_tree(const value_compare& cmp, const value_allocator_type value_alloc = value_allocator_type())
     avl_tree()
     {
-        end_ = create_node_(value_type(), NULL);
+        end_ = create_node_(value_type(), NULL, BLACK);
         root_ = end_;
         begin_ = end_;
         size_ = 0;
@@ -107,7 +107,7 @@ public:
             pos = root_;
         if (pos == end_)
         {
-            root_ = create_node_(value, NULL);
+            root_ = create_node_(value, NULL, BLACK);
             root_->right = end_;
             begin_ = root_;
             end_->parent = root_;
@@ -124,7 +124,7 @@ public:
         }
         if(cmp_(value, pos->value)) //left
         {
-            node_pointer new_node = create_node_(value, pos);
+            node_pointer new_node = create_node_(value, pos, RED);
             pos->left = new_node;
             if (pos == begin_)
                 begin_ = new_node;
@@ -133,7 +133,7 @@ public:
         }
         else if(cmp_(pos->value, value)) //right
         {
-            node_pointer new_node = create_node_(value, pos);
+            node_pointer new_node = create_node_(value, pos, RED);
             if (pos->right == end_)
             {
                 pos->right = new_node;
@@ -142,7 +142,7 @@ public:
             }
             else
                 pos->right = new_node;
-            balance_(new_node);
+            _insert_rb_violation(new_node);
             return (ft::make_pair(iterator(new_node), true));
         }
         return (ft::make_pair(iterator(pos), false));
@@ -396,83 +396,115 @@ public:
     * 
     *   @param node Given node to begin with.
     */
-    void balance_(node_pointer node)
+    // void balance_(node_pointer node)
+    // {
+    //     if (node == end_)
+    //         return ;
+    //     while (node)
+    //     {
+    //         long long balance = balance_of_subtrees_(node);
+
+    //         if (balance <= -2 && balance_of_subtrees_(node->right) <= -1)
+    //             rotate_left_(node->right);
+    //         else if (balance <= -2 && balance_of_subtrees_(node->right) >= 0)
+    //             rotate_left_(rotate_right_(node->right->left));
+    //         else if (balance >= 2 && balance_of_subtrees_(node->left) >= 1)
+    //             rotate_right_(node->left);
+    //         else if (balance >= 2 && balance_of_subtrees_(node->left) <= 0)
+    //             rotate_right_(rotate_left_(node->left->right));
+
+    //         node = node->parent;
+    //     }
+    // }
+
+    // node_pointer rotate_right_(node_pointer new_head)
+    // {
+    //     node_pointer    rotation_node = new_head->parent;
+
+    //     if (rotation_node == root_)
+    //         root_ = new_head;
+    //     else if(rotation_node != root_)
+    //     {
+    //         if (rotation_node->parent->right == rotation_node)
+    //             rotation_node->parent->right = new_head;
+    //         else
+    //             rotation_node->parent->left = new_head;
+    //     }
+    //     rotation_node->left = new_head->right;
+    //     if (rotation_node->left != NULL)
+    //         rotation_node->left->parent = rotation_node;
+    //     new_head->right = rotation_node;
+    //     new_head->parent = rotation_node->parent;
+    //     rotation_node->parent = new_head;
+    //     new_head->balance_factor = new_head->balance_factor + 1 - min(rotation_node->balance_factor, 0);
+	// 	rotation_node->balance_factor = rotation_node->balance_factor + 1 + max(new_head->balance_factor, 0);
+    //     return (new_head);
+    // }
+    // node_pointer rotate_left_(node_pointer new_head)
+    // {
+    //     node_pointer    rotation_node = new_head->parent;
+
+    //     if (rotation_node == root_)
+    //         root_ = new_head;
+    //     else if(rotation_node != root_)
+    //     {
+    //         if (rotation_node->parent->right == rotation_node)
+    //             rotation_node->parent->right = new_head;
+    //         else
+    //             rotation_node->parent->left = new_head;
+    //     }
+    //     rotation_node->right = new_head->left;
+    //     if (rotation_node->right != end_ && rotation_node->right != NULL)
+    //         rotation_node->right->parent = rotation_node;
+    //     new_head->left = rotation_node;
+    //     new_head->parent = rotation_node->parent;
+    //     rotation_node->parent = new_head;
+    //     new_head->balance_factor = new_head->balance_factor - 1 - max(rotation_node->balance_factor, 0);
+	// 	rotation_node->balance_factor = rotation_node->balance_factor - 1 + min(new_head->balance_factor, 0);
+    //     return (new_head);
+    // }
+
+    void    _left_rotate( node_pointer o )
     {
-        if (node == end_)
-            return ;
-        while (node)
-        {
-            long long balance = balance_of_subtrees_(node);
-
-            if (balance <= -2 && balance_of_subtrees_(node->right) <= -1)
-                rotate_left_(node->right);
-            else if (balance <= -2 && balance_of_subtrees_(node->right) >= 0)
-                rotate_left_(rotate_right_(node->right->left));
-            else if (balance >= 2 && balance_of_subtrees_(node->left) >= 1)
-                rotate_right_(node->left);
-            else if (balance >= 2 && balance_of_subtrees_(node->left) <= 0)
-                rotate_right_(rotate_left_(node->left->right));
-
-            node = node->parent;
-        }
+        node_pointer    n = o->right;
+        n->parent = o->parent;
+        if (o->parent == NULL)
+            root_ = n;
+        else if (o->parent->left == o)
+            o->parent->left = n;
+        else
+            o->parent->right = n;
+        o->right = n->left;
+        if (o->right != NULL)
+            o->right->parent = o;
+        n->left = o;
+        o->parent = n;
     }
 
-    node_pointer rotate_right_(node_pointer new_head)
+    void    _right_rotate( node_pointer o )
     {
-        node_pointer    rotation_node = new_head->parent;
-
-        if (rotation_node == root_)
-            root_ = new_head;
-        else if(rotation_node != root_)
-        {
-            if (rotation_node->parent->right == rotation_node)
-                rotation_node->parent->right = new_head;
-            else
-                rotation_node->parent->left = new_head;
-        }
-        rotation_node->left = new_head->right;
-        if (rotation_node->left != NULL)
-            rotation_node->left->parent = rotation_node;
-        new_head->right = rotation_node;
-        new_head->parent = rotation_node->parent;
-        rotation_node->parent = new_head;
-        new_head->balance_factor = new_head->balance_factor + 1 - min(rotation_node->balance_factor, 0);
-		rotation_node->balance_factor = rotation_node->balance_factor + 1 + max(new_head->balance_factor, 0);
-        return (new_head);
+        node_pointer    n = o->left;
+        n->parent = o->parent;
+        if (o->parent == NULL)
+            root_ = n;
+        else if (o->parent->right == o)
+            o->parent->right = n;
+        else
+            o->parent->left = n;
+        o->left = n->right;
+        if (o->left != NULL)
+            o->left->parent = o;
+        n->right = o;
+        o->parent = n;
     }
 
-
-    node_pointer rotate_left_(node_pointer new_head)
-    {
-        node_pointer    rotation_node = new_head->parent;
-
-        if (rotation_node == root_)
-            root_ = new_head;
-        else if(rotation_node != root_)
-        {
-            if (rotation_node->parent->right == rotation_node)
-                rotation_node->parent->right = new_head;
-            else
-                rotation_node->parent->left = new_head;
-        }
-        rotation_node->right = new_head->left;
-        if (rotation_node->right != end_ && rotation_node->right != NULL)
-            rotation_node->right->parent = rotation_node;
-        new_head->left = rotation_node;
-        new_head->parent = rotation_node->parent;
-        rotation_node->parent = new_head;
-        new_head->balance_factor = new_head->balance_factor - 1 - max(rotation_node->balance_factor, 0);
-		rotation_node->balance_factor = rotation_node->balance_factor - 1 + min(new_head->balance_factor, 0);
-        return (new_head);
-    }
-
-    node_pointer create_node_(value_type value, node_pointer parent)
+    node_pointer create_node_(value_type value, node_pointer parent, bool color)
     {
         node_pointer new_node = node_alloc_.allocate(1);
         new_node->parent = parent;
         new_node->left = NULL;
         new_node->right = NULL;
-        new_node->balance_factor = 0;
+        new_node->color = color;
         value_alloc_.construct(&new_node->value, value);
         ++size_;
         return (new_node);
@@ -518,21 +550,138 @@ public:
     {
         if (from == NULL)
             return (NULL);
-        node_pointer new_node = create_node_(from->value, parent);
+        node_pointer new_node = create_node_(from->value, parent, from->color);
         new_node->left = _copy_tree(from->left, new_node);
         end_ = new_node;                                                     // sets the new end_iterator. should be done differently cause it's not self explainatory ;)
         new_node->right = _copy_tree(from->right, new_node);
         return (new_node);
     }
 
-	short max(short a, short b)
-	{
-		return a > b ? a : b;
-	}
-	short min(short a, short b)
-	{
-		return a < b ? a : b;
-	}
+  void    _insert_rb_violation( node_pointer n )
+    {
+        while (n != NULL && n->parent != NULL && n->parent->parent != NULL
+                && n != root_ && n->parent->color == RED)
+        {
+            if (n->parent->parent->right == n->parent)
+            {
+                if (n->parent->parent->left != NULL && n->parent->parent->left->color == RED)
+                {
+                    n->parent->parent->left->color = BLACK;
+                    n->parent->color = BLACK;
+                    n->parent->parent->color = RED;
+                    n = n->parent->parent;
+                }
+                else
+                {
+                    if (n->parent->left == n)
+                    {
+                        n = n->parent;
+                        _right_rotate(n);
+                    }
+                    n->parent->color = BLACK;
+                    n->parent->parent->color = RED;
+                    _left_rotate(n->parent->parent);
+                }
+            }
+            else
+            {
+                if (n->parent->parent->right != NULL && n->parent->parent->right->color == RED)
+                {
+                    n->parent->parent->right->color = BLACK;
+                    n->parent->color = BLACK;
+                    n->parent->parent->color = RED;
+                    n = n->parent->parent;
+                }
+                else 
+                {
+                    if (n->parent->right == n)
+                    {
+                        n = n->parent;
+                        _left_rotate(n);
+                    }
+                    n->parent->color = BLACK;
+                    n->parent->parent->color = RED;
+                    _right_rotate(n->parent->parent);
+                }
+            }
+        }
+        root_->color = BLACK;
+    }
+    #define _IS_LEFT_CHILD( n ) (n != NULL && n->parent != NULL && n == n->parent->left) ? true : false
+
+    void    _erase_rb_violation( node_pointer n )
+    {
+        if (n == root_ || n == NULL)
+            return;
+    
+        node_pointer    parent = n->parent;
+        node_pointer    sibling = parent->left;
+        if (_IS_LEFT_CHILD(n))
+            sibling = parent->right;
+
+        if (sibling == NULL)                                                    //  No sibiling, double black pushed up
+        {
+            _erase_rb_violation(parent);
+        }
+        else
+        {
+            if (sibling->color == RED)
+            {
+                parent->color = RED;
+                sibling->color = BLACK;
+                if (_IS_LEFT_CHILD(sibling))
+                    _right_rotate(parent);
+                else
+                    _left_rotate(parent);
+                _erase_rb_violation(n);
+            }
+            else                                                                //  Sibling has color black
+            {
+                if ((sibling->left != NULL && sibling->left->color == RED)
+                    || (sibling->right != NULL && sibling->right->color == RED))    //  node has at least one red child
+                {
+                    if (sibling->left != NULL && sibling->left->color == RED) {
+                        if (_IS_LEFT_CHILD(sibling))
+                        {
+                            sibling->left->color = sibling->color;
+                            sibling->color = parent->color;
+                            _right_rotate(parent);
+                        }
+                        else
+                        {
+                            sibling->left->color = parent->color;
+                            _right_rotate(sibling);
+                            _left_rotate(parent);
+                        }
+                    }
+                    else
+                    {
+                        if (_IS_LEFT_CHILD(sibling))
+                        {
+                            sibling->right->color = parent->color;
+                            _left_rotate(sibling);
+                            _right_rotate(parent);
+                        }
+                        else
+                        {
+                            sibling->right->color = sibling->color;
+                            sibling->color = parent->color;
+                            _left_rotate(parent);
+                        }
+                    }
+                    parent->color = BLACK;
+                }
+                else                                                            //  node has two black children
+                {
+                    sibling->color = RED;
+                    if (parent->color == BLACK)
+                        _erase_rb_violation(parent);
+                    else
+                        parent->color = BLACK;
+                }
+            }
+        }
+    }
 };
 } // namespace ft
 //cases:

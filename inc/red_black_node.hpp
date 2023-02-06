@@ -2,6 +2,10 @@
 
 namespace ft
 {
+    enum COLOR {
+    BLACK,
+    RED
+    };
     template<
     class value_type
     > struct avl_node
@@ -16,7 +20,7 @@ namespace ft
         pointer     right;
         pointer     left;
         pointer     parent;
-        short       balance_factor;
+        bool        color;
 
         // avl_node() : parent(NULL), left(NULL), right(NULL), value(value_type()) {}
 
