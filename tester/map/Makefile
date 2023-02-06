@@ -1,7 +1,7 @@
 NAME	= ft_containers
 
 SRC_DIR	= ./
-SRC		= insert_range.cpp
+SRC		= erase_range.cpp 
 
 # HDR	=  ./inc/vector.hpp
 

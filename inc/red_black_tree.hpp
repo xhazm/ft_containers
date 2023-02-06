@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "./iterator/avl_iterator.hpp"
+#include "./iterator/rb_tree_iterator.hpp"
 #include "./iterator/reverse_iterator.hpp"
 #include "./pair.hpp"
 #include "./utils.hpp"
@@ -15,19 +15,19 @@ template<
     class Value,
     class Compare,
     class Allocator = std::allocator< Value >
-> class avl_tree
+> class red_black_tree
 {
 public:
     typedef Value                                           value_type;
     typedef Allocator                                       value_allocator_type;
     typedef typename value_allocator_type::difference_type  difference_type;
     typedef Compare                                         value_compare;
-    typedef typename avl_node< value_type >::node_type      node_type;
+    typedef typename red_black_node< value_type >::node_type      node_type;
     typedef typename node_type::pointer                     node_pointer;
     typedef typename value_allocator_type::template rebind<node_type>::other    node_allocator_type;
     typedef typename value_allocator_type::size_type        size_type;
-    typedef ft::avl_iterator< value_type >			        iterator;
-    typedef ft::const_avl_iterator< value_type >			const_iterator;
+    typedef ft::rb_tree_iterator< value_type >			        iterator;
+    typedef ft::const_rb_tree_iterator< value_type >			const_iterator;
     typedef ft::reverse_iterator<iterator>                  reverse_iterator;
     typedef ft::reverse_iterator<const_iterator>            const_reverse_iterator;
 
@@ -42,8 +42,8 @@ public:
 
 
 public:
-    // avl_tree(const value_compare& cmp, const value_allocator_type value_alloc = value_allocator_type())
-    avl_tree()
+    // red_black_tree(const value_compare& cmp, const value_allocator_type value_alloc = value_allocator_type())
+    red_black_tree()
     {
         end_ = create_node_(value_type(), NULL, BLACK);
         root_ = end_;
@@ -51,13 +51,13 @@ public:
         size_ = 0;
         //init also node alloc? or is it auto inited
     }
-    ~avl_tree() 
+    ~red_black_tree() 
     {
         clear();
         erase_node_(end_);
     }
 
-    avl_tree& operator=(const avl_tree& other) 
+    red_black_tree& operator=(const red_black_tree& other) 
     {
         if (this != &other)
         {
@@ -128,7 +128,7 @@ public:
             pos->left = new_node;
             if (pos == begin_)
                 begin_ = new_node;
-            balance_(new_node);
+            balance_insert(new_node);
             return (ft::make_pair(iterator(new_node), true));
         }
         else if(cmp_(pos->value, value)) //right
@@ -142,7 +142,7 @@ public:
             }
             else
                 pos->right = new_node;
-            _insert_rb_violation(new_node);
+            balance_insert(new_node);
             return (ft::make_pair(iterator(new_node), true));
         }
         return (ft::make_pair(iterator(pos), false));
@@ -238,13 +238,14 @@ public:
             erase_node_(tmp);
             tmp = erase;
         }
-        balance_(tmp);
+        if (tmp->color == BLACK)
+            balance_erase(tmp);
         if (erased_begin == true)
             begin_ = min_value_node_(root_);
         return (true);
     }
 
-    void swap(avl_tree& other)
+    void swap(red_black_tree& other)
     {
         ft::swap(value_alloc_, other.value_alloc_);
         ft::swap(node_alloc_, other.node_alloc_);
@@ -396,106 +397,39 @@ public:
     * 
     *   @param node Given node to begin with.
     */
-    // void balance_(node_pointer node)
-    // {
-    //     if (node == end_)
-    //         return ;
-    //     while (node)
-    //     {
-    //         long long balance = balance_of_subtrees_(node);
 
-    //         if (balance <= -2 && balance_of_subtrees_(node->right) <= -1)
-    //             rotate_left_(node->right);
-    //         else if (balance <= -2 && balance_of_subtrees_(node->right) >= 0)
-    //             rotate_left_(rotate_right_(node->right->left));
-    //         else if (balance >= 2 && balance_of_subtrees_(node->left) >= 1)
-    //             rotate_right_(node->left);
-    //         else if (balance >= 2 && balance_of_subtrees_(node->left) <= 0)
-    //             rotate_right_(rotate_left_(node->left->right));
-
-    //         node = node->parent;
-    //     }
-    // }
-
-    // node_pointer rotate_right_(node_pointer new_head)
-    // {
-    //     node_pointer    rotation_node = new_head->parent;
-
-    //     if (rotation_node == root_)
-    //         root_ = new_head;
-    //     else if(rotation_node != root_)
-    //     {
-    //         if (rotation_node->parent->right == rotation_node)
-    //             rotation_node->parent->right = new_head;
-    //         else
-    //             rotation_node->parent->left = new_head;
-    //     }
-    //     rotation_node->left = new_head->right;
-    //     if (rotation_node->left != NULL)
-    //         rotation_node->left->parent = rotation_node;
-    //     new_head->right = rotation_node;
-    //     new_head->parent = rotation_node->parent;
-    //     rotation_node->parent = new_head;
-    //     new_head->balance_factor = new_head->balance_factor + 1 - min(rotation_node->balance_factor, 0);
-	// 	rotation_node->balance_factor = rotation_node->balance_factor + 1 + max(new_head->balance_factor, 0);
-    //     return (new_head);
-    // }
-    // node_pointer rotate_left_(node_pointer new_head)
-    // {
-    //     node_pointer    rotation_node = new_head->parent;
-
-    //     if (rotation_node == root_)
-    //         root_ = new_head;
-    //     else if(rotation_node != root_)
-    //     {
-    //         if (rotation_node->parent->right == rotation_node)
-    //             rotation_node->parent->right = new_head;
-    //         else
-    //             rotation_node->parent->left = new_head;
-    //     }
-    //     rotation_node->right = new_head->left;
-    //     if (rotation_node->right != end_ && rotation_node->right != NULL)
-    //         rotation_node->right->parent = rotation_node;
-    //     new_head->left = rotation_node;
-    //     new_head->parent = rotation_node->parent;
-    //     rotation_node->parent = new_head;
-    //     new_head->balance_factor = new_head->balance_factor - 1 - max(rotation_node->balance_factor, 0);
-	// 	rotation_node->balance_factor = rotation_node->balance_factor - 1 + min(new_head->balance_factor, 0);
-    //     return (new_head);
-    // }
-
-    void    _left_rotate( node_pointer o )
+    void    left_rotate(node_pointer old_head)
     {
-        node_pointer    n = o->right;
-        n->parent = o->parent;
-        if (o->parent == NULL)
-            root_ = n;
-        else if (o->parent->left == o)
-            o->parent->left = n;
+        node_pointer    new_head = old_head->right;
+        new_head->parent = old_head->parent;
+        if (old_head->parent == NULL)
+            root_ = new_head;
+        else if (old_head->parent->left == old_head)
+            old_head->parent->left = new_head;
         else
-            o->parent->right = n;
-        o->right = n->left;
-        if (o->right != NULL)
-            o->right->parent = o;
-        n->left = o;
-        o->parent = n;
+            old_head->parent->right = new_head;
+        old_head->right = new_head->left;
+        if (old_head->right != NULL)
+            old_head->right->parent = old_head;
+        new_head->left = old_head;
+        old_head->parent = new_head;
     }
 
-    void    _right_rotate( node_pointer o )
+    void    _right_rotate(node_pointer old_head)
     {
-        node_pointer    n = o->left;
-        n->parent = o->parent;
-        if (o->parent == NULL)
-            root_ = n;
-        else if (o->parent->right == o)
-            o->parent->right = n;
+        node_pointer    new_head = old_head->left;
+        new_head->parent = old_head->parent;
+        if (old_head->parent == NULL)
+            root_ = new_head;
+        else if (old_head->parent->right == old_head)
+            old_head->parent->right = new_head;
         else
-            o->parent->left = n;
-        o->left = n->right;
-        if (o->left != NULL)
-            o->left->parent = o;
-        n->right = o;
-        o->parent = n;
+            old_head->parent->left = new_head;
+        old_head->left = new_head->right;
+        if (old_head->left != NULL)
+            old_head->left->parent = old_head;
+        new_head->right = old_head;
+        old_head->parent = new_head;
     }
 
     node_pointer create_node_(value_type value, node_pointer parent, bool color)
@@ -557,16 +491,18 @@ public:
         return (new_node);
     }
 
-  void    _insert_rb_violation( node_pointer n )
+    #define UNCLE_L(n) n->parent->parent->left
+    #define UNCLE_R(n) n->parent->parent->right
+
+    void    balance_insert(node_pointer n)
     {
-        while (n != NULL && n->parent != NULL && n->parent->parent != NULL
-                && n != root_ && n->parent->color == RED)
+        while (n->parent != NULL && n->parent->parent != NULL && n->parent->color == RED)
         {
-            if (n->parent->parent->right == n->parent)
+            if (UNCLE_R(n) == n->parent)
             {
-                if (n->parent->parent->left != NULL && n->parent->parent->left->color == RED)
+                if (UNCLE_L(n) != NULL && UNCLE_L(n)->color == RED)
                 {
-                    n->parent->parent->left->color = BLACK;
+                    UNCLE_L(n)->color = BLACK;
                     n->parent->color = BLACK;
                     n->parent->parent->color = RED;
                     n = n->parent->parent;
@@ -580,14 +516,14 @@ public:
                     }
                     n->parent->color = BLACK;
                     n->parent->parent->color = RED;
-                    _left_rotate(n->parent->parent);
+                    left_rotate(n->parent->parent);
                 }
             }
             else
             {
-                if (n->parent->parent->right != NULL && n->parent->parent->right->color == RED)
+                if (UNCLE_R(n) != NULL && UNCLE_R(n)->color == RED)
                 {
-                    n->parent->parent->right->color = BLACK;
+                    UNCLE_R(n)->color = BLACK;
                     n->parent->color = BLACK;
                     n->parent->parent->color = RED;
                     n = n->parent->parent;
@@ -597,7 +533,7 @@ public:
                     if (n->parent->right == n)
                     {
                         n = n->parent;
-                        _left_rotate(n);
+                        left_rotate(n);
                     }
                     n->parent->color = BLACK;
                     n->parent->parent->color = RED;
@@ -607,9 +543,10 @@ public:
         }
         root_->color = BLACK;
     }
+
     #define _IS_LEFT_CHILD( n ) (n != NULL && n->parent != NULL && n == n->parent->left) ? true : false
 
-    void    _erase_rb_violation( node_pointer n )
+    void    balance_erase(node_pointer n)
     {
         if (n == root_ || n == NULL)
             return;
@@ -621,7 +558,7 @@ public:
 
         if (sibling == NULL)                                                    //  No sibiling, double black pushed up
         {
-            _erase_rb_violation(parent);
+            balance_erase(parent);
         }
         else
         {
@@ -632,8 +569,8 @@ public:
                 if (_IS_LEFT_CHILD(sibling))
                     _right_rotate(parent);
                 else
-                    _left_rotate(parent);
-                _erase_rb_violation(n);
+                    left_rotate(parent);
+                balance_erase(n);
             }
             else                                                                //  Sibling has color black
             {
@@ -651,7 +588,7 @@ public:
                         {
                             sibling->left->color = parent->color;
                             _right_rotate(sibling);
-                            _left_rotate(parent);
+                            left_rotate(parent);
                         }
                     }
                     else
@@ -659,14 +596,14 @@ public:
                         if (_IS_LEFT_CHILD(sibling))
                         {
                             sibling->right->color = parent->color;
-                            _left_rotate(sibling);
+                            left_rotate(sibling);
                             _right_rotate(parent);
                         }
                         else
                         {
                             sibling->right->color = sibling->color;
                             sibling->color = parent->color;
-                            _left_rotate(parent);
+                            left_rotate(parent);
                         }
                     }
                     parent->color = BLACK;
@@ -675,7 +612,7 @@ public:
                 {
                     sibling->color = RED;
                     if (parent->color == BLACK)
-                        _erase_rb_violation(parent);
+                        balance_erase(parent);
                     else
                         parent->color = BLACK;
                 }
@@ -684,8 +621,3 @@ public:
     }
 };
 } // namespace ft
-//cases:
-// -2 -1 = left rot
-// +2 +1 = right rot
-// -2 +1 = right left rot (bottom starting)
-// +2 -1 = left right rot

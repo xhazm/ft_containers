@@ -2,12 +2,12 @@
 
 #include "iterator.hpp"
 #include "../pair.hpp"
-#include  "../avl_node.hpp"
+#include  "../red_black_node.hpp"
 
 namespace ft {
 
 template < class node_ptr >
-node_ptr avl_tree_max(node_ptr node)
+node_ptr rb_tree_tree_max(node_ptr node)
 {
     while (node->right != NULL)
         node = node->right;
@@ -15,7 +15,7 @@ node_ptr avl_tree_max(node_ptr node)
 }
 
 template < class node_ptr >
-node_ptr avl_tree_min(node_ptr node)
+node_ptr rb_tree_tree_min(node_ptr node)
 {
     while (node->left != NULL)
         node = node->left;
@@ -23,31 +23,31 @@ node_ptr avl_tree_min(node_ptr node)
 }
 
 template < class node_ptr >
-node_ptr avl_tree_prev(node_ptr x)
+node_ptr rb_tree_tree_prev(node_ptr x)
 {
     if (x->left != NULL)
-        return avl_tree_max(x->left);
+        return rb_tree_tree_max(x->left);
     while (x == x->parent->left)
         x = x->parent;
     return x->parent;
 }
 
 template < class node_ptr >
-node_ptr avl_tree_next(node_ptr node)
+node_ptr rb_tree_tree_next(node_ptr node)
 {
     if (node->right != NULL)
-        return avl_tree_min(node->right);
+        return rb_tree_tree_min(node->right);
     while (node == node->parent->right)
         node = node->parent;
     return node->parent;
 }
 
 template < class T_value >
-class const_avl_iterator;
+class const_rb_tree_iterator;
 
 template <
     class T_value
-> class avl_iterator
+> class rb_tree_iterator
 {
    public:
 /* =================    Member types                        ================= */
@@ -59,10 +59,10 @@ template <
     typedef ft::bidirectional_iterator_tag              iterator_category;
 
    private:
-    typedef typename avl_node< T_value >::pointer         node_pointer;
-    typedef typename avl_node< T_value >::const_pointer   const_node_pointer;
-    typedef avl_iterator                                  iterator;
-    typedef const_avl_iterator< T_value >                 const_iterator;
+    typedef typename red_black_node< T_value >::pointer         node_pointer;
+    typedef typename red_black_node< T_value >::const_pointer   const_node_pointer;
+    typedef rb_tree_iterator                                  iterator;
+    typedef const_rb_tree_iterator< T_value >                 const_iterator;
 
 /* =================    Member objects                      ================= */
 
@@ -71,11 +71,11 @@ template <
    public:
 /* =================    Constructors / Destructor           ================= */
 
-    avl_iterator( const node_pointer& ptr = NULL ) : current_(ptr) {}
+    rb_tree_iterator( const node_pointer& ptr = NULL ) : current_(ptr) {}
 
-    avl_iterator( const iterator& rhs ) : current_(rhs.base()) {}
+    rb_tree_iterator( const iterator& rhs ) : current_(rhs.base()) {}
 
-    ~avl_iterator() {}
+    ~rb_tree_iterator() {}
     
 /* =================    Accessors                           ================= */
 
@@ -88,7 +88,7 @@ template <
     pointer       operator->() const    { return &(current_->value); }
     iterator& operator++()                              
     {
-        current_ = avl_tree_next< node_pointer >(current_);
+        current_ = rb_tree_tree_next< node_pointer >(current_);
         return *this;
     }
     iterator  operator++(int)                           
@@ -99,7 +99,7 @@ template <
     }
     iterator& operator--()                              
     {
-        current_ = avl_tree_prev< node_pointer >(current_);
+        current_ = rb_tree_tree_prev< node_pointer >(current_);
         return *this; 
     }
     iterator  operator--(int)                           
@@ -117,7 +117,7 @@ template <
 
 template <
     class T_value
-> class const_avl_iterator
+> class const_rb_tree_iterator
 {
    public:
 /* =================    Member types                        ================= */
@@ -128,10 +128,10 @@ template <
     typedef ft::bidirectional_iterator_tag              iterator_category;
 
    private:
-    typedef typename avl_node< T_value >::pointer        node_pointer;
-    typedef typename avl_node< T_value >::const_pointer  const_node_pointer;
-    typedef avl_iterator< T_value >                      iterator;
-    typedef const_avl_iterator                           const_iterator;
+    typedef typename red_black_node< T_value >::pointer        node_pointer;
+    typedef typename red_black_node< T_value >::const_pointer  const_node_pointer;
+    typedef rb_tree_iterator< T_value >                      iterator;
+    typedef const_rb_tree_iterator                           const_iterator;
 
 /* =================    Member objects                      ================= */
 
@@ -140,13 +140,13 @@ template <
    public:
 /* =================    Constructors / Destructor           ================= */
 
-    const_avl_iterator(const const_node_pointer& ptr = NULL) : current_(ptr) {}
+    const_rb_tree_iterator(const const_node_pointer& ptr = NULL) : current_(ptr) {}
 
-    const_avl_iterator(const const_iterator& other) : current_(other.base()) {}
+    const_rb_tree_iterator(const const_iterator& other) : current_(other.base()) {}
 
-    const_avl_iterator(const iterator& other) : current_(other.base()) {}
+    const_rb_tree_iterator(const iterator& other) : current_(other.base()) {}
 
-    ~const_avl_iterator() {}
+    ~const_rb_tree_iterator() {}
 
 /* =================    Accessors                           ================= */
 
@@ -160,7 +160,7 @@ template <
     pointer       operator->() const    { return &(current_->value); }
     const_iterator& operator++()                              
     {
-        current_ = avl_tree_next< const_node_pointer >(current_);
+        current_ = rb_tree_tree_next< const_node_pointer >(current_);
         return *this;
     }
     const_iterator  operator++(int)                           
@@ -171,7 +171,7 @@ template <
     }
     const_iterator& operator--()                              
     {
-        current_ = avl_tree_prev< const_node_pointer >(current_);
+        current_ = rb_tree_tree_prev< const_node_pointer >(current_);
         return *this; 
     }
     const_iterator  operator--(int)                           
