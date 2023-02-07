@@ -39,7 +39,7 @@ public:
 	vector() : start_(NULL), finish_(NULL), end_of_storage_(NULL) {}
 
 	explicit vector(const Allocator& alloc)
-        : start_(NULL), finish_(NULL), end_of_storage_(NULL), static_allocator(alloc) {}
+		: start_(NULL), finish_(NULL), end_of_storage_(NULL), static_allocator(alloc) {}
 
 	explicit vector(size_type count, const T& value = T(),
 						const Allocator& alloc = Allocator())
@@ -72,14 +72,14 @@ public:
 	}
 
 	vector  &operator=(const vector& other)
-    {
-        if (this != &other)
-        {
+	{
+		if (this != &other)
+		{
 			static_allocator = other.static_allocator;
 			assign(other.begin(), other.end());
-        }
-        return (*this);
-    }
+		}
+		return (*this);
+	}
 
 /* =================		 Member Functions		   ================= */
 	void assign(size_type count, const T& value)
@@ -118,7 +118,7 @@ public:
 	reference		back()							{ return *(end() - 1); }
 	const_reference	back() const					{ return *(end() - 1); }
 	T*  			data() 							{ return (start_); }
-    const T*		data() const 					{ return (start_); }
+	const T*		data() const 					{ return (start_); }
 
 /* =================				Iterators			   ================= */
 	iterator				begin()			{ return iterator(start_); }
@@ -143,10 +143,6 @@ public:
 		_grow_(new_cap);
 	}
 /* =================			   Modifiers			  ================= */
-<<<<<<< HEAD
-=======
-
->>>>>>> c741cac951d90c2a84b8e48dcf7fc3da9c085391
 	public:
 	void push_back(const T& data)
 	{
@@ -201,21 +197,12 @@ public:
 		if (count > max_size())
 			throw std::length_error("vector");
 		if (count < size())
-<<<<<<< HEAD
 		{
 			erase(start_ + count, finish_);
 			finish_ = start_ + count;
 		}
 		else if (count > size())
 		{
-=======
-		{
-			erase(start_ + count, finish_);
-			finish_ = start_ + count;
-		}
-		else if (count > size())
-		{
->>>>>>> c741cac951d90c2a84b8e48dcf7fc3da9c085391
 			if (count > capacity())
 			{
 				if (count <= capacity() * 2)
@@ -259,7 +246,6 @@ public:
 
 	void swap(vector& x)
 	{
-		return ;
 		ft::swap(start_, x.start_);
 		ft::swap(finish_, x.finish_);
 		ft::swap(end_of_storage_, x.end_of_storage_);
@@ -336,77 +322,91 @@ private:
 	}
 
 	template< typename InputIterator >
-    void _assign_range_( InputIterator first, InputIterator last, input_iterator_tag )
-    {
-        for ( ; first != last; ++first)
-            push_back(*first);
-    }
-
-    template< typename InputIterator >
-    void _assign_range_( InputIterator first, InputIterator last, random_access_iterator_tag )
-    {
-		insert(begin(), first, last);
-    }
-
-	template< typename InputIterator >
-    iterator _insert_range_( iterator pos, InputIterator first, InputIterator last, input_iterator_tag )
-    {
-		for ( ; first != last; ++first, ++pos)
-            pos = insert(pos, 1, *first);
-        return (pos);
-    }
-
-	template< typename InputIterator >
-    iterator _insert_range_( iterator pos, InputIterator first, InputIterator last, forward_iterator_tag )
-    {
-		difference_type count = ft::distance(first, last);
-
-		if (count == 0) //make sure that pos is in vector. pos can be end() let distance throw error?
-			return (pos);
-
-		difference_type c_pos = ft::distance(begin(), pos);
-		size_type		n_size = size() + count;
-		size_type		old_end = size();
-	
-		resize(n_size);
-		backward_copy(begin() + c_pos, begin() + old_end, begin() + c_pos + count);
-		_assign_construct_(first, start_ + c_pos, count, typename iterator_traits< InputIterator >::iterator_category());
-		return (begin() + c_pos);
-    }
-
-	template< typename InputIterator >
-    iterator _insert_range_( iterator pos, InputIterator first, InputIterator last, random_access_iterator_tag )
-    {
-		difference_type count = ft::distance(first, last);
-
-		if (count == 0) //make sure that pos is in vector. pos can be end() let distance throw error?
-			return (pos);
-
-		difference_type c_pos = ft::distance(begin(), pos);
-		size_type		n_size = size() + count;
-		size_type		old_end = size();
-	
-		resize(n_size);
-		backward_copy(begin() + c_pos, begin() + old_end, begin() + c_pos + count);
-		_assign_construct_(first, start_ + c_pos, count, typename iterator_traits< InputIterator >::iterator_category());
-		return (begin() + c_pos);
-    }
-
-	template<typename iterator, typename InputIterator>
-	iterator	backward_copy(InputIterator first, InputIterator last, iterator position) {
-		--first;
-		--last;
-		size_t n = ft::distance(first, last);
-		position = position + n - 1;
-		while (last != first)
-		{
-			*position = *last; 
-			last--;
-			position--;
-		}
-		return(position + n);
+	void _assign_range_( InputIterator first, InputIterator last, input_iterator_tag )
+	{
+		for ( ; first != last; ++first)
+			push_back(*first);
 	}
 
+	template< typename InputIterator >
+	void _assign_range_( InputIterator first, InputIterator last, random_access_iterator_tag )
+	{
+		insert(begin(), first, last);
+	}
+
+	template< typename InputIterator >
+	iterator _insert_range_( iterator pos, InputIterator first, InputIterator last, input_iterator_tag )
+	{
+		for ( ; first != last; ++first, ++pos)
+			pos = insert(pos, 1, *first);
+		return (pos);
+	}
+
+	template< typename InputIterator >
+	iterator _insert_range_( iterator pos, InputIterator first, InputIterator last, forward_iterator_tag )
+	{
+		difference_type count = ft::distance(first, last);
+
+		if (count == 0) //make sure that pos is in vector. pos can be end() let distance throw error?
+			return (pos);
+
+		difference_type c_pos = ft::distance(begin(), pos);
+		size_type		n_size = size() + count;
+		size_type		alloc_size = capacity() > n_size ? capacity() : n_size;
+
+		if (capacity() >= n_size)
+		{
+			if (size())
+				_assign_construct_(start_ + c_pos, start_ + c_pos + count, size());
+			_assign_construct_(first, start_ + c_pos, count, typename iterator_traits< InputIterator >::iterator_category());
+			_set_class_vars_(start_, start_ + n_size, start_ + alloc_size);
+		}
+		else
+		{
+			pointer n_start = _allocate_safe_(alloc_size);
+			_copy_destroy_(start_, n_start, c_pos);
+			for (difference_type dist = c_pos; dist < c_pos + count; ++dist, ++first)
+				static_allocator.construct(n_start + dist, *first);
+			_copy_destroy_(start_ + c_pos, n_start + c_pos + count, n_size - count - c_pos);
+			if (start_ != NULL)
+				static_allocator.deallocate(start_, capacity());
+			_set_class_vars_(n_start, n_start + n_size, n_start + alloc_size);
+		}
+		return (begin() + c_pos);
+	}
+
+	template< typename InputIterator >
+	iterator _insert_range_( iterator pos, InputIterator first, InputIterator last, random_access_iterator_tag )
+	{
+		difference_type count = ft::distance(first, last);
+
+		if (count == 0) //make sure that pos is in vector. pos can be end() let distance throw error?
+			return (pos);
+
+		difference_type c_pos = ft::distance(begin(), pos);
+		size_type		n_size = size() + count;
+		size_type		alloc_size = capacity() > n_size ? capacity() : n_size;
+
+		if (capacity() >= n_size)
+		{
+			if (size())
+				_assign_construct_(start_ + c_pos, start_ + c_pos + count, count);
+			_assign_construct_(first, start_ + c_pos, count, typename iterator_traits< InputIterator >::iterator_category());
+			_set_class_vars_(start_, start_ + n_size, start_ + alloc_size);
+		}
+		else
+		{
+			pointer n_start = _allocate_safe_(alloc_size);
+			_copy_destroy_(start_, n_start, c_pos);
+			for (difference_type dist = c_pos; dist < c_pos + count; ++dist, ++first)
+				static_allocator.construct(n_start + dist, *first);
+			_copy_destroy_(start_ + c_pos, n_start + c_pos + count, n_size - count - c_pos);
+			if (start_ != NULL)
+				static_allocator.deallocate(start_, capacity());
+			_set_class_vars_(n_start, n_start + n_size, n_start + alloc_size);
+		}
+		return (begin() + c_pos);
+	}
 
 	pointer _allocate_safe_(size_type new_cap)
 	{
@@ -441,37 +441,37 @@ private:
 	}
 
 	template<typename iterator, typename InputIterator>
-		iterator	backward_copy(InputIterator first, InputIterator last, iterator position) {
-			--first;
-			--last;
-			size_t n = ft::distance(first, last);
-			position = position + n - 1;
-			while (last != first)
-			{
-				*position = *last; 
-				last--;
-				position--;
-			}
-			return(position + n);
+	iterator	backward_copy(InputIterator first, InputIterator last, iterator position) {
+		--first;
+		--last;
+		size_t n = ft::distance(first, last);
+		position = position + n - 1;
+		while (last != first)
+		{
+			*position = *last; 
+			last--;
+			position--;
 		}
+		return(position + n);
+	}
 };
 
-/* =================    Non-member functions                ================= */
+/* =================	Non-member functions				================= */
 
 //  Checks if the contents of lhs and rhs are equal, that is, they have the same number of elements
 //  and each element in lhs compares equal with the element in rhs at the same position.
 template< class T, class Alloc >
 bool operator==(const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs)
 {
-    return (lhs.size() == rhs.size()
-        && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+	return (lhs.size() == rhs.size()
+		&& ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
 }
 
 // see operator ==
 template< class T, class Alloc >
 bool operator!=(const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs)
 {
-    return (!(lhs == rhs));
+	return (!(lhs == rhs));
 }
 
 //  Compares the contents of lhs and rhs lexicographically.
@@ -479,28 +479,28 @@ bool operator!=(const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs)
 template< class T, class Alloc >
 bool operator<(const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs)
 {
-    return (ft::lexicographical_compare(lhs.begin(), lhs.end(),
-                                        rhs.begin(), rhs.end()));
+	return (ft::lexicographical_compare(lhs.begin(), lhs.end(),
+										rhs.begin(), rhs.end()));
 }
 
 // see operator <
 template< class T, class Alloc >
 bool operator<=(const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs)
 {
-    return (!(rhs < lhs));
+	return (!(rhs < lhs));
 }
 
 // see operator <
 template< class T, class Alloc >
 bool operator>(const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs)
 {
-    return (rhs < lhs);
+	return (rhs < lhs);
 }
 
 // see operator <
 template< class T, class Alloc >
 bool operator>=(const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs)
 {
-    return (!(lhs < rhs));
+	return (!(lhs < rhs));
 }
 } // namespace ft
