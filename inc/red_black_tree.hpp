@@ -166,17 +166,14 @@ public:
     bool erase(value_type value, node_pointer pos)
     {
         node_pointer    erase = search_node(value, pos);
+        bool            prev_color = erase->color;
         node_pointer    tmp = NULL;
-        bool            erased_begin = false;
-        bool            prev_color = RED;
 
         if (erase == end_)
-            return (false);
-        //either one or no child
+            return false;
         if ((erase->left == NULL) || (erase->right == end_ || erase->right == NULL))
         {
             tmp = (erase->left != NULL ? erase->left : erase->right);
-            //no child
             if (tmp == end_ || tmp == NULL)
             {
                 tmp = root_;
@@ -216,35 +213,44 @@ public:
                     end_->parent = tmp;
                 }
             }
-            if (begin_ == erase)
-                erased_begin = true;
-            erase_node_(erase);
         }
-        //left and right child
+        // node has two children
         else
         {
-            tmp = max_value_node_(erase->left);
+            tmp = min_value_node_(erase->right);
             prev_color = tmp->color;
-            if (tmp->parent == erase)
+            if (tmp->parent != erase)
             {
-                erase->left = tmp->left;
-                if (erase->left != NULL)
-                    erase->left->parent = erase;
+                _transplant_node(tmp, tmp->right);
+                tmp->right = erase->right;
+                if (tmp->right != NULL)
+                    tmp->right->parent = tmp;
             }
-            else if (tmp->parent != NULL)
-                tmp->parent->right = NULL; //maybe end in some cases?
-            if (tmp == begin_)
-                erased_begin = true;
-            value_alloc_.destroy(&erase->value);
-            value_alloc_.construct(&erase->value, tmp->value);
-            erase_node_(tmp);
-            tmp = erase;
+            _transplant_node(erase, tmp);
+            tmp->left = erase->left;
+            tmp->left->parent = tmp;
+            tmp->color = erase->color;
+            tmp = end_;
         }
+        erase_node_(erase);
         if (prev_color == BLACK)
-            balance_erase(tmp);
-        if (erased_begin == true)
-            begin_ = min_value_node_(root_);
+           balance_erase(tmp);
+        begin_ = min_value_node_(root_);
         return (true);
+    }
+
+    void    _transplant_node( node_pointer o, node_pointer n )
+    {
+        if (o->parent == NULL)
+            root_ = n;
+        else if (o == o->parent->left)
+            o->parent->left = n;
+        else
+            o->parent->right = n;
+        if (begin_ == o)
+            begin_ = n;
+        if (n != NULL)
+            n->parent = o->parent;
     }
 
     void swap(red_black_tree& other)

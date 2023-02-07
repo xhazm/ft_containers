@@ -51,14 +51,14 @@ void map_test_random()
 
         PRINT_ALL(m);
 
-    //     strmap::size_type s = m.erase("1234");
+        strmap::size_type s = m.erase("1234");
 
-    //     PRINT_ALL(m);
-    //     PRINT_LINE("S:", s);
+        PRINT_ALL(m);
+        PRINT_LINE("S:", s);
 
-    //     m.clear();
+        m.clear();
 
-    //     PRINT_ALL(m);
+        PRINT_ALL(m);
 
     //     it = m.insert(m.begin(), NAMESPACE::make_pair("", "test"));
 
