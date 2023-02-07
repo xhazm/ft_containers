@@ -1,7 +1,7 @@
 NAME	= ft_containers
 
 SRC_DIR	= ./
-SRC		= insert_range.cpp
+SRC		= random.cpp 
 
 # HDR	=  ./inc/vector.hpp
 
@@ -29,5 +29,5 @@ re: fclean all
 
 valgrind: re
 	rm -f valgrind.log
-	G_SLICE=always-malloc G_DEBUG=gc-friendly  valgrind -v --tool=memcheck --leak-check=full --num-callers=40 --log-file=valgrind.log /home/sirlin/code/ft_containers/ft_containers
+	G_SLICE=always-malloc G_DEBUG=gc-friendly  valgrind -v --tool=memcheck --leak-check=full --num-callers=40 --log-file=valgrind.log ./$(NAME)
 	tail -1 ./valgrind.log

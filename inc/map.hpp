@@ -2,7 +2,7 @@
 
 #include <functional>
 #include <iostream>
-#include "./avl.hpp"
+#include "./red_black_tree.hpp"
 #include "./utils.hpp"
 #include "./iterator/reverse_iterator.hpp"
 
@@ -52,7 +52,7 @@ namespace ft
         };
 
     private:
-        typedef avl_tree<value_type, value_compare>             tree;
+        typedef red_black_tree<value_type, value_compare>             tree;
     
     public:
         typedef typename tree::iterator                         iterator;

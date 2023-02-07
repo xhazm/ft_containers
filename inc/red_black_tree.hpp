@@ -1,11 +1,11 @@
 #pragma once
 
 #include <memory>
-#include "./iterator/avl_iterator.hpp"
+#include "./iterator/rb_tree_iterator.hpp"
 #include "./iterator/reverse_iterator.hpp"
 #include "./pair.hpp"
 #include "./utils.hpp"
-#include "./avl_node.hpp"
+#include "./red_black_node.hpp"
 
 
 namespace ft
@@ -15,19 +15,19 @@ template<
     class Value,
     class Compare,
     class Allocator = std::allocator< Value >
-> class avl_tree
+> class red_black_tree
 {
 public:
     typedef Value                                           value_type;
     typedef Allocator                                       value_allocator_type;
     typedef typename value_allocator_type::difference_type  difference_type;
     typedef Compare                                         value_compare;
-    typedef typename avl_node< value_type >::node_type      node_type;
+    typedef typename red_black_node< value_type >::node_type      node_type;
     typedef typename node_type::pointer                     node_pointer;
     typedef typename value_allocator_type::template rebind<node_type>::other    node_allocator_type;
     typedef typename value_allocator_type::size_type        size_type;
-    typedef ft::avl_iterator< value_type >			        iterator;
-    typedef ft::const_avl_iterator< value_type >			const_iterator;
+    typedef ft::rb_tree_iterator< value_type >			        iterator;
+    typedef ft::const_rb_tree_iterator< value_type >			const_iterator;
     typedef ft::reverse_iterator<iterator>                  reverse_iterator;
     typedef ft::reverse_iterator<const_iterator>            const_reverse_iterator;
 
@@ -42,22 +42,22 @@ public:
 
 
 public:
-    // avl_tree(const value_compare& cmp, const value_allocator_type value_alloc = value_allocator_type())
-    avl_tree()
+    // red_black_tree(const value_compare& cmp, const value_allocator_type value_alloc = value_allocator_type())
+    red_black_tree()
     {
-        end_ = create_node_(value_type(), NULL);
+        end_ = create_node_(value_type(), NULL, BLACK);
         root_ = end_;
         begin_ = end_;
         size_ = 0;
         //init also node alloc? or is it auto inited
     }
-    ~avl_tree() 
+    ~red_black_tree() 
     {
         clear();
         erase_node_(end_);
     }
 
-    avl_tree& operator=(const avl_tree& other) 
+    red_black_tree& operator=(const red_black_tree& other) 
     {
         if (this != &other)
         {
@@ -107,7 +107,7 @@ public:
             pos = root_;
         if (pos == end_)
         {
-            root_ = create_node_(value, NULL);
+            root_ = create_node_(value, NULL, BLACK);
             root_->right = end_;
             begin_ = root_;
             end_->parent = root_;
@@ -124,16 +124,16 @@ public:
         }
         if(cmp_(value, pos->value)) //left
         {
-            node_pointer new_node = create_node_(value, pos);
+            node_pointer new_node = create_node_(value, pos, RED);
             pos->left = new_node;
             if (pos == begin_)
                 begin_ = new_node;
-            balance_(new_node);
+            balance_insert(new_node);
             return (ft::make_pair(iterator(new_node), true));
         }
         else if(cmp_(pos->value, value)) //right
         {
-            node_pointer new_node = create_node_(value, pos);
+            node_pointer new_node = create_node_(value, pos, RED);
             if (pos->right == end_)
             {
                 pos->right = new_node;
@@ -142,7 +142,7 @@ public:
             }
             else
                 pos->right = new_node;
-            balance_(new_node);
+            balance_insert(new_node);
             return (ft::make_pair(iterator(new_node), true));
         }
         return (ft::make_pair(iterator(pos), false));
@@ -166,16 +166,14 @@ public:
     bool erase(value_type value, node_pointer pos)
     {
         node_pointer    erase = search_node(value, pos);
+        bool            prev_color = erase->color;
         node_pointer    tmp = NULL;
-        bool            erased_begin = false;
 
         if (erase == end_)
-            return (false);
-        //either one or no child
+            return false;
         if ((erase->left == NULL) || (erase->right == end_ || erase->right == NULL))
         {
             tmp = (erase->left != NULL ? erase->left : erase->right);
-            //no child
             if (tmp == end_ || tmp == NULL)
             {
                 tmp = root_;
@@ -215,36 +213,47 @@ public:
                     end_->parent = tmp;
                 }
             }
-            if (begin_ == erase)
-                erased_begin = true;
-            erase_node_(erase);
         }
-        //left and right child
+        // node has two children
         else
         {
-            tmp = max_value_node_(erase->left);
-            if (tmp->parent == erase)
+            tmp = min_value_node_(erase->right);
+            prev_color = tmp->color;
+            if (tmp->parent != erase)
             {
-                erase->left = tmp->left;
-                if (erase->left != NULL)
-                    erase->left->parent = erase;
+                _transplant_node(tmp, tmp->right);
+                tmp->right = erase->right;
+                if (tmp->right != NULL)
+                    tmp->right->parent = tmp;
             }
-            else if (tmp->parent != NULL)
-                tmp->parent->right = NULL; //maybe end in some cases?
-            if (tmp == begin_)
-                erased_begin = true;
-            value_alloc_.destroy(&erase->value);
-            value_alloc_.construct(&erase->value, tmp->value);
-            erase_node_(tmp);
-            tmp = erase;
+            _transplant_node(erase, tmp);
+            tmp->left = erase->left;
+            tmp->left->parent = tmp;
+            tmp->color = erase->color;
+            tmp = end_;
         }
-        balance_(tmp);
-        if (erased_begin == true)
-            begin_ = min_value_node_(root_);
+        erase_node_(erase);
+        if (prev_color == BLACK)
+           balance_erase(tmp);
+        begin_ = min_value_node_(root_);
         return (true);
     }
 
-    void swap(avl_tree& other)
+    void    _transplant_node( node_pointer o, node_pointer n )
+    {
+        if (o->parent == NULL)
+            root_ = n;
+        else if (o == o->parent->left)
+            o->parent->left = n;
+        else
+            o->parent->right = n;
+        if (begin_ == o)
+            begin_ = n;
+        if (n != NULL)
+            n->parent = o->parent;
+    }
+
+    void swap(red_black_tree& other)
     {
         ft::swap(value_alloc_, other.value_alloc_);
         ft::swap(node_alloc_, other.node_alloc_);
@@ -396,78 +405,48 @@ public:
     * 
     *   @param node Given node to begin with.
     */
-    void balance_(node_pointer node)
+
+    void    left_rotate(node_pointer old_head)
     {
-        if (node == end_)
-            return ;
-        while (node)
-        {
-            long long balance = balance_of_subtrees_(node);
-
-            if (balance <= -2 && balance_of_subtrees_(node->right) <= -1)
-                rotate_left_(node->right);
-            else if (balance <= -2 && balance_of_subtrees_(node->right) >= 0)
-                rotate_left_(rotate_right_(node->right->left));
-            else if (balance >= 2 && balance_of_subtrees_(node->left) >= 1)
-                rotate_right_(node->left);
-            else if (balance >= 2 && balance_of_subtrees_(node->left) <= 0)
-                rotate_right_(rotate_left_(node->left->right));
-
-            node = node->parent;
-        }
-    }
-
-    node_pointer rotate_right_(node_pointer new_head)
-    {
-        node_pointer    rotation_node = new_head->parent;
-
-        if (rotation_node == root_)
+        node_pointer    new_head = old_head->right;
+        new_head->parent = old_head->parent;
+        if (old_head->parent == NULL)
             root_ = new_head;
-        else if(rotation_node != root_)
-        {
-            if (rotation_node->parent->right == rotation_node)
-                rotation_node->parent->right = new_head;
-            else
-                rotation_node->parent->left = new_head;
-        }
-        rotation_node->left = new_head->right;
-        if (rotation_node->left != NULL)
-            rotation_node->left->parent = rotation_node;
-        new_head->right = rotation_node;
-        new_head->parent = rotation_node->parent;
-        rotation_node->parent = new_head;
-        return (new_head);
+        else if (old_head->parent->left == old_head)
+            old_head->parent->left = new_head;
+        else
+            old_head->parent->right = new_head;
+        old_head->right = new_head->left;
+        if (old_head->right != NULL)
+            old_head->right->parent = old_head;
+        new_head->left = old_head;
+        old_head->parent = new_head;
     }
 
-
-    node_pointer rotate_left_(node_pointer new_head)
+    void    _right_rotate(node_pointer old_head)
     {
-        node_pointer    rotation_node = new_head->parent;
-
-        if (rotation_node == root_)
+        node_pointer    new_head = old_head->left;
+        new_head->parent = old_head->parent;
+        if (old_head->parent == NULL)
             root_ = new_head;
-        else if(rotation_node != root_)
-        {
-            if (rotation_node->parent->right == rotation_node)
-                rotation_node->parent->right = new_head;
-            else
-                rotation_node->parent->left = new_head;
-        }
-        rotation_node->right = new_head->left;
-        if (rotation_node->right != end_ && rotation_node->right != NULL)
-            rotation_node->right->parent = rotation_node;
-        new_head->left = rotation_node;
-        new_head->parent = rotation_node->parent;
-        rotation_node->parent = new_head;
-        return (new_head);
+        else if (old_head->parent->right == old_head)
+            old_head->parent->right = new_head;
+        else
+            old_head->parent->left = new_head;
+        old_head->left = new_head->right;
+        if (old_head->left != NULL)
+            old_head->left->parent = old_head;
+        new_head->right = old_head;
+        old_head->parent = new_head;
     }
 
-    node_pointer create_node_(value_type value, node_pointer parent)
+    node_pointer create_node_(value_type value, node_pointer parent, bool color)
     {
         node_pointer new_node = node_alloc_.allocate(1);
         new_node->parent = parent;
         new_node->left = NULL;
         new_node->right = NULL;
+        new_node->color = color;
         value_alloc_.construct(&new_node->value, value);
         ++size_;
         return (new_node);
@@ -513,17 +492,142 @@ public:
     {
         if (from == NULL)
             return (NULL);
-        node_pointer new_node = create_node_(from->value, parent);
+        node_pointer new_node = create_node_(from->value, parent, from->color);
         new_node->left = _copy_tree(from->left, new_node);
         end_ = new_node;                                                     // sets the new end_iterator. should be done differently cause it's not self explainatory ;)
         new_node->right = _copy_tree(from->right, new_node);
         return (new_node);
     }
 
+    #define UNCLE_L(n) n->parent->parent->left
+    #define UNCLE_R(n) n->parent->parent->right
+
+    void    balance_insert(node_pointer n)
+    {
+        while (n->parent != NULL && n->parent->parent != NULL && n->parent->color == RED)
+        {
+            if (UNCLE_R(n) == n->parent)
+            {
+                if (UNCLE_L(n) != NULL && UNCLE_L(n)->color == RED)
+                {
+                    UNCLE_L(n)->color = BLACK;
+                    n->parent->color = BLACK;
+                    n->parent->parent->color = RED;
+                    n = n->parent->parent;
+                }
+                else
+                {
+                    if (n->parent->left == n)
+                    {
+                        n = n->parent;
+                        _right_rotate(n);
+                    }
+                    n->parent->color = BLACK;
+                    n->parent->parent->color = RED;
+                    left_rotate(n->parent->parent);
+                }
+            }
+            else
+            {
+                if (UNCLE_R(n) != NULL && UNCLE_R(n)->color == RED)
+                {
+                    UNCLE_R(n)->color = BLACK;
+                    n->parent->color = BLACK;
+                    n->parent->parent->color = RED;
+                    n = n->parent->parent;
+                }
+                else 
+                {
+                    if (n->parent->right == n)
+                    {
+                        n = n->parent;
+                        left_rotate(n);
+                    }
+                    n->parent->color = BLACK;
+                    n->parent->parent->color = RED;
+                    _right_rotate(n->parent->parent);
+                }
+            }
+        }
+        root_->color = BLACK;
+    }
+
+    #define _IS_LEFT_CHILD( n ) (n != NULL && n->parent != NULL && n == n->parent->left) ? true : false
+
+    void    balance_erase(node_pointer n)
+    {
+        if (n == root_ || n == NULL)
+            return;
+
+        node_pointer    parent = n->parent;
+        node_pointer    sibling = parent->left;
+        if (_IS_LEFT_CHILD(n))
+            sibling = parent->right;
+        if (sibling == NULL)                                                    
+        {
+            balance_erase(parent);
+        }
+        else
+        {
+            if (sibling->color == RED)
+            {
+                parent->color = RED;
+                sibling->color = BLACK;
+                if (_IS_LEFT_CHILD(sibling))
+                    _right_rotate(parent);
+                else
+                    left_rotate(parent);
+                balance_erase(n);
+            }
+            // black sibling
+            else
+            {
+                // at least one red child
+                if ((sibling->left != NULL && sibling->left->color == RED)
+                    || (sibling->right != NULL && sibling->right->color == RED))
+                {
+                    if (sibling->left != NULL && sibling->left->color == RED) {
+                        if (_IS_LEFT_CHILD(sibling))
+                        {
+                            sibling->left->color = sibling->color;
+                            sibling->color = parent->color;
+                            _right_rotate(parent);
+                        }
+                        else
+                        {
+                            sibling->left->color = parent->color;
+                            _right_rotate(sibling);
+                            left_rotate(parent);
+                        }
+                    }
+                    else
+                    {
+                        if (_IS_LEFT_CHILD(sibling))
+                        {
+                            sibling->right->color = parent->color;
+                            left_rotate(sibling);
+                            _right_rotate(parent);
+                        }
+                        else
+                        {
+                            sibling->right->color = sibling->color;
+                            sibling->color = parent->color;
+                            left_rotate(parent);
+                        }
+                    }
+                    parent->color = BLACK;
+                }
+                //  node has two black children
+                else
+                {
+                    sibling->color = RED;
+                    if (parent->color == BLACK)
+                        balance_erase(parent);
+                    else
+                        parent->color = BLACK;
+                }
+            }
+        }
+    }
 };
 } // namespace ft
-//cases:
-// -2 -1 = left rot
-// +2 +1 = right rot
-// -2 +1 = right left rot (bottom starting)
-// +2 -1 = left right rot
