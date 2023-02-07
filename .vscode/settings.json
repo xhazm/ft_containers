@@ -61,6 +61,17 @@
 		"system_error": "cpp",
 		"tuple": "cpp",
 		"typeinfo": "cpp",
-		"utility": "cpp"
+		"utility": "cpp",
+		"deque": "cpp",
+		"fstream": "cpp",
+		"list": "cpp",
+		"__tree": "cpp",
+		"csignal": "cpp",
+		"iomanip": "cpp",
+		"map": "cpp",
+		"set": "cpp",
+		"stack": "cpp",
+		"__memory": "cpp",
+		"filesystem": "cpp"
 	}
 }

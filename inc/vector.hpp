@@ -143,6 +143,10 @@ public:
 		_grow_(new_cap);
 	}
 /* =================			   Modifiers			  ================= */
+<<<<<<< HEAD
+=======
+
+>>>>>>> c741cac951d90c2a84b8e48dcf7fc3da9c085391
 	public:
 	void push_back(const T& data)
 	{
@@ -197,12 +201,21 @@ public:
 		if (count > max_size())
 			throw std::length_error("vector");
 		if (count < size())
+<<<<<<< HEAD
 		{
 			erase(start_ + count, finish_);
 			finish_ = start_ + count;
 		}
 		else if (count > size())
 		{
+=======
+		{
+			erase(start_ + count, finish_);
+			finish_ = start_ + count;
+		}
+		else if (count > size())
+		{
+>>>>>>> c741cac951d90c2a84b8e48dcf7fc3da9c085391
 			if (count > capacity())
 			{
 				if (count <= capacity() * 2)
@@ -233,7 +246,7 @@ public:
 		return (begin() + c_pos);
 	}
 
-	iterator insert( const_iterator pos, const T& value )
+	iterator insert(const_iterator pos, const T& value)
 	{
 		return(insert(pos, 1, value));
 	}
@@ -244,12 +257,13 @@ public:
  		return (_insert_range_(pos, first, last, typename ft::iterator_traits<InputIt>::iterator_category()));
 	}
 
-	void swap(vector& other)
+	void swap(vector& x)
 	{
-		ft::swap(start_, other.start_);
-		ft::swap(finish_, other.finish_);
-		ft::swap(end_of_storage_, other.end_of_storage_);
-		ft::swap(static_allocator, other.static_allocator);
+		return ;
+		ft::swap(start_, x.start_);
+		ft::swap(finish_, x.finish_);
+		ft::swap(end_of_storage_, x.end_of_storage_);
+		ft::swap(static_allocator, x.static_allocator);
 	}
 
 /* =================			 Helper Functions			  ================= */
@@ -352,26 +366,11 @@ private:
 
 		difference_type c_pos = ft::distance(begin(), pos);
 		size_type		n_size = size() + count;
-		size_type		alloc_size = capacity() > n_size ? capacity() : n_size;
-
-		if (capacity() >= n_size)
-		{
-			if (size())
-				_assign_construct_(start_ + c_pos, start_ + c_pos + count, size());
-			_assign_construct_(first, start_ + c_pos, count, typename iterator_traits< InputIterator >::iterator_category());
-			_set_class_vars_(start_, start_ + n_size, start_ + alloc_size);
-		}
-		else
-		{
-			pointer n_start = _allocate_safe_(alloc_size);
-			_copy_destroy_(start_, n_start, c_pos);
-			for (difference_type dist = c_pos; dist < c_pos + count; ++dist, ++first)
-				static_allocator.construct(n_start + dist, *first);
-			_copy_destroy_(start_ + c_pos, n_start + c_pos + count, n_size - count - c_pos);
-			if (start_ != NULL)
-				static_allocator.deallocate(start_, capacity());
-			_set_class_vars_(n_start, n_start + n_size, n_start + alloc_size);
-		}
+		size_type		old_end = size();
+	
+		resize(n_size);
+		backward_copy(begin() + c_pos, begin() + old_end, begin() + c_pos + count);
+		_assign_construct_(first, start_ + c_pos, count, typename iterator_traits< InputIterator >::iterator_category());
 		return (begin() + c_pos);
     }
 
@@ -385,28 +384,29 @@ private:
 
 		difference_type c_pos = ft::distance(begin(), pos);
 		size_type		n_size = size() + count;
-		size_type		alloc_size = capacity() > n_size ? capacity() : n_size;
-
-		if (capacity() >= n_size)
-		{
-			if (size())
-				_assign_construct_(start_ + c_pos, start_ + c_pos + count, count);
-			_assign_construct_(first, start_ + c_pos, count, typename iterator_traits< InputIterator >::iterator_category());
-			_set_class_vars_(start_, start_ + n_size, start_ + alloc_size);
-		}
-		else
-		{
-			pointer n_start = _allocate_safe_(alloc_size);
-			_copy_destroy_(start_, n_start, c_pos);
-			for (difference_type dist = c_pos; dist < c_pos + count; ++dist, ++first)
-				static_allocator.construct(n_start + dist, *first);
-			_copy_destroy_(start_ + c_pos, n_start + c_pos + count, n_size - count - c_pos);
-			if (start_ != NULL)
-				static_allocator.deallocate(start_, capacity());
-			_set_class_vars_(n_start, n_start + n_size, n_start + alloc_size);
-		}
+		size_type		old_end = size();
+	
+		resize(n_size);
+		backward_copy(begin() + c_pos, begin() + old_end, begin() + c_pos + count);
+		_assign_construct_(first, start_ + c_pos, count, typename iterator_traits< InputIterator >::iterator_category());
 		return (begin() + c_pos);
     }
+
+	template<typename iterator, typename InputIterator>
+	iterator	backward_copy(InputIterator first, InputIterator last, iterator position) {
+		--first;
+		--last;
+		size_t n = ft::distance(first, last);
+		position = position + n - 1;
+		while (last != first)
+		{
+			*position = *last; 
+			last--;
+			position--;
+		}
+		return(position + n);
+	}
+
 
 	pointer _allocate_safe_(size_type new_cap)
 	{
