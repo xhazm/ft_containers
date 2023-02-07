@@ -7,7 +7,7 @@
 namespace ft {
 
 template < class node_ptr >
-node_ptr rb_tree_tree_max(node_ptr node)
+node_ptr rb_tree_max(node_ptr node)
 {
     while (node->right != NULL)
         node = node->right;
@@ -15,7 +15,7 @@ node_ptr rb_tree_tree_max(node_ptr node)
 }
 
 template < class node_ptr >
-node_ptr rb_tree_tree_min(node_ptr node)
+node_ptr rb_tree_min(node_ptr node)
 {
     while (node->left != NULL)
         node = node->left;
@@ -23,20 +23,20 @@ node_ptr rb_tree_tree_min(node_ptr node)
 }
 
 template < class node_ptr >
-node_ptr rb_tree_tree_prev(node_ptr x)
+node_ptr rb_tree_prev(node_ptr x)
 {
     if (x->left != NULL)
-        return rb_tree_tree_max(x->left);
+        return rb_tree_max(x->left);
     while (x == x->parent->left)
         x = x->parent;
     return x->parent;
 }
 
 template < class node_ptr >
-node_ptr rb_tree_tree_next(node_ptr node)
+node_ptr rb_tree_next(node_ptr node)
 {
     if (node->right != NULL)
-        return rb_tree_tree_min(node->right);
+        return rb_tree_min(node->right);
     while (node == node->parent->right)
         node = node->parent;
     return node->parent;
@@ -88,7 +88,7 @@ template <
     pointer       operator->() const    { return &(current_->value); }
     iterator& operator++()                              
     {
-        current_ = rb_tree_tree_next< node_pointer >(current_);
+        current_ = rb_tree_next< node_pointer >(current_);
         return *this;
     }
     iterator  operator++(int)                           
@@ -99,7 +99,7 @@ template <
     }
     iterator& operator--()                              
     {
-        current_ = rb_tree_tree_prev< node_pointer >(current_);
+        current_ = rb_tree_prev< node_pointer >(current_);
         return *this; 
     }
     iterator  operator--(int)                           
@@ -160,7 +160,7 @@ template <
     pointer       operator->() const    { return &(current_->value); }
     const_iterator& operator++()                              
     {
-        current_ = rb_tree_tree_next< const_node_pointer >(current_);
+        current_ = rb_tree_next< const_node_pointer >(current_);
         return *this;
     }
     const_iterator  operator++(int)                           
@@ -171,7 +171,7 @@ template <
     }
     const_iterator& operator--()                              
     {
-        current_ = rb_tree_tree_prev< const_node_pointer >(current_);
+        current_ = rb_tree_prev< const_node_pointer >(current_);
         return *this; 
     }
     const_iterator  operator--(int)                           

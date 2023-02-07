@@ -20,14 +20,15 @@ template<
 public:
     typedef Value                                           value_type;
     typedef Allocator                                       value_allocator_type;
-    typedef typename value_allocator_type::difference_type  difference_type;
     typedef Compare                                         value_compare;
-    typedef typename red_black_node< value_type >::node_type      node_type;
+    typedef typename value_allocator_type::difference_type  difference_type;
+    typedef typename red_black_node<value_type>::node_type  node_type;
     typedef typename node_type::pointer                     node_pointer;
-    typedef typename value_allocator_type::template rebind<node_type>::other    node_allocator_type;
+    typedef typename value_allocator_type::template 
+                                rebind<node_type>::other    node_allocator_type;
     typedef typename value_allocator_type::size_type        size_type;
-    typedef ft::rb_tree_iterator< value_type >			        iterator;
-    typedef ft::const_rb_tree_iterator< value_type >			const_iterator;
+    typedef ft::rb_tree_iterator<value_type>                iterator;
+    typedef ft::const_rb_tree_iterator<value_type>          const_iterator;
     typedef ft::reverse_iterator<iterator>                  reverse_iterator;
     typedef ft::reverse_iterator<const_iterator>            const_reverse_iterator;
 
@@ -49,8 +50,8 @@ public:
         root_ = end_;
         begin_ = end_;
         size_ = 0;
-        //init also node alloc? or is it auto inited
     }
+
     ~red_black_tree() 
     {
         clear();
@@ -66,12 +67,11 @@ public:
             value_alloc_ = other.value_alloc_;
             node_alloc_ = other.node_alloc_;
             cmp_ = other.cmp_;
-            root_ = _copy_tree(other.root_, NULL);
+            root_ = copy_tree_(other.root_, NULL);
             begin_ = min_value_node_(root_);
             end_->parent = max_value_node_(root_);
             size_ = other.size_;
         }
-
         return *this;
     }
 
@@ -405,10 +405,10 @@ public:
     * 
     *   @param node Given node to begin with.
     */
-
-    void    left_rotate(node_pointer old_head)
+    void    rotate_left(node_pointer old_head)
     {
         node_pointer    new_head = old_head->right;
+    
         new_head->parent = old_head->parent;
         if (old_head->parent == NULL)
             root_ = new_head;
@@ -423,9 +423,10 @@ public:
         old_head->parent = new_head;
     }
 
-    void    _right_rotate(node_pointer old_head)
+    void    rotate_right_(node_pointer old_head)
     {
         node_pointer    new_head = old_head->left;
+    
         new_head->parent = old_head->parent;
         if (old_head->parent == NULL)
             root_ = new_head;
@@ -488,14 +489,14 @@ public:
         erase_node_(n);
     }
 
-    node_pointer    _copy_tree(node_pointer from, node_pointer parent)
+    node_pointer    copy_tree_(node_pointer from, node_pointer parent)
     {
         if (from == NULL)
             return (NULL);
         node_pointer new_node = create_node_(from->value, parent, from->color);
-        new_node->left = _copy_tree(from->left, new_node);
-        end_ = new_node;                                                     // sets the new end_iterator. should be done differently cause it's not self explainatory ;)
-        new_node->right = _copy_tree(from->right, new_node);
+        new_node->left = copy_tree_(from->left, new_node);
+        end_ = new_node;
+        new_node->right = copy_tree_(from->right, new_node);
         return (new_node);
     }
 
@@ -520,11 +521,11 @@ public:
                     if (n->parent->left == n)
                     {
                         n = n->parent;
-                        _right_rotate(n);
+                        rotate_right_(n);
                     }
                     n->parent->color = BLACK;
                     n->parent->parent->color = RED;
-                    left_rotate(n->parent->parent);
+                    rotate_left(n->parent->parent);
                 }
             }
             else
@@ -541,11 +542,11 @@ public:
                     if (n->parent->right == n)
                     {
                         n = n->parent;
-                        left_rotate(n);
+                        rotate_left(n);
                     }
                     n->parent->color = BLACK;
                     n->parent->parent->color = RED;
-                    _right_rotate(n->parent->parent);
+                    rotate_right_(n->parent->parent);
                 }
             }
         }
@@ -574,9 +575,9 @@ public:
                 parent->color = RED;
                 sibling->color = BLACK;
                 if (_IS_LEFT_CHILD(sibling))
-                    _right_rotate(parent);
+                    rotate_right_(parent);
                 else
-                    left_rotate(parent);
+                    rotate_left(parent);
                 balance_erase(n);
             }
             // black sibling
@@ -591,13 +592,13 @@ public:
                         {
                             sibling->left->color = sibling->color;
                             sibling->color = parent->color;
-                            _right_rotate(parent);
+                            rotate_right_(parent);
                         }
                         else
                         {
                             sibling->left->color = parent->color;
-                            _right_rotate(sibling);
-                            left_rotate(parent);
+                            rotate_right_(sibling);
+                            rotate_left(parent);
                         }
                     }
                     else
@@ -605,14 +606,14 @@ public:
                         if (_IS_LEFT_CHILD(sibling))
                         {
                             sibling->right->color = parent->color;
-                            left_rotate(sibling);
-                            _right_rotate(parent);
+                            rotate_left(sibling);
+                            rotate_right_(parent);
                         }
                         else
                         {
                             sibling->right->color = sibling->color;
                             sibling->color = parent->color;
-                            left_rotate(parent);
+                            rotate_left(parent);
                         }
                     }
                     parent->color = BLACK;
