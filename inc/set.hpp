@@ -1,11 +1,9 @@
 #pragma once
 
-#include "./vector.hpp"
-#include "./utils.hpp"
+#include <functional>
 #include "./red_black_tree.hpp"
 #include "./iterator/rb_tree_iterator.hpp"
 #include "./iterator/reverse_iterator.hpp"
-#include "./pair.hpp"
 
 namespace ft
 {
