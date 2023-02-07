@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <sstream>
 
-#include "is_const.hpp"
 #include <type_traits>
 
 #ifndef NS

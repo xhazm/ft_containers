@@ -1,4 +1,4 @@
-#include "stack.hpp"
+#include "../../inc/stack.hpp"
 #include <stack>
 
 #include <deque>

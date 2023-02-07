@@ -2,9 +2,9 @@
 #include <vector>
 #include <stack>
 #include <iostream>
-#include "./inc/vector.hpp"
-#include "./inc/utils.hpp"
-#include "./tester/vector/vector_test.hpp"
+#include "../../inc/vector.hpp"
+#include "../../inc/utils.hpp"
+#include "vector_test.hpp"
 
 
 int main(void)
@@ -30,7 +30,7 @@ int main(void)
     vec_tester.test_front_back_access();
     vec_tester.clear();
     vec_tester.reserve(900);
-    vec_tester.test_assign(5, 12);
+    vec_tester.test_assign(17, 12);
     vec_tester.test_copy_constructor();
     vec_tester.test_it_constructor(2);
     vec_tester.test_fill_constructor(5, 99);
