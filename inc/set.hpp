@@ -1,78 +1,60 @@
 #pragma once
 
-#include <functional>
-#include <iostream>
-#include "./red_black_tree.hpp"
+#include "./vector.hpp"
 #include "./utils.hpp"
+#include "./red_black_tree.hpp"
+#include "./iterator/rb_tree_iterator.hpp"
 #include "./iterator/reverse_iterator.hpp"
+#include "./pair.hpp"
 
 namespace ft
 {
+
 template<
-class Key,
-class T,
-class Compare = std::less<Key>,
-class Allocator = std::allocator<ft::pair<const Key, T> >
-> class map
+    class Key,
+    class Compare = std::less<Key>,
+    class Allocator = std::allocator<Key>
+> class set
 {
-    public:
-
-    typedef T                                           mapped_type;
-    typedef Key                                         key_type;
-    typedef ft::pair<const key_type, mapped_type>       value_type;
-    typedef Allocator                                   allocator_type;
-    typedef Compare                                     key_compare;
-    typedef std::size_t                                 size_type;
-    typedef std::ptrdiff_t                              difference_type;
-    typedef typename allocator_type::reference          reference;
-    typedef typename allocator_type::const_reference    const_reference;
-    typedef typename allocator_type::pointer            pointer;
-    typedef typename allocator_type::const_pointer      const_pointer;
-
-/* =================                Member class                        ================= */
-
-    // std::map::value_compare is a function object that compares objects of type 
-    // std::map::value_type (key-value pairs) by comparing of the first components of the pairs. 
-    class value_compare : std::binary_function<value_type, value_type, bool>
-    {
-        protected:  
-            key_compare comp;
-
-        public:
-        // Initializes the internal instance of the comparator to c.
-            value_compare() : comp() {}
-            value_compare(key_compare c) : comp(c) {}
-
-        public:
-        // Compares lhs.first and rhs.first by calling the stored comparator.
-        bool    operator()( const value_type& lhs, const value_type& rhs ) const
-        {
-            return (comp(lhs.first, rhs.first));
-        }
-    };
-
-private:
-    typedef red_black_tree<value_type, value_compare>             tree;
-
 public:
-    typedef typename tree::iterator                         iterator;
-    typedef typename tree::const_iterator                   const_iterator;
-    typedef typename tree::reverse_iterator                 reverse_iterator;
-    typedef typename tree::const_reverse_iterator           const_reverse_iterator;
+/* =================    Member types                        ================= */
+
+    typedef Key                                             key_type;
+    typedef Key                                             value_type;
+    typedef std::size_t                                     size_type;
+    typedef std::ptrdiff_t                                  difference_type;
+    typedef Compare                                         key_compare;
+    typedef Compare                                         value_compare;
+    typedef Allocator                                       allocator_type;
+    typedef value_type&                                     reference;
+    typedef const value_type&                               const_reference;
+    typedef typename allocator_type::pointer                pointer;
+    typedef typename allocator_type::const_pointer          const_pointer;
 
 private:
+    typedef ft::red_black_tree<value_type, value_compare>   tree;
+    
+public:
+    typedef typename tree::const_iterator                   iterator;
+    typedef typename tree::const_iterator                   const_iterator;
+    typedef typename ft::reverse_iterator<iterator>         reverse_iterator;
+    typedef typename ft::reverse_iterator<const_iterator>   const_reverse_iterator;
+
+
+private:
+/* =================    Member objects                      ================= */
     value_compare                   cmp_;
     allocator_type                  value_allocator_;
     tree                            rb_tree_;
-        
-/* =================                Member class                        ================= */
+/* =================    Constructors                        ================= */
+
 public:
 
-    explicit map(const Compare& comp = Compare(), const Allocator& alloc = Allocator())
-        : cmp_(comp), value_allocator_(alloc), rb_tree_(tree()) {}
+    explicit set(const Compare& comp = Compare(), const Allocator& alloc = Allocator())
+        : cmp_(comp), value_allocator_(alloc) {}
 
     template< class InputIt >
-    map(InputIt first, InputIt last,
+    set(InputIt first, InputIt last,
             const Compare& comp = Compare(),
             const Allocator& alloc = Allocator())
             : cmp_(comp), value_allocator_(alloc)
@@ -80,9 +62,9 @@ public:
         insert(first, last);
     }
 
-    map(const map& other) { *this = other; }
+    set(const set& other) { *this = other; }
 
-    map& operator=(const map& other)
+    set& operator=(const set& other)
     {
         if (this != &other)
         {
@@ -93,39 +75,9 @@ public:
         return *this;
     }
 
-    ~map() {}
+    ~set() {}
 
     allocator_type get_allocator() const { return value_allocator_; }
-
-
-/* =================                 Element Access                   ================= */
-    
-    // Returns a reference to the mapped value of the element with key equivalent to key. 
-    // If no such element exists, an exception of type std::out_of_range is thrown. 
-    T& at(const key_type& key)
-    {
-        iterator    it = find(key);
-        if (it == end())
-            throw std::out_of_range("map::at:  key not found");
-        else
-            return (it->second);
-    }
-
-    const T& at(const key_type& key) const
-    {
-        const_iterator  it = find(key);
-        if (it == end())
-            throw std::out_of_range("map::at:  key not found");
-        else
-            return (it->second);
-    }
-    
-    // Returns a reference to the value that is mapped to a key equivalent to key, 
-    // performing an insertion if such key does not already exist. 
-    T& operator[](const Key& key)
-    {
-        return (insert(value_type(key, mapped_type())).first->second);
-    }
 
 /* =================                    Iterators                   ================= */
     iterator        begin()         { return rb_tree_.begin(); }
@@ -175,10 +127,9 @@ public:
 
     size_type erase(const Key& key) 
     {
-        return (rb_tree_.erase(ft::make_pair(key, mapped_type()), NULL));
+        return (rb_tree_.erase(key, NULL));
     }
 
-    
     void erase(iterator pos) { rb_tree_.erase(pos); }
 
     void erase(iterator first, iterator last)
@@ -192,24 +143,23 @@ public:
         }
     }
 
-    void swap(map& other)
+    void swap(set& other)
     {
         ft::swap(cmp_, other.cmp_);
         ft::swap(value_allocator_, other.value_allocator_);
         rb_tree_.swap(other.rb_tree_);
     }
-
 /* =================                    LookUp                      ================= */
 
     // Finds an element with key equivalent to key. 
     iterator find(const Key& key)
     {
-        return (iterator(rb_tree_.search_node(ft::make_pair(key, mapped_type()), NULL)));
+        return (iterator(rb_tree_.search_node(key, NULL)));
     }
 
     const_iterator find(const Key& key) const
     {
-        return (const_iterator(rb_tree_.search_node(ft::make_pair(key, mapped_type()), NULL)));
+        return (const_iterator(rb_tree_.search_node(key, NULL)));
     }
 
     // Returns the number of elements with key that compares equivalent to the specified argument.
@@ -235,75 +185,74 @@ public:
     // Returns an iterator pointing to the first element that is not less than key.
     iterator lower_bound( const Key& key )
     {
-        return (rb_tree_.lower_bound(ft::make_pair(key, mapped_type())));
+        return (rb_tree_.lower_bound(key));
     }
 
     const_iterator lower_bound( const Key& key ) const
     {
-        return (rb_tree_.lower_bound(ft::make_pair(key, mapped_type())));
+        return (rb_tree_.lower_bound(key));
     }
 
     // Returns an iterator pointing to the first element that is greater than key.
     iterator upper_bound( const Key& key )
     {
-        return (rb_tree_.upper_bound(ft::make_pair(key, mapped_type())));
+        return (rb_tree_.upper_bound(key));
     }
 
     const_iterator upper_bound( const Key& key ) const
     {
-        return (rb_tree_.upper_bound(ft::make_pair(key, mapped_type())));
+        return (rb_tree_.upper_bound(key));
     }
 
 /* =================                    Observers                       ================= */
 
     key_compare key_comp() const        { return (key_compare()); }
     value_compare value_comp() const    { return (value_compare()); }
-}; //end of map
+}; //end of set
 
 /* =================                Non-member functions                ================= */
 
-template< class Key, class T, class Compare, class Alloc >
-bool    operator==( const ft::map< Key, T, Compare, Alloc >& lhs,
-                    const ft::map< Key, T, Compare, Alloc >& rhs )
+template< class Key, class Compare, class Alloc >
+bool    operator==( const ft::set< Key, Compare, Alloc >& lhs,
+                    const ft::set< Key, Compare, Alloc >& rhs )
 {
     return (lhs.size() == rhs.size()
             && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
 }
 
-template< class Key, class T, class Compare, class Alloc >
-bool    operator!=( const ft::map< Key, T, Compare, Alloc >& lhs,
-                    const ft::map< Key, T, Compare, Alloc >& rhs )
+template< class Key, class Compare, class Alloc >
+bool    operator!=( const ft::set< Key, Compare, Alloc >& lhs,
+                    const ft::set< Key, Compare, Alloc >& rhs )
 {
     return (!(lhs == rhs));
 }
 
-template< class Key, class T, class Compare, class Alloc >
-bool    operator<( const ft::map< Key, T, Compare, Alloc >& lhs,
-                    const ft::map< Key, T, Compare, Alloc >& rhs )
+template< class Key, class Compare, class Alloc >
+bool    operator<( const ft::set< Key, Compare, Alloc >& lhs,
+                    const ft::set< Key, Compare, Alloc >& rhs )
 {
     return (ft::lexicographical_compare(lhs.begin(), lhs.end(),
                                         rhs.begin(), rhs.end()));
 }
 
-template< class Key, class T, class Compare, class Alloc >
-bool    operator<=( const ft::map< Key, T, Compare, Alloc >& lhs,
-                    const ft::map< Key, T, Compare, Alloc >& rhs )
+template< class Key, class Compare, class Alloc >
+bool    operator<=( const ft::set< Key, Compare, Alloc >& lhs,
+                    const ft::set< Key, Compare, Alloc >& rhs )
 {
     return (!(rhs < lhs));
 }
 
-template< class Key, class T, class Compare, class Alloc >
-bool    operator>( const ft::map< Key, T, Compare, Alloc >& lhs,
-                    const ft::map< Key, T, Compare, Alloc >& rhs )
+template< class Key, class Compare, class Alloc >
+bool    operator>( const ft::set< Key, Compare, Alloc >& lhs,
+                    const ft::set< Key, Compare, Alloc >& rhs )
 {
     return (rhs < lhs);
 }
 
-template< class Key, class T, class Compare, class Alloc >
-bool    operator>=( const ft::map< Key, T, Compare, Alloc >& lhs,
-                    const ft::map< Key, T, Compare, Alloc >& rhs )
+template< class Key, class Compare, class Alloc >
+bool    operator>=( const ft::set< Key, Compare, Alloc >& lhs,
+                    const ft::set< Key, Compare, Alloc >& rhs )
 {
     return (!(lhs < rhs));
 }
-
 } // namespace ft
