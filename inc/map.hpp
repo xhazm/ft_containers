@@ -52,7 +52,7 @@ class Allocator = std::allocator<ft::pair<const Key, T> >
     };
 
 private:
-    typedef red_black_tree<value_type, value_compare>             tree;
+    typedef red_black_tree<value_type, value_compare, allocator_type>             tree;
 
 public:
     typedef typename tree::iterator                         iterator;

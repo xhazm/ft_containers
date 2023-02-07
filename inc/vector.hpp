@@ -253,6 +253,8 @@ public:
 	}
 
 /* =================			 Helper Functions			  ================= */
+
+private:
 	void _copy_destroy_(pointer from, pointer to, size_type count)
 	{
 		for (size_type dist = 0; dist < count ; ++dist)
