@@ -26,7 +26,7 @@ public:
 	typedef typename ft::reverse_iterator<iterator>  	reverse_iterator;
 	typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
-protected:
+private:
 	pointer					start_;
 	pointer					finish_;
 	pointer					end_of_storage_;
