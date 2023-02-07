@@ -9,19 +9,6 @@
 
 int main(void)
 {
-    // std::vector<int> stdtest;
-    // stdtest.push_back(6);
-	// stdtest.push_back(9);
-	// stdtest.push_back(6);
-	// stdtest.push_back(7);
-	// stdtest.push_back(6);
-
-    // std::vector<int> stdtest2;
-    // stdtest2.insert(stdtest.begin(), stdtest.begin(), stdtest.end());
-    // for(std::vector<int>::iterator it = stdtest2.begin(); it < stdtest2.end(); ++it)
-    //     std::cout << *it << std::endl;
-
-
     vector_test<int> vec_tester;
     vec_tester.reserve(2);
     vec_tester.push_back(6);

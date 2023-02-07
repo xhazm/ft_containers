@@ -131,7 +131,8 @@ public:
 	const_reverse_iterator	rend() const	{ return const_reverse_iterator(begin() ); }
 /* =================				Capacity				================= */
 	size_type	size() const		{ return size_type(finish_ - start_); }
-	size_type	max_size() const	{ return static_allocator.max_size(); }
+	size_type	max_size() const	{ 
+		return std::min<size_type>(this->static_allocator.max_size(), std::numeric_limits<difference_type>::max()); }
 	size_type	capacity() const	{ return size_type(end_of_storage_ - start_ ); }
 	bool		empty() const		{ return start_ == finish_; } //or static allocator.empty()?
 /* =================				Capacity Modulator	  ================= */
@@ -142,21 +143,6 @@ public:
 		_grow_(new_cap);
 	}
 /* =================			   Modifiers			  ================= */
-	private:
-	void destroy_range(iterator first, iterator last)
-	{
-		difference_type n = ft::distance(first, last);
-		for (iterator it = first; last < end(); ++it, ++last)
-		{
-			*it = *last;
-		}
-		for (difference_type diff = 1; n >= diff ; diff++)
-		{
-			static_allocator.destroy(finish_ - diff);
-		}
-		finish_ -= n;
-	}
-
 	public:
 	void push_back(const T& data)
 	{
@@ -175,23 +161,32 @@ public:
 		erase(finish_ - 1);
 	}
 
-	iterator erase( iterator pos )
+	iterator erase(iterator pos)
 	{
-		for (iterator it = pos; it < end() - 1; ++it)
+		iterator tmp;
+		iterator tmp_end = end();
+		for (iterator it = pos, tmp = it + 1; it < tmp_end - 1; ++it, ++tmp)
 		{
-			*it = *(it + 1);
+			*it = *tmp;
 		}
 		static_allocator.destroy(finish_ - 1);
-		if (pos != end())
+		if (pos != tmp_end)
 			finish_ -= 1;
 		return (pos);
 	}
 
-	iterator erase( iterator first, iterator last )
+	iterator erase(iterator first, iterator last )
 	{
-		if (first == last)
-			return(first);
-		destroy_range(first, last);
+		difference_type n = ft::distance(first, last);
+		for (iterator it = first; last < end(); ++it, ++last)
+		{
+			*it = *last;
+		}
+		for (difference_type diff = 1; n >= diff ; diff++)
+		{
+			static_allocator.destroy(finish_ - diff);
+		}
+		finish_ -= n;
 		return (first);
 	}
 
@@ -199,21 +194,28 @@ public:
 
 	void resize(size_type count, T value = T())
 	{
-		size_type size = this->size();
-		size_type capacity = this->capacity();
-		if (count > size)
+		if (count > max_size())
+			throw std::length_error("vector");
+		if (count < size())
 		{
-			reserve(count);
-			size = this->size();
-			capacity = this->capacity();
-			for( ; size < capacity; ++size)
+			erase(start_ + count, finish_);
+			finish_ = start_ + count;
+		}
+		else if (count > size())
+		{
+			if (count > capacity())
+			{
+				if (count <= capacity() * 2)
+					reserve(capacity() * 2);
+				else
+					reserve(count);
+			}
+			for (size_t i = size(); i < count; i++)
 			{
 				static_allocator.construct(finish_, value);
 				finish_++;
 			}
 		}
-		else if (count < size)
-			erase(begin() + count, end());
 	}
 
 	iterator insert(const_iterator pos, size_type count, const T& value)
@@ -223,26 +225,11 @@ public:
 
 		difference_type c_pos = ft::distance(begin(), pos);
 		size_type		n_size = size() + count;
-		size_type		alloc_size = capacity() > n_size ? capacity() : n_size;
+		size_type		old_end = size();
 
-		// resize(n_size);
-		if (capacity() >= n_size)
-		{
-			if (size())
-				_assign_construct_(start_ + c_pos, start_ + c_pos + count, count);
-			_assign_construct_(start_ + c_pos, value, count);
-		}
-		else
-		{
-			pointer			n_start = _allocate_safe_(alloc_size);
-			_copy_destroy_(start_, n_start, c_pos);
-			for (size_type temp_pos = c_pos; temp_pos < c_pos + count; ++temp_pos)
-				static_allocator.construct(n_start + temp_pos, value);
-			_copy_destroy_(start_ + c_pos, n_start + c_pos + count, n_size - count - c_pos);
-			if (start_ != NULL)
-				static_allocator.deallocate(start_, capacity());
-			_set_class_vars_(n_start, n_start + n_size, n_start + alloc_size);
-		}
+		resize(n_size);
+		backward_copy(begin() + c_pos, begin() + old_end, begin() + c_pos + count);
+		_assign_construct_(start_ + c_pos, value, count);
 		return (begin() + c_pos);
 	}
 
@@ -278,7 +265,7 @@ public:
 	void _assign_construct_(pointer from, pointer to, size_type count)
 	{
 		size_type dist = 0;
-		for ( ; dist < count && (to + dist) < end().base(); ++dist)
+		for ( ; dist < count && (to + dist) < finish_; ++dist)
 		{
 			*(to + dist) = *(from + dist);
 		}
@@ -291,7 +278,7 @@ public:
 	void _assign_construct_(pointer to, const T& value, size_type count)
 	{
 		size_type dist = 0;
-		for ( ; dist < count && (to + dist) < end().base(); ++dist)
+		for ( ; dist < count && (to + dist) < finish_; ++dist)
 		{
 			*(to + dist) = value;
 		}
@@ -306,7 +293,7 @@ public:
 	void _assign_construct_(InputIterator from, pointer to, size_type count, random_access_iterator_tag)
 	{
 		size_type dist = 0;
-		for ( ; dist < count && (to + dist) < end().base(); ++dist)
+		for ( ; dist < count && (to + dist) < finish_; ++dist)
 		{
 			*(to + dist) = *(from + dist);
 		}
@@ -321,7 +308,7 @@ public:
 	void _assign_construct_(InputIterator from, pointer to, size_type count, forward_iterator_tag)
 	{
 		size_type dist = 0;
-		for ( ; dist < count && (to + dist) < end().base(); ++dist, ++from)
+		for ( ; dist < count && (to + dist) < finish_; ++dist, ++from)
 		{
 			*(to + dist) = *from;
 		}
@@ -351,30 +338,6 @@ public:
 		for ( ; first != last; ++first, ++pos)
             pos = insert(pos, 1, *first);
         return (pos);
-		// difference_type c_pos = ft::distance(begin(), pos);
-		// size_type		n_size = size() + count;
-		// size_type		alloc_size = capacity() > n_size ? capacity() : n_size;
-		// size_type		count = 0;
-
-		// if (capacity() >= n_size)
-		// {
-		// 	if (size())
-		// 		_assign_construct_(start_ + c_pos, start_ + c_pos + count, size());
-		// 	_assign_construct_(first, start_ + c_pos, count, typename iterator_traits< InputIterator >::iterator_category());
-		// 	_set_class_vars_(start_, start_ + n_size, start_ + alloc_size);
-		// }
-		// else
-		// {
-		// 	pointer n_start = _allocate_safe_(alloc_size);
-		// 	_copy_destroy_(start_, n_start, c_pos);
-		// 	for (count = cpos; first != last; ++count, ++first)
-		// 		static_allocator.construct(n_start + count, *first);
-		// 	_copy_destroy_(start_ + c_pos, n_start + c_pos + count, n_size - count - c_pos);
-		// 	if (start_ != NULL)
-		// 		static_allocator.deallocate(start_, capacity());
-		// 	_set_class_vars_(n_start, n_start + n_size, n_start + alloc_size);
-		// }
-		// return (begin() + c_pos);
     }
 
 	template< typename InputIterator >
@@ -475,6 +438,20 @@ public:
 		end_of_storage_ = start_ + new_cap;
 	}
 
+	template<typename iterator, typename InputIterator>
+		iterator	backward_copy(InputIterator first, InputIterator last, iterator position) {
+			--first;
+			--last;
+			size_t n = ft::distance(first, last);
+			position = position + n - 1;
+			while (last != first)
+			{
+				*position = *last; 
+				last--;
+				position--;
+			}
+			return(position + n);
+		}
 };
 
 /* =================    Non-member functions                ================= */

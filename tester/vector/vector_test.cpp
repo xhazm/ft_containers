@@ -23,17 +23,6 @@ std::string print_data(U& test_vec)
     return ("");
 }
 
-// template<class U>
-// std::string print_data(U test_vec)
-// {
-//     typename U::iterator test_it = test_vec.begin();
-//     for(; test_it != test_vec.end(); ++test_it)
-//     {
-//         std::cout << "test_data: " << *test_it << std::endl;
-//     }
-//     return ("");
-// }
-
 template<class T>
 std::string print_data(std::vector<T> test_ft_vec, std::vector<T> test_std_vec)
 {
