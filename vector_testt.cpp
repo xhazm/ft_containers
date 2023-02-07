@@ -13,7 +13,7 @@
 
 
 template<class U>
-std::string print_data(U& test_vec)
+std::string print_data(U test_vec)
 {
     typename U::iterator test_it = test_vec.begin();
     for(; test_it != test_vec.end(); ++test_it)
@@ -23,54 +23,99 @@ std::string print_data(U& test_vec)
     return ("");
 }
 
-int main(void)
-{
-    ft::vector<int> v;
 
-    for (int i = 0; i < 1; ++i) {
-        v.insert(v.end(), 20, i);
+class B {
+public:
+    char *l;
+    int i;
+    B():l(nullptr), i(1) {};
+    B(const int &ex) {
+        this->i = ex;
+        this->l = new char('a');
+    };
+    virtual ~B() {
+        delete this->l;
+        this->l = nullptr;
+    };
+};
+
+class A : public B {
+public:
+    A():B(){};
+    A(const B* ex){
+        this->l = new char(*(ex->l));
+        this->i = ex->i;
+        if (ex->i == -1) 
+        {
+            throw "n";
+        }
     }
-    ft::vector<int>::iterator it = v.insert(v.begin(), 4);
-    print_data(v);
-    std::cout << v.size() << " before " <<v.capacity() << std::endl;
-    v.resize(6);
-    std::cout << v.size() << " " <<v.capacity() << std::endl;
-    print_data(v);
-    
+    ~A() {
+        delete this->l;
+        this->l = nullptr;
+    };
+};
 
-    std::vector<int> v2;
+template <typename T>
+std::vector<int> insert_test_3(std::vector<T> vector) {
+    std::vector<int> v;
+    std::vector<int> tmp;
+    tmp.assign(2600 * _ratio, 1);
+    vector.assign(4200 * _ratio, 1);
+    vector.insert(vector.end() - 1000 * _ratio, tmp.begin(), tmp.end());
+    v.push_back(vector[3]);
+    v.push_back(vector.size());
+    v.push_back(vector.capacity());
 
-    for (int i = 0; i < 1; ++i) {
-        v2.insert(v2.end(), 20, i);
+    std::unique_ptr<B> k2(new B(3));
+    std::unique_ptr<B> k3(new B(4));
+    std::unique_ptr<B> k4(new B(-1));
+    std::vector<A> vv;
+    std::vector<B*> v1;
+
+    v1.push_back(&(*k2));
+    v1.push_back(&(*k3));
+    v1.push_back(&(*k4));
+    try { vv.insert(vv.begin(), v1.begin(), v1.end()); }
+    catch (...) {
+        v.push_back(vv.size());
+        v.push_back(vv.capacity());
     }
-    std::vector<int>::iterator it2 = v2.insert(v2.begin(), 4);
-    print_data(v2);
-    std::cout << v2.size() << " before  " <<v2.capacity() << std::endl;
-    v2.resize(6);
-    std::cout << v2.size() << " " <<v2.capacity() << std::endl;
-    print_data(v2);
-    
 
-    // for (int i = 0; i < 2; ++i) {
-    //     ft::vector<int> v;
+    return v;
+}
 
-    //     for (std::size_t i = 0; i < 3000; ++i) {
-    //         v.insert(v.begin(), i, rand());
-    //     }
-    //     for (std::size_t i = 0; i < 3000; ++i) {
-    //         v.insert(v.begin(), 20, rand());
-    //     }
-    // }
+template <typename T>
+std::vector<int> insert_test_3(_vector<T> vector) {
+    std::vector<int> v;
+    _vector<int> tmp;
+    tmp.assign(2600 * _ratio, 1);
+    vector.assign(4200 * _ratio, 1);
+    vector.insert(vector.end() - 1000 * _ratio, tmp.begin(), tmp.end());
+    v.push_back(vector[3]);
+    v.push_back(vector.size());
+    v.push_back(vector.capacity());
 
-    // for (int i = 0; i < 2; ++i) {
-    //     ft::vector<int> v;
+    std::unique_ptr<B> k2(new B(3));
+    std::unique_ptr<B> k3(new B(4));
+    std::unique_ptr<B> k4(new B(-1));
+    _vector<A> vv;
+    _vector<B*> v1;
 
-    //     for (std::size_t i = 0; i < 1000; ++i) {
-    //         v.insert(v.end(), rand());
-    //     }
-    //     for (std::size_t i = 0; i < 3000; ++i) {
-    //         v.insert(v.begin() + 450, i, rand());
-    //     }
-    // }
-    return 0;
+    v1.push_back(&(*k2));
+    v1.push_back(&(*k3));
+    v1.push_back(&(*k4));
+    try { vv.insert(vv.begin(), v1.begin(), v1.end()); }
+    catch (...) {
+        v.push_back(vv.size());
+        v.push_back(vv.capacity());
+    }
+
+    return v;
+}
+
+int main() {
+
+    ft::vector<int> vec;
+    print_data(insert_test_3(vec));
 }
