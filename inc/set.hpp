@@ -30,7 +30,7 @@ public:
     typedef typename allocator_type::const_pointer          const_pointer;
 
 private:
-    typedef ft::red_black_tree<value_type, value_compare>   tree;
+    typedef ft::red_black_tree<value_type, value_compare, allocator_type>   tree;
     
 public:
     typedef typename tree::const_iterator                   iterator;
